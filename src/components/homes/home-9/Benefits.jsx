@@ -68,20 +68,24 @@ export default function Benefits() {
                 aria-labelledby="ownership-tab"
               >
                 <figure className="flex items-center justify-center">
-                  <Image
-                    width={426}
-                    height={426}
-                    src={currentTabItem.img}
-                    alt="image"
-                    className="rounded-full border border-jacarta-100 p-14 dark:border-jacarta-600"
-                  />
-                  <Image
-                    width={630}
-                    height={594}
-                    src="/img/dao/3d_elements_circle.png"
-                    alt="image"
-                    className="absolute animate-spin-slow"
-                  />
+                  <picture className="rounded-full border border-jacarta-100 p-14 dark:border-jacarta-600">
+                    <Image
+                      width={426}
+                      height={426}
+                      src={currentTabItem.img}
+                      alt="image"
+                      className="rounded-full border border-jacarta-100 p-14 dark:border-jacarta-600"
+                    />
+                  </picture>
+                  <picture className="absolute animate-spin-slow">
+                    <Image
+                      width={630}
+                      height={594}
+                      src="/img/dao/3d_elements_circle.png"
+                      alt="image"
+                      className="absolute animate-spin-slow"
+                    />
+                  </picture>
                 </figure>
               </div>
             </div>

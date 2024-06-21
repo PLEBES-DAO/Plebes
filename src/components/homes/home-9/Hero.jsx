@@ -1,16 +1,18 @@
 import Image from "../../common/Image";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
     <section className="relative h-screen">
-      <Image
-        width={1920}
-        height={1014}
-        src="/img/hero/hero_dao.jpg"
-        alt="image"
-        className="absolute inset-0 -z-10 h-full w-full object-cover"
-      />
+      <picture className="pointer-events-none absolute -z-10 inset-0">
+        <Image
+          width={1920}
+          height={1014}
+          src="/img/hero/hero_dao.jpg"
+          alt="image"
+          className="absolute inset-0 -z-10 h-full w-full object-cover"
+        />
+      </picture>
       <div className="ml-auto mr-auto h-full max-w-[91rem] px-4">
         <div className="grid h-full items-center gap-4 md:grid-cols-12">
           <div className="col-span-5 flex h-full flex-col items-center justify-center py-10 md:items-start lg:py-20">

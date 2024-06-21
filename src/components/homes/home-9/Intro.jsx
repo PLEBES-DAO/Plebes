@@ -8,6 +8,7 @@ export default function Intro() {
         <div className="lg:flex lg:justify-between">
           <div className="relative lg:w-[45%]">
             <figure className="relative">
+              <picture className="rounded-2.5xl">
               <Image
                 width={500}
                 height={500}
@@ -15,6 +16,7 @@ export default function Intro() {
                 className="rounded-2.5xl"
                 alt="image"
               />
+              </picture>
             </figure>
           </div>
 

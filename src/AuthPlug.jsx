@@ -42,7 +42,7 @@ export const useAuthClient = () => {
     // if (!connected) requestConnectAsync();
   };
 
-  useEffect(async () => {
+  useEffect( () => {
     if (!publicKey && !principal) {
       verifyConnection();
     }
