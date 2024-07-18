@@ -4,10 +4,10 @@ export const metadata = {
   title: "Home 1 || Xhibiter | NFT Marketplace Nextjs Template",
 };
 
-export default function Home() {
+export default function Home({login}) {
   return (
     <>
-      <HomePage9 />
+      <HomePage9 login={login} />
     </>
   );
 }

@@ -12,10 +12,10 @@ import Partners2 from "../../../components/homes/home-9/Partners2";
 export const metadata = {
   title: "Home 9 || Xhibiter | NFT Marketplace Nextjs Template",
 };
-export default function HomePage9() {
+export default function HomePage9({login}) {
   return (
     <>
-      <Header1 />
+      <Header1 bLogin={login} />
       <main>
         <Hero />
         <Partners />
