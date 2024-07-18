@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import MetamarkComponent from "../metamask/MetamarkComponent";
 import { useAuth } from "../../AuthPlug";
 
-export default function Header1() {
+export default function Header1({bLogin}) {
   const { login, principal, isAuthPlug } = useAuth();
   useEffect(() => {}, [principal, isAuthPlug]);
   useEffect(() => {
@@ -252,8 +252,9 @@ export default function Header1() {
             <div className="ml-8  hidden lg:flex xl:ml-12">
               {!isAuthPlug && (
                 <div
-                  onClick={() => {
-                    login();
+                  onClick={async () => {
+                    console.log("before bLogin")
+                   await  bLogin();
                   }}
                   className=" cursor-pointer rtl:ml-2 js-wallet group flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
                 >

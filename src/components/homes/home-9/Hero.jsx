@@ -8,7 +8,7 @@ export default function Hero() {
         <Image
           width={1920}
           height={1014}
-          src="/img/hero/hero_dao.jpg"
+          src="/img/dao/hero_dao.jpg"
           alt="image"
           className="absolute inset-0 -z-10 h-full w-full object-cover"
         />
@@ -57,6 +57,7 @@ export default function Hero() {
             <div className="absolute right-8 top-1/2 animate-fly">
               <div className="flex items-center space-x-4 rounded-2lg bg-[#62688F]/50 p-2.5 pr-6 pl-0 backdrop-blur-md">
                 <div className="-ml-6 flex h-12 w-12 items-center justify-center rounded-full bg-white">
+                <picture className="pointer-events-none absolute -z-10 inset-0">
                   <Image
                     width={48}
                     height={48}
@@ -64,6 +65,7 @@ export default function Hero() {
                     alt="image"
                     className="max-w-[50%]"
                   />
+                  </picture>
                 </div>
                 <span className="font-display text-sm text-white">
                   Ethereum

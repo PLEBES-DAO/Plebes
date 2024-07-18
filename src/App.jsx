@@ -1,10 +1,17 @@
 import Page from "./app/page";
-
+import { useBioniqContext } from "./hooks/BioniqContext";
 
 function App() {
+  const {
+    login,
+    userConnection,
+    reloadInscriptions,
+    reloadWallets,
+    liveBioniqWalletApi,
+  } = useBioniqContext();
   return (
     <>
-      <Page></Page>
+      <Page login={login}></Page>
     </>
   );
 }
