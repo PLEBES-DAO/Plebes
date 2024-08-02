@@ -253,8 +253,9 @@ export default function Header1({bLogin}) {
               {!isAuthPlug && (
                 <div
                   onClick={async () => {
-                    console.log("before bLogin")
-                   await  bLogin();
+                  //   console.log("before bLogin")
+                  //  await  bLogin();
+                  await login()
                   }}
                   className=" cursor-pointer rtl:ml-2 js-wallet group flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
                 >

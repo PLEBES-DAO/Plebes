@@ -14,9 +14,10 @@ export const useAuthClient = () => {
   const host = "https://mainnet.dfinity.network";
 
   const setPrincipalAsync = async () => {
-    console.log("setting principal");
     let principal = await window.ic.plug.principalId;
+    console.log("getting principal",principal)
     setPrincipal(principal);
+
   };
 
   const requestConnectAsync = async () => {
@@ -24,26 +25,29 @@ export const useAuthClient = () => {
       whitelist,
       host,
     });
-    window.location.reload();
-    console.log("public key", publicKey);
-    if (publicKey) {
+    console.log("public key", publicKeyRequest);
+      //  window.location.reload();
+    if (publicKeyRequest) {
       setIsAuthenticated(true);
       setPublicKey(publicKeyRequest);
       await setPrincipalAsync();
     }
+
   };
 
   const verifyConnection = async () => {
     const connected = await window.ic.plug.isConnected();
+    console.log("is connected",connected)
     if (connected) {
       setIsAuthenticated(true);
-      setPrincipalAsync();
+      await setPrincipalAsync();
     }
     // if (!connected) requestConnectAsync();
   };
 
   useEffect( () => {
     if (!publicKey && !principal) {
+      console.log("in verify connection")
       verifyConnection();
     }
   }, []);
