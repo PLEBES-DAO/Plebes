@@ -1,7 +1,7 @@
 {
     "canisters": {
-        "fungibletoken_backend": {
-            "main": "src/fungibletoken_backend/main.mo",
+        "voting_treasury": {
+            "main": "src/voting_treasury/main.mo",
             "type": "motoko"
         },
         "internet_identity": {

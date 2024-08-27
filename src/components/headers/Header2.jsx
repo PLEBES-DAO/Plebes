@@ -36,7 +36,7 @@ export default function Header2() {
 
   return (
     <header
-      className={`js-page-header page-header--transparent fixed top-0 z-20 w-full bg-white/[.15] backdrop-blur transition-colors ${
+      className={`js-page-header page-header--transparent fixed top-0 z-20 w-full bg-white backdrop-blur transition-colors ${
         scrolled ? "js-page-header--is-sticky" : ""
       } `}
     >
@@ -59,7 +59,7 @@ export default function Header2() {
         >
           <input
             type="search"
-            className="w-full rounded-2xl border border-none bg-white/[.15] py-3 px-4 pl-10 text-white placeholder-white focus:ring-accent"
+            className="w-full rounded-2xl border border-none bg-white py-3 px-4 pl-10 text-white placeholder-white focus:ring-accent"
             placeholder="Search"
           />
           <span className="absolute left-0 top-0 flex h-full w-12 items-center justify-center rounded-2xl">
@@ -100,7 +100,7 @@ export default function Header2() {
 
             {/* Mobile Menu Close */}
             <button
-              className="js-mobile-close group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
+              className="js-mobile-close group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white dark:hover:bg-accent"
               aria-label="close mobile menu"
             >
               <svg
@@ -123,7 +123,7 @@ export default function Header2() {
           >
             <input
               type="search"
-              className="w-full rounded-2xl border border-jacarta-100 py-3 px-4 pl-10 text-jacarta-700 placeholder-jacarta-500 focus:ring-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
+              className="w-full rounded-2xl border border-jacarta-100 py-3 px-4 pl-10 text-jacarta-700 placeholder-jacarta-500 focus:ring-accent dark:border-transparent dark:bg-white dark:text-white dark:placeholder-white"
               placeholder="Search"
             />
             <span className="absolute left-0 top-0 flex h-full w-12 items-center justify-center rounded-2xl">
@@ -235,7 +235,7 @@ export default function Header2() {
           {/* Actions */}
           <div className="ml-8 hidden lg:flex xl:ml-12">
             <MetamarkComponent>
-              <a className="group flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white/[.15] transition-colors hover:bg-accent focus:bg-accent">
+              <a className="group flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white transition-colors hover:bg-accent focus:bg-accent">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -253,7 +253,7 @@ export default function Header2() {
             {/* Dark Mode */}
             <div
               onClick={() => handleDarkMode()}
-              className="cursor-pointer js-dark-mode-trigger group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white/[.15] transition-colors hover:bg-accent focus:bg-accent"
+              className="cursor-pointer js-dark-mode-trigger group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white transition-colors hover:bg-accent focus:bg-accent"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -284,7 +284,7 @@ export default function Header2() {
           {/* Profile */}
           <Link
             href="/edit-profile"
-            className="group flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white/[.15] transition-colors hover:bg-accent focus:bg-accent"
+            className="group flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white transition-colors hover:bg-accent focus:bg-accent"
             aria-label="profile"
           >
             <svg
@@ -302,7 +302,7 @@ export default function Header2() {
           {/* Dark Mode */}
           <div
             onClick={() => handleDarkMode()}
-            className="cursor-pointer js-dark-mode-trigger group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white/[.15] transition-colors hover:bg-accent focus:bg-accent"
+            className="cursor-pointer js-dark-mode-trigger group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white transition-colors hover:bg-accent focus:bg-accent"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -328,7 +328,7 @@ export default function Header2() {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="js-mobile-toggle group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white/[.15] transition-colors hover:bg-accent focus:bg-accent"
+            className="js-mobile-toggle group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-white transition-colors hover:bg-accent focus:bg-accent"
             aria-label="open mobile menu"
           >
             <svg

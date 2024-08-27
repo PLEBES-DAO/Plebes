@@ -24,38 +24,28 @@ export const faqs = [
 export const faqs2 = [
   {
     id: 1,
-    question: "How do I create an NFT?",
-    answer: ` Learn how to create your very first NFT and how to create
-                      your NFT collections. Unique, fully 3D and built to unite
-                      the design multiverse. Designed and styled by Digimental.`,
+    question: "How many Plebes exist?",
+    answer: `Plebes are infinite.`,
   },
   {
     id: 2,
-    question: "How can I stay safe and protect my NFTs ?",
-    answer: ` Learn how to create your very first NFT and how to create
-                      your NFT collections. Unique, fully 3D and built to unite
-                      the design multiverse. Designed and styled by Digimental.`,
+    question: "How much does a Plebe cost?",
+    answer: `The price of each Plebe is determined by the daily auction mechanism.`,
   },
   {
     id: 3,
-    question: "What are the key terms to know in NFTs and Web3 ?",
-    answer: ` Learn how to create your very first NFT and how to create
-                      your NFT collections. Unique, fully 3D and built to unite
-                      the design multiverse. Designed and styled by Digimental.`,
+    question: "How do I participate in Plebes?",
+    answer: `Join our communities and buy Plebes.`,
   },
   {
     id: 4,
-    question: "How do I sell an NFT ?",
-    answer: ` Learn how to create your very first NFT and how to create
-                      your NFT collections. Unique, fully 3D and built to unite
-                      the design multiverse. Designed and styled by Digimental.`,
+    question: "How do I sell an NFT?” por “How can I obtain a Plebe?",
+    answer: ` Initially, you can connect your ICP wallet and participate in the auction.`,
   },
   {
     id: 5,
-    question: "Smart Contract Upgrade: What You Need to Know",
-    answer: ` Learn how to create your very first NFT and how to create
-                      your NFT collections. Unique, fully 3D and built to unite
-                      the design multiverse. Designed and styled by Digimental.`,
+    question: "Why Plebes?",
+    answer: ` Plebes" is a Mexican term that refers to a group of individuals.`,
   },
 ];
 export const faqs3 = [

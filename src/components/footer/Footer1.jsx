@@ -1,9 +1,9 @@
-import Socials from "./Socials";
-import MarketplaceLinks from "./MarketplaceLinks";
-import CompanyLinks from "./CompanyLinks";
-import MyAccountKink from "./MyAccountLink";
-import Image from "../common/Image";
-import {Link} from "react-router-dom";
+import Socials from './Socials'
+import MarketplaceLinks from './MarketplaceLinks'
+import CompanyLinks from './CompanyLinks'
+import MyAccountKink from './MyAccountLink'
+import Image from '../common/Image'
+import { Link } from 'react-router-dom'
 
 export default function Footer1() {
   return (
@@ -15,38 +15,27 @@ export default function Footer1() {
               <Image
                 width={130}
                 height={28}
-                src="/img/logo.png"
+                src="/img/plebes1b.svg"
                 className="max-h-7 dark:hidden"
                 alt="Xhibiter | NFT Marketplace"
               />
               <Image
                 width={130}
                 height={28}
-                src="/img/logo_white.png"
+                src="/img/plebes1w.svg"
                 className="hidden max-h-7 dark:block"
                 alt="Xhibiter | NFT Marketplace"
               />
             </Link>
             <p className="mb-12 dark:text-jacarta-300">
-              Create, sell and collect truly rare digital artworks. Powered by
-              blockchain technology.
+              Follow us on all our social media platforms, including Twitter and
+              OpenChat.
             </p>
-
             <div className="flex space-x-5">
               <Socials />
             </div>
           </div>
-
           <div className="col-span-full sm:col-span-3 md:col-span-2 md:col-start-7">
-            <h3 className="mb-6 font-display text-sm text-jacarta-700 dark:text-white">
-              Marketplace
-            </h3>
-            <ul className="flex flex-col space-y-1 dark:text-jacarta-300">
-              <MarketplaceLinks />
-            </ul>
-          </div>
-
-          <div className="col-span-full sm:col-span-3 md:col-span-2">
             <h3 className="mb-6 font-display text-sm text-jacarta-700 dark:text-white">
               Company
             </h3>
@@ -54,24 +43,31 @@ export default function Footer1() {
               <CompanyLinks />
             </ul>
           </div>
-
           <div className="col-span-full sm:col-span-3 md:col-span-2">
             <h3 className="mb-6 font-display text-sm text-jacarta-700 dark:text-white">
-              My Account
+              Documentation
             </h3>
             <ul className="flex flex-col space-y-1 dark:text-jacarta-300">
               <MyAccountKink />
             </ul>
           </div>
+          <div className="col-span-full sm:col-span-3 md:col-span-2">
+            <h3 className="mb-6 font-display text-sm text-jacarta-700 dark:text-white">
+              Social
+            </h3>
+            <ul className="flex flex-col space-y-1 dark:text-jacarta-300">
+              <MarketplaceLinks />
+            </ul>
+          </div>
         </div>
         <div className="flex flex-col items-center justify-between space-y-2 py-8 sm:flex-row sm:space-y-0">
           <span className="text-sm dark:text-jacarta-400">
-            &copy; {new Date().getFullYear()} Xhibiter — Made by{" "}
+            &copy; {new Date().getFullYear()} Plebes — Made by{' '}
             <a
               href="https://themeforest.net/user/ib-themes/portfolio"
               className="hover:text-accent"
             >
-              ib-themes
+              Bario
             </a>
           </span>
           <ul className="flex flex-wrap space-x-4 text-sm dark:text-jacarta-400">
@@ -89,5 +85,5 @@ export default function Footer1() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

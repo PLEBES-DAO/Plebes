@@ -18,7 +18,7 @@ export default function Profile() {
   return (
     <div className="js-nav-dropdown group-dropdown relative">
       <button
-        className="dropdown-toggle group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
+        className="dropdown-toggle group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white dark:hover:bg-accent"
         id="profileDropdown"
         aria-expanded="false"
         data-bs-toggle="dropdown"

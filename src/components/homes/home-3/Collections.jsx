@@ -16,7 +16,7 @@ export default function Collections() {
         <div className="flex flex-col space-y-5 lg:flex-row lg:space-y-0 lg:space-x-7">
           <div className="rounded-2.5xl bg-light-base p-12 dark:bg-jacarta-800 lg:w-1/3">
             <h2 className="mb-8 text-center font-display text-3xl font-semibold text-jacarta-700 dark:text-white">
-              Today's Drops
+              Top Auctions
             </h2>
             <div className="flex flex-col space-y-5">
               {collections.slice(0, 4).map((elm, i) => (

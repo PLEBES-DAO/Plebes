@@ -1,9 +1,9 @@
-"use client";
-import { testimonialsData } from "../../../data/testimonials";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
-import { blogs } from "../../../data/blogs";
-import {Link} from "react-router-dom";
+'use client'
+import { testimonialsData } from '../../../data/testimonials'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination } from 'swiper/modules'
+import { blogs } from '../../../data/blogs'
+import { Link } from 'react-router-dom'
 
 export default function Blogs() {
   return (
@@ -11,11 +11,10 @@ export default function Blogs() {
       <div className="container">
         <div className="mx-auto mb-12 max-w-sm text-center">
           <h2 className="mb-6 text-center font-display text-3xl font-medium text-jacarta-700 dark:text-white">
-            Financial News
+            Plebes New
           </h2>
           <p className="text-lg dark:text-jacarta-300">
-            Here are the best features that makes Xhibiter the most powerful,
-            and fast.
+          Stay up to date with the latest news from Plebes.
           </p>
         </div>
         <Swiper
@@ -42,7 +41,7 @@ export default function Blogs() {
             },
           }}
           pagination={{
-            el: ".spb2",
+            el: '.spb2',
             clickable: true,
           }}
           className="swiper card-slider-3-columns-large-gap"
@@ -95,5 +94,5 @@ export default function Blogs() {
         <div className=" spb2 swiper-pagination-1 mt-10 text-center"></div>
       </div>
     </section>
-  );
+  )
 }

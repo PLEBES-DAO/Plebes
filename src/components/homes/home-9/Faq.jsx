@@ -1,27 +1,23 @@
-"use client";
-import { faqs2 } from "../../../data/faq";
-import Image from "../../common/Image";
-import { useState } from "react";
-import ModalVideo from "react-modal-video";
+'use client'
+import { faqs2 } from '../../../data/faq'
+import Image from '../../common/Image'
+import { useState } from 'react'
+import ModalVideo from 'react-modal-video'
 
 export default function Faq() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [openIndex, setOpenIndex] = useState(null);
+  const [isOpen, setIsOpen] = useState(false)
+  const [openIndex, setOpenIndex] = useState(null)
 
   const handleToggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+    setOpenIndex(openIndex === index ? null : index)
+  }
   return (
     <section className="bg-light-base py-24 dark:bg-jacarta-800">
       <div className="container">
         <div className="mx-auto mb-12 max-w-xl text-center">
           <h2 className="mb-6 text-center font-display text-3xl font-medium text-jacarta-700 dark:text-white">
-            How to Participate
+            Frequently Asked Questions (FAQ)
           </h2>
-          <p className="text-lg dark:text-jacarta-300">
-            NFTs can be used to represent items such as photos, videos, audio,
-            and other types of digital files.
-          </p>
         </div>
         <div className="lg:flex lg:flex-nowrap">
           <div className="lg:w-[59%]">
@@ -51,61 +47,51 @@ export default function Faq() {
             </figure>
           </div>
           <div className="lg:w-[41%] lg:pl-24">
-            <p className="mb-6 dark:text-jacarta-300">
-              DAOs are said to be the future of work. As a concept and a
-              technology, DAO can transform the structure of a legacy business
-              by empowering member-owned communities and removing centralized
-              leadership.
-            </p>
-            <a
-              href="#"
-              className="mb-8 inline-block text-sm font-bold text-accent"
-            >
-              Learn More
-            </a>
             <div className="accordion mx-auto max-w-[35rem]" id="accordionFAQ">
-      {faqs2.map((elm, i) => (
-        <div
-          key={i}
-          className="accordion-item mb-5 overflow-hidden rounded-lg border border-jacarta-100 dark:border-jacarta-600"
-        >
-          <h2 className="accordion-header" id={`faq-heading-${elm.id}`}>
-            <button
-              className={`accordion-button relative flex w-full items-center justify-between bg-white px-4 py-3 text-left font-display text-sm text-jacarta-700 dark:bg-jacarta-700 dark:text-white ${
-                openIndex === i ? "" : "collapsed"
-              }`}
-              type="button"
-              onClick={() => handleToggle(i)}
-              aria-expanded={openIndex === i}
-              aria-controls={`faq-${elm.id}`}
-            >
-              <span>{elm.question}</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                className={`accordion-arrow h-4 w-4 shrink-0 fill-jacarta-700 transition-transform dark:fill-white ${
-                  openIndex === i ? "rotate-180" : ""
-                }`}
-              >
-                <path fill="none" d="M0 0h24v24H0z"></path>
-                <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z"></path>
-              </svg>
-            </button>
-          </h2>
-          <div
-            id={`faq-${elm.id}`}
-            className={`accordion-collapse ${openIndex === i ? "block" : "hidden"}`}
-            aria-labelledby={`faq-heading-${elm.id}`}
-          >
-            <div className="accordion-body border-t border-jacarta-100 bg-white p-4 dark:border-jacarta-600 dark:bg-jacarta-700">
-              <p className="dark:text-jacarta-200">{elm.answer}</p>
+              {faqs2.map((elm, i) => (
+                <div
+                  key={i}
+                  className="accordion-item mb-5 overflow-hidden rounded-lg border border-jacarta-100 dark:border-jacarta-600"
+                >
+                  <h2 className="accordion-header" id={`faq-heading-${elm.id}`}>
+                    <button
+                      className={`accordion-button relative flex w-full items-center justify-between bg-white px-4 py-3 text-left font-display text-sm text-jacarta-700 dark:bg-jacarta-700 dark:text-white ${
+                        openIndex === i ? '' : 'collapsed'
+                      }`}
+                      type="button"
+                      onClick={() => handleToggle(i)}
+                      aria-expanded={openIndex === i}
+                      aria-controls={`faq-${elm.id}`}
+                    >
+                      <span>{elm.question}</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                        className={`accordion-arrow h-4 w-4 shrink-0 fill-jacarta-700 transition-transform dark:fill-white ${
+                          openIndex === i ? 'rotate-180' : ''
+                        }`}
+                      >
+                        <path fill="none" d="M0 0h24v24H0z"></path>
+                        <path d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z"></path>
+                      </svg>
+                    </button>
+                  </h2>
+                  <div
+                    id={`faq-${elm.id}`}
+                    className={`accordion-collapse ${
+                      openIndex === i ? 'block' : 'hidden'
+                    }`}
+                    aria-labelledby={`faq-heading-${elm.id}`}
+                  >
+                    <div className="accordion-body border-t border-jacarta-100 bg-white p-4 dark:border-jacarta-600 dark:bg-jacarta-700">
+                      <p className="dark:text-jacarta-200">{elm.answer}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-      ))}
-    </div>
           </div>
         </div>
       </div>
@@ -117,5 +103,5 @@ export default function Faq() {
         onClose={() => setIsOpen(false)}
       />
     </section>
-  );
+  )
 }

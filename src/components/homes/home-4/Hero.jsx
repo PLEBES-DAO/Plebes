@@ -51,7 +51,7 @@ export default function Hero() {
           <form onSubmit={(e) => e.preventDefault()} className="relative mb-4">
             <input
               type="search"
-              className="w-full rounded-2xl border border-jacarta-100 py-4 px-4 pl-10 text-md text-jacarta-700 placeholder-jacarta-300 focus:ring-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:placeholder-white"
+              className="w-full rounded-2xl border border-jacarta-100 py-4 px-4 pl-10 text-md text-jacarta-700 placeholder-jacarta-300 focus:ring-accent dark:border-transparent dark:bg-white dark:text-white dark:placeholder-white"
               placeholder="Search by Collection, NFT or user"
             />
             <span className="absolute left-0 top-0 flex h-full w-12 items-center justify-center rounded-2xl">

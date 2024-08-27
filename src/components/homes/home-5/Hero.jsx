@@ -29,7 +29,7 @@ export default function Hero() {
         <div className="grid h-full items-center gap-4 lg:grid-cols-12">
           <div className="col-span-6 flex h-full flex-col items-center justify-center py-10 md:items-start md:py-20 xl:col-span-5 xl:pl-[20%] xl:pr-[10%]">
             <div className="mb-10 w-full sm:flex sm:space-x-4">
-              <div className="mb-4 flex-1 rounded-2lg bg-white p-4 text-center dark:bg-white/[.15]">
+              <div className="mb-4 flex-1 rounded-2lg bg-white p-4 text-center dark:bg-white">
                 <span className="block font-display text-3xl text-[#8DD059]">
                   10,568
                 </span>
@@ -37,7 +37,7 @@ export default function Hero() {
                   Collectibles
                 </span>
               </div>
-              <div className="mb-4 flex-1 rounded-2lg bg-white p-4 text-center dark:bg-white/[.15]">
+              <div className="mb-4 flex-1 rounded-2lg bg-white p-4 text-center dark:bg-white">
                 <span className="block font-display text-3xl text-[#737EF2]">
                   1,200
                 </span>
@@ -45,7 +45,7 @@ export default function Hero() {
                   Auctions
                 </span>
               </div>
-              <div className="mb-4 flex-1 rounded-2lg bg-white p-4 text-center dark:bg-white/[.15]">
+              <div className="mb-4 flex-1 rounded-2lg bg-white p-4 text-center dark:bg-white">
                 <span className="block font-display text-3xl text-[#F35BC7]">
                   6,897
                 </span>

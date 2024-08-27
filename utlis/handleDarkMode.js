@@ -1,4 +1,5 @@
 export const handleDarkMode = () => {
+  console.log("in handle dark mode")
   const htmlElm = document.getElementsByTagName("html")[0];
   const isDarkMode = localStorage?.getItem("idDarkMode");
   if (JSON.parse(isDarkMode)) {
