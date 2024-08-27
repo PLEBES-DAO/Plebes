@@ -26,11 +26,10 @@ export default function Team() {
       <div className="container">
         <div className="mx-auto mb-12 max-w-xl text-center">
           <h2 className="mb-6 text-center font-display text-3xl font-medium text-jacarta-700 dark:text-white">
-            Meet our Crypto Experts
-          </h2>
+          Founder
+                    </h2>
           <p className="text-lg dark:text-jacarta-200">
-            NFTs can be used to represent items such as photos, videos, audio,
-            and other types of digital files.
+          NFTs can be used…
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-[1.875rem] lg:grid-cols-5">

@@ -1,16 +1,22 @@
 const activeMobileMenu = () => {
+  console.log("mobile menu 1")
   const header = document.getElementsByClassName("js-page-header")[0];
   const body = document.body;
   const mobileMenu = document.getElementsByClassName("js-mobile-menu")[0];
   const mobileMenuActiveButton =
     document.getElementsByClassName("js-mobile-toggle")[0];
+  console.log("mobile menu 2",mobileMenuActiveButton)
+  console.log("header",header)
+  console.log("mobile menu",mobileMenu)
   if (header && mobileMenu) {
+    console.log("toogle fucntion")
     const toggleFunction = () => {
       body.classList.add("nav-open-noscroll");
       header.classList.add("h-full");
       mobileMenu.classList.add("nav-menu--is-open");
     };
     mobileMenuActiveButton.addEventListener("click", () => {
+      console.log("mobile toggle")
       toggleFunction();
     });
   }

@@ -14,8 +14,7 @@ export default function Roadmap() {
       <div className="container relative z-10">
         <h2 className="mb-6 font-display text-3xl text-white">Roadmap</h2>
         <p className="mb-12 max-w-xl text-lg text-jacarta-300">
-          This timeline details our funding and development goals. Connect our
-          AI to your exchange account and invest crypto automatically.
+        The plans for Plebes are so numerous that we can't list them all, but here you can find the key upcoming events in Plebes
         </p>
         <div className="flex">
           <ul

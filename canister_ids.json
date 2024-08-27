@@ -1,10 +1,10 @@
 {
   "front": {
     "old": "2vep4-2iaaa-aaaag-akz7q-cai",
-    "ic": "jlk7i-tqaaa-aaaam-acojq-cai",
+    "ic": "j7sk4-liaaa-aaaan-qmllq-cai",
     "plebes":"jlk7i-tqaaa-aaaam-acojq-cai"
   },
-  "fungibletoken_backend": {
-    "ic": "5cst6-3yaaa-aaaag-ak6ra-cai"
+  "voting_treasury": {
+    "ic": "wmfyw-vyaaa-aaaal-ajm3a-cai"
   }
 }

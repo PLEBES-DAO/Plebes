@@ -66,7 +66,7 @@ export default function Header4() {
 
             {/* Mobile Menu Close  */}
             <button
-              className="js-mobile-close group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 border-transparent bg-white/[.15] transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent"
+              className="js-mobile-close group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 border-transparent bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent"
               aria-label="close mobile menu"
             >
               <svg
@@ -190,7 +190,7 @@ export default function Header4() {
         <div className="ml-auto flex lg:hidden">
           {/* Mobile Menu Toggle  */}
           <button
-            className="js-mobile-toggle group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
+            className="js-mobile-toggle group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white dark:hover:bg-accent"
             aria-label="open mobile menu"
           >
             <svg
