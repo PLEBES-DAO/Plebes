@@ -50,7 +50,6 @@ const createBioniqAuthClient = async (_web3AuthClient) => {
 };
 
 const BioniqContextProvider = ({ children }) => {
-  const { publicKey, principal } = useAuth();
   const [web3Auth, setWeb3Auth] = useState(null);
   const [bioniqAuthClient, setBioniqAuthClient] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -146,50 +145,41 @@ const BioniqContextProvider = ({ children }) => {
   }, [bioniqAuthClient]);
 
   const reloadWallets = useCallback(async () => {
-    console.log(
-      "in reload wallets before the if",
-      liveBioniqWalletApi,
-      principal
-    );
-    if (!liveBioniqWalletApi || !principal) return;
-    console.log("public key", publicKey);
-    let privatePlebesKey = deriveKey("plebesDao", principal);
-    console.log("private key", privatePlebesKey);
+		if (!liveBioniqWalletApi || !userConnection) return;
 
-    try {
-      const _wallets = await liveBioniqWalletApi.wallet.loadWallets({
-        privateKey: privatePlebesKey,
-        tokenMode: "ckBTC",
-      });
+		try {
+      console.log("before livee bionic loadWallets")
+			const _wallets = await liveBioniqWalletApi.wallet.loadWallets({
+				privateKey: userConnection.privateKey,
+				tokenMode: 'ckBTC',
+			});
+      console.log("getting wallets in reload wallets",_wallets)
+			setWallets(_wallets);
 
-      console.log("wallets", _wallets);
-      setWallets(_wallets);
+			let _balances = [];
 
-      let _balances = [];
+			for (const walletType in _wallets) {
+				if (Object.hasOwnProperty.call(_wallets, walletType)) {
+					const balances = await liveBioniqWalletApi.wallet.fetchLatestWalletBalance({
+						wallet: _wallets[walletType],
+						tokenMode: walletType,
+					});
 
-      for (const walletType in _wallets) {
-        if (Object.hasOwnProperty.call(_wallets, walletType)) {
-          const balances =
-            await liveBioniqWalletApi.wallet.fetchLatestWalletBalance({
-              wallet: _wallets[walletType],
-              tokenMode: walletType,
-            });
-
-          _balances = _balances.concat(balances);
-        }
-      }
-      setBalances(_balances);
-    } catch (error) {
-      console.error("Error reloading wallets:", error);
-    }
-  }, [liveBioniqWalletApi, principal]);
+					_balances = _balances.concat(balances);
+				}
+			}
+			setBalances(_balances);
+		} catch (error) {
+			console.error('Error reloading wallets:', error);
+		}
+	}, [liveBioniqWalletApi, userConnection]);
 
   useEffect(() => {
-    console.log("before reload wallets", liveBioniqWalletApi, principal);
-    if (principal) {
+    console.log("before reload wallets", liveBioniqWalletApi);
+
       reloadWallets();
-    }
-  }, [liveBioniqWalletApi, principal, reloadWallets]);
+  
+  }, [liveBioniqWalletApi, reloadWallets]);
 
   const reloadInscriptions = useCallback(async () => {
     console.log("@inscriptions reload before useEffect",liveBioniqWalletApi,wallets);
@@ -203,7 +193,10 @@ const BioniqContextProvider = ({ children }) => {
         },
         tokenMode: "ckBTC",
       });
-    console.log("@inscriptions after load all inscriptions", inscriptions);
+
+      const adminInscriptions = await liveBioniqWalletApi.inscription.getAdminInscriptions();
+      console.log("@inscriptions loading adming inscriptins",adminInscriptions)
+    console.log("@inscriptions after load all inscriptions", _inscriptions);
     setInscriptions(_inscriptions);
     return _inscriptions;
   }, [liveBioniqWalletApi, wallets]);
@@ -211,10 +204,10 @@ const BioniqContextProvider = ({ children }) => {
   useEffect(() => {
     console.log("@inscriptions useEffect");
     reloadInscriptions();
-  }, [liveBioniqWalletApi, principal, wallets]);
+  }, [liveBioniqWalletApi, wallets]);
 
   const login = useCallback(async () => {
-    console.log("inside the bionic login");
+    console.log("inside the bionic login",bioniqAuthClient);
     if (!bioniqAuthClient) return;
     console.log("inside the bioniq login after the if authclient");
     const bioniqAuthClientLoginResult = await bioniqAuthClient.login(

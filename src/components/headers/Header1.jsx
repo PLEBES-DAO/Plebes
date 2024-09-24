@@ -12,10 +12,19 @@ import Image from "../common/Image";
 import { Link } from "react-router-dom";
 import MetamarkComponent from "../metamask/MetamarkComponent";
 import { useAuth } from "../../AuthPlug";
+import { useBioniqContext } from "../../hooks/BioniqContext";
 
 export default function Header1({bLogin}) {
-  const { login, principal, isAuthPlug } = useAuth();
-  useEffect(() => {}, [principal, isAuthPlug]);
+  const {
+    login,
+    logout,
+    userConnection,
+    reloadInscriptions,
+    reloadWallets,
+    liveBioniqWalletApi,
+    isLoggedIn
+  } = useBioniqContext();
+  useEffect(() => {}, [ isLoggedIn]);
   useEffect(() => {
     addMobileMenuToggle();
     return () => {
@@ -225,7 +234,7 @@ export default function Header1({bLogin}) {
 
             {/* Actions */}
             <div className="ml-8  hidden lg:flex xl:ml-12">
-              {!isAuthPlug && (
+              {!isLoggedIn && (
                 <div
                   onClick={async () => {
                   //   console.log("before bLogin")
@@ -248,11 +257,11 @@ export default function Header1({bLogin}) {
               )}
 
               {/* Profile */}
-              {isAuthPlug && <Profile />}
+              {isLoggedIn && <Profile />}
 
               {/* Dark Mode */}
               <div
-                onClick={() => handleDarkMode()}
+                onClick={() => logout()}
                 className="cursor-pointer  js-dark-mode-trigger  group ml-2 flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
               >
                 <svg
