@@ -63,7 +63,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
   }
 };
 
-export default function Timer() {
+export default function Timer({timerStamp=null}) {
   const [showTimer, setShowTimer] = useState(false);
   const [remainingTime, setRemainingTime] = useState(
     new Date(
@@ -72,8 +72,14 @@ export default function Timer() {
     ).toISOString()
   );
   useEffect(() => {
+    if(timerStamp){
+      let stamp =new Date(timerStamp).toISOString();
+      console.log("stamp",stamp)
+      console.log("timerStamp",timerStamp)
+      setRemainingTime(stamp)
+    }
     setShowTimer(true);
-  }, []);
+  }, [timerStamp]);
   return (
     <>{showTimer && <Countdown date={remainingTime} renderer={renderer} />}</>
   );

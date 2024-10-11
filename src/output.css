@@ -2148,7 +2148,7 @@ select {
 }
 
 .animate-spin-slow {
-  animation: spin 10s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 .cursor-default {

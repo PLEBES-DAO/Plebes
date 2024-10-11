@@ -22,9 +22,16 @@ export default function Header1({bLogin}) {
     reloadInscriptions,
     reloadWallets,
     liveBioniqWalletApi,
-    isLoggedIn
+    isLoggedIn,
+    wallets,
+    ckBTCTotal,
+    balances
   } = useBioniqContext();
-  useEffect(() => {}, [ isLoggedIn]);
+
+
+  useEffect(() => {
+    console.log("header reload",isLoggedIn,wallets,ckBTCTotal)
+  }, [ isLoggedIn, wallets,balances]);
   useEffect(() => {
     addMobileMenuToggle();
     return () => {
@@ -139,14 +146,6 @@ export default function Header1({bLogin}) {
                 </svg>
               </span>
             </form>
-
-            {/* Primary Nav */}
-            <nav className="navbar w-full">
-              <ul className="flex flex-col lg:flex-row">
-                <Nav />
-              </ul>
-            </nav>
-
             {/* Mobile Connect Wallet / Socials */}
             <div className="mt-10 w-full lg:hidden">
               <MetamarkComponent>
@@ -257,7 +256,7 @@ export default function Header1({bLogin}) {
               )}
 
               {/* Profile */}
-              {isLoggedIn && <Profile />}
+              {isLoggedIn && <Profile wallets={wallets} balances={balances} />}
 
               {/* Dark Mode */}
               <div
