@@ -6,8 +6,6 @@ import { useAuth } from "../../../AuthPlug";
 import { useEffect } from "react";
 
 export default function Nav() {
-  const { login, principal, isAuthPlug } = useAuth();
-  useEffect(() => {}, [principal, isAuthPlug]);
   const pathname = "HOME";
   const isActiveParentMenu = (menus) => {
     return menus.some(
@@ -16,7 +14,7 @@ export default function Nav() {
   };
   return (
     <>
-      {isAuthPlug && (
+   (
         <li className="js-nav-dropdown group relative">
           <a
             href="#"
@@ -73,7 +71,7 @@ export default function Nav() {
           ))}
         </ul> */}
         </li>
-      )}
+      )
     </>
   );
 }

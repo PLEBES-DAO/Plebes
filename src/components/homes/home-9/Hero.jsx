@@ -1,21 +1,16 @@
+import { useBioniqContext } from '../../../hooks/BioniqContext'
 import Image from '../../common/Image'
 import { Link } from 'react-router-dom'
 
 export default function Hero() {
+  const{createAuction,cancelAuction}=useBioniqContext()
   return (
     <section className="relative h-screen sm:h-full">
       <picture className="pointer-events-none absolute -z-10 inset-0">
         <Image
           width={1920}
           height={1014}
-          src="/img/Plebes2.png"
-          alt="image"
-          className="absolute inset-0 -z-10 h-full w-full object-cover"
-        />
-         <Image
-          width={2020}
-          height={2000}
-          src="/img/Plebes2.png"
+          src="/img/background.png"
           alt="image"
           className="absolute inset-0 -z-10 h-full w-full object-cover"
         />
@@ -27,17 +22,22 @@ export default function Hero() {
               Chihuahuas and frens for Public Goods*
             </h1>
             <p className="mb-8 max-w-md text-center text-lg text-white md:text-left">
-              Plebes is a non-governance token DAO that promotes the use of
-              Internet Computer by funding open-source technology, creative
-              projects, and public goods through weekly reverse Ordinals
-              auctions.
+            Plebes is a DAO that promotes the use of Internet Computer Protocol by funding open-source technology, creative projects, and public goods through daily Reserved Ordinals auctions.
             </p>
-            <div className="flex space-x-4">
+            <div onClick={async () =>{await createAuction()}}  className="flex space-x-4">
+              <Link
+                href="/auctiond"
+                className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+              >
+                auction
+              </Link>
+            </div>
+            <div onClick={async ()=>{await cancelAuction()}} className="flex space-x-4">
               <Link
                 href="/collections"
                 className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
               >
-                Bid
+                white paper
               </Link>
             </div>
           </div>

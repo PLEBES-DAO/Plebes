@@ -29,7 +29,6 @@ window.global ||= window;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <AuthProvider>
       <BrowserRouter>
         <MetaMaskProvider>
           <BioniqContextProvider>
@@ -37,7 +36,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           </BioniqContextProvider>
         </MetaMaskProvider>
       </BrowserRouter>
-    </AuthProvider>
     ,
   </React.StrictMode>
 );

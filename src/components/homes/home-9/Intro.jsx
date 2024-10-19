@@ -9,22 +9,22 @@ export default function Intro() {
           <div className="relative lg:w-[45%]">
             <figure className="relative">
               <picture className="rounded-2.5xl">
-              <Image
-                width={500}
-                height={500}
-                src="/img/plebes/PBNEW001.png"
-                className="rounded-2.5xl"
-                alt="image"
-              />
+                <Image
+                  width={500}
+                  height={500}
+                  src="/Plebes_GIF.gif"
+                  className="rounded-2.5xl"
+                  alt="image"
+                />
               </picture>
             </figure>
           </div>
 
           <div className="py-10 lg:w-[55%] lg:pl-24">
             <h2 className="mb-6 font-display text-3xl text-jacarta-700 dark:text-white">
-            1 Plebe, every day, forever            </h2>
+              Daily Plebes, eternally interchangeables”        </h2>
             <p className="mb-8 text-lg leading-normal dark:text-jacarta-300">
-            Digital art that will be permanently on the Bitcoin blockchain, leveraging ICP as a Layer 2. Inscribing a Plebe immutable on Bitcoin that makes you part of a governance mechanism, giving the owner both voice and vote in the decisions of the Plebes DAO
+              Plebes merges the technology of ICP with the solidity of Bitcoin, creating an infinite and dynamic collection that allows the exchange of up to 7 interchangeable layers between each Plebe, including skins and clothing. Additionally, Plebes facilitates the incorporation of new members into the community through daily auctions, ensuring active participation from holders. In this way, each member has the opportunity to exercise their voice and vote in the decisions of the DAO.
             </p>
           </div>
         </div>

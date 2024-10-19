@@ -51,3 +51,17 @@ export function toDefaultSub(owner, subaccount = []) {
 
 
 
+  export function formatNumberWithPattern(number) {
+    // Convert the number to a string to get its length
+    const numStr = number.toString();
+    const numDigits = numStr.length;
+  
+    // Determine how many zeros to add based on the number of digits
+    // If there are n digits, we should add (8 - n) zeros
+    const zeroCount = 8 - numDigits;
+  
+    // Create the '0.' followed by the calculated number of zeros and the original number
+    const formattedNumber = `0.${'0'.repeat(zeroCount)}${numStr}`;
+  
+    return formattedNumber;
+  }

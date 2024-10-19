@@ -2148,6 +2148,10 @@ select {
 }
 
 .animate-spin-slow {
+  animation: spin 1s linear infinite;
+}
+
+.animate-spin-slow-2 {
   animation: spin 10s linear infinite;
 }
 
