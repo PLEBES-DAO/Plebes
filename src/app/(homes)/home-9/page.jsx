@@ -30,15 +30,15 @@ export default function HomePage9({login}) {
         <Hero />
         <Intro />
         <Benefits />
-        <CoverFlowSlider/>
+        {/* <CoverFlowSlider/> */}
         <Faq />
-        <Collections/>
-        <Partners2 />
-        <Testimonials/>
-        <Cta/>
-        <Blogs/>
-        <Team/>
-        <Roadmap/>
+        {/* <Collections/> */}
+        {/* <Partners2 /> */}
+        {/* <Testimonials/> */}
+        {/* <Cta/> */}
+        {/* <Blogs/> */}
+        {/* <Team/> */}
+        {/* <Roadmap/> */}
         {/* <AggregatorTable/> */}
       </main>
       <Footer1 />

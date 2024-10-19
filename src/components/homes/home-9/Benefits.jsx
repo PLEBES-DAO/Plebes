@@ -13,7 +13,7 @@ export default function Benefits() {
       <div className="container">
         <div className="mx-auto mb-12 max-w-xl text-center">
           <h2 className="mb-6 text-center font-display text-3xl font-medium text-jacarta-700 dark:text-white">
-            Como funciona Plebes DAO?{' '}
+            How Plebes works?{' '}
           </h2>
         </div>
         <div className="lg:flex lg:flex-nowrap lg:space-x-10">
@@ -30,9 +30,8 @@ export default function Benefits() {
                   role="presentation"
                 >
                   <button
-                    className={`nav-link nav-link--style-2 group relative flex w-full border-b border-jacarta-100 p-6 text-left dark:border-jacarta-600 ${
-                      currentTabItem == elm ? 'active' : ''
-                    }`}
+                    className={`nav-link nav-link--style-2 group relative flex w-full border-b border-jacarta-100 p-6 text-left dark:border-jacarta-600 ${currentTabItem == elm ? 'active' : ''
+                      }`}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -50,9 +49,8 @@ export default function Benefits() {
                         {elm.title}
                       </span>
                       <div
-                        className={`nav-link-content ${
-                          currentTabItem == elm ? 'block' : 'hidden'
-                        }`}
+                        className={`nav-link-content ${currentTabItem == elm ? 'block' : 'hidden'
+                          }`}
                       >
                         <p className="text-jacarta-500 dark:text-jacarta-300">
                           {elm.description}
@@ -82,13 +80,13 @@ export default function Benefits() {
                       className="rounded-full border border-jacarta-100 p-14 dark:border-jacarta-600"
                     />
                   </picture>
-                  <picture className="absolute animate-spin-slow">
+                  <picture className="absolute animate-spin-slow-2">
                     <Image
                       width={630}
                       height={594}
-                      src="/img/dao/3d_elements_circle.png"
+                      src="/3d_elements_circle.png"
                       alt="image"
-                      className="absolute animate-spin-slow"
+                      className="absolute animate-spin-slow-2"
                     />
                   </picture>
                 </figure>

@@ -38,11 +38,6 @@ export const faqs2 = [
     answer: `Join our communities and buy Plebes.`,
   },
   {
-    id: 4,
-    question: "How do I sell an NFT?” por “How can I obtain a Plebe?",
-    answer: ` Initially, you can connect your ICP wallet and participate in the auction.`,
-  },
-  {
     id: 5,
     question: "Why Plebes?",
     answer: ` Plebes" is a Mexican term that refers to a group of individuals.`,

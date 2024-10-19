@@ -234,7 +234,7 @@ const BioniqContextProvider = ({ children }) => {
         startAmount: { decimalAmount: 0.00001, tokenType: "ckBTC" },
         utxoList: [],
         wrapFeeRate: { fullRate: 1000, tokenType: "Btc" },
-        auctionDuration: { seconds: 109500 }
+        auctionDuration: { seconds: 509500 }
       });
       console.log("auction response", auctionResponse)
       setLoading(false)

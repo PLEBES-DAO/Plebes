@@ -40,7 +40,7 @@ export default function Faq() {
               <Image
                 width={690}
                 height={541}
-                src="/img/dao/video_cover_dao.jpg"
+                src="/thumb.png"
                 className="w-full"
                 alt="image"
               />
@@ -99,7 +99,7 @@ export default function Faq() {
         channel="youtube"
         youtube={{ mute: 0, autoplay: 0 }}
         isOpen={isOpen}
-        videoId="dQw4w9WgXcQ"
+        videoId="-2qdOgn2efY"
         onClose={() => setIsOpen(false)}
       />
     </section>
