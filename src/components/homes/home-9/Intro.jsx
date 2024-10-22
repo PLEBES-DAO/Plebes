@@ -22,7 +22,8 @@ export default function Intro() {
 
           <div className="py-10 lg:w-[55%] lg:pl-24">
             <h2 className="mb-6 font-display text-3xl text-jacarta-700 dark:text-white">
-              Daily Plebes, eternally interchangeables”        </h2>
+              Daily Plebes, eternally interchangeables
+            </h2>
             <p className="mb-8 text-lg leading-normal dark:text-jacarta-300">
               Plebes merges the technology of ICP with the solidity of Bitcoin, creating an infinite and dynamic collection that allows the exchange of up to 7 interchangeable layers between each Plebe, including skins and clothing. Additionally, Plebes facilitates the incorporation of new members into the community through daily auctions, ensuring active participation from holders. In this way, each member has the opportunity to exercise their voice and vote in the decisions of the DAO.
             </p>
