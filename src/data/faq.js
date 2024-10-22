@@ -40,7 +40,7 @@ export const faqs2 = [
   {
     id: 5,
     question: "Why Plebes?",
-    answer: `Plebes is a Mexican termn tha refers to a group of individuals.`,
+    answer: ` Plebes" is a Mexican term that refers to a group of individuals.`,
   },
 ];
 export const faqs3 = [
