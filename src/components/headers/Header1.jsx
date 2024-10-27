@@ -13,8 +13,10 @@ import { Link } from "react-router-dom";
 import MetamarkComponent from "../metamask/MetamarkComponent";
 import { useAuth } from "../../AuthPlug";
 import { useBioniqContext } from "../../hooks/BioniqContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Header1({bLogin}) {
+  const navigate = useNavigate();
   const {
     login,
     logout,
@@ -63,7 +65,7 @@ export default function Header1({bLogin}) {
       >
         <div className="flex items-center px-6 py-6 xl:px-24 ">
           {/* Logo */}
-          <Link href="/" className="shrink-0">
+          <div onClick={()=>{navigate("/")}} href="/" className="shrink-0">
             <picture className="dark:hidden">
               <Image
                 width={130}
@@ -82,7 +84,7 @@ export default function Header1({bLogin}) {
                 alt="Xhibiter | NFT Marketplace"
               />
             </picture>
-          </Link>
+          </div>
          {/* Menu / Actions */}
           <div className="js-mobile-menu invisible lg:visible fixed inset-0 z-10 ml-auto rtl:mr-auto rtl:ml-0 items-center bg-white opacity-0 dark:bg-jacarta-800 lg:relative lg:inset-auto lg:flex lg:bg-transparent lg:opacity-100 dark:lg:bg-transparent ">
             {/* Mobile Logo / Menu Close */}

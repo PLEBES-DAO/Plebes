@@ -1,8 +1,10 @@
 import { useBioniqContext } from '../../../hooks/BioniqContext'
 import Image from '../../common/Image'
 import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function Hero() {
+  const navigate = useNavigate();
   const{createAuction,cancelAuction}=useBioniqContext()
   return (
     <section className="relative h-screen sm:h-full">
@@ -24,7 +26,7 @@ export default function Hero() {
             <p className="mb-8 max-w-md text-center text-lg text-white md:text-left">
             Plebes is a DAO that promotes the use of Internet Computer Protocol by funding open-source technology, creative projects, and public goods through daily Reserved Ordinals auctions.
             </p>
-            <div onClick={async () =>{await createAuction()}}  className="flex space-x-4">
+            <div onClick={async () =>{navigate("/auction")}}  className="flex space-x-4">
               <Link
                 href="/auctiond"
                 className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
