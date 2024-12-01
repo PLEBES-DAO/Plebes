@@ -219,6 +219,37 @@ const BioniqContextProvider = ({ children }) => {
   };
 
 
+  const sendInscription = async (inscription,destinationAddress) =>{
+    setLoading(true);
+    console.log('in send inscription',inscription,destinationAddress)
+  //   async sendInscription({
+  //     inscription,
+  //     destinationAddress,
+  //     utxoList,
+  //     wrapFeeRate,
+  //     resolvedBioniqUser,
+  // }) 
+  try{
+    console.log("in send inscription try",inscription,destinationAddress)
+    let sendinscriptionResponse = await liveBioniqWalletApi.inscription.sendInscription({
+      inscription,
+      resolvedBioniqUser: {
+        currentWallets: wallets,
+      },
+      destinationAddress,
+      utxoList:[],
+      wrapFeeRate: { fullRate: 1000, tokenType: "Btc" }
+    })
+    await reloadInscriptions();
+    setLoading(false);
+    console.log("response",sendinscriptionResponse)
+  }catch(e){
+    setError(e)
+    console.log("failed send inscription",e)
+  }
+  };
+
+
   const createAuction = async () => {
     let userInscriptions = inscriptions;
     console.log("use inscriptions", inscriptions)
@@ -365,6 +396,7 @@ const BioniqContextProvider = ({ children }) => {
       setUserConnection(null);
       setWallets(null);
       setBalances(null);
+      setInscriptions(null);
     } catch (error) {
       console.error(error);
     }
@@ -397,7 +429,8 @@ const BioniqContextProvider = ({ children }) => {
       liveAuctionBidders,
       ckBTCTotal,
       error,
-      resetError
+      resetError,
+      sendInscription
     }),
     [
       isLoading,
@@ -424,7 +457,8 @@ const BioniqContextProvider = ({ children }) => {
       liveAuctionBidders,
       ckBTCTotal,
       error,
-      resetError
+      resetError,
+      sendInscription
     ]
   );
 
