@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 export const metadata = {
     title: "Home 9 || Xhibiter | NFT Marketplace Nextjs Template",
 };
-export default function OwnedPage({ login, inscriptions, loading }) {
+export default function OwnedPage({ login, inscriptions, loading, setModalOpen }) {
     const navigate = useNavigate();
     useEffect(() => {
         console.log("in profile",loading,inscriptions)
@@ -21,7 +21,7 @@ export default function OwnedPage({ login, inscriptions, loading }) {
 
     return (
         <>
-            <Header1 bLogin={login} />
+            <Header1 bLogin={login} setModalOpen={setModalOpen} />
             <main>
                 <Owned inscriptions={inscriptions} />
             </main>

@@ -73,7 +73,7 @@ export default function Timer({timerStamp=null}) {
   );
   useEffect(() => {
     if(timerStamp){
-      let stamp =new Date(timerStamp).toISOString();
+      let stamp = new Date(timerStamp * 1000).toISOString();
       console.log("stamp",stamp)
       console.log("timerStamp",timerStamp)
       setRemainingTime(stamp)

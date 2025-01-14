@@ -4,8 +4,13 @@ import { Navigation, Pagination, EffectCoverflow } from "swiper/modules";
 import { collections4 } from "../../../data/item";
 import {Link} from "react-router-dom";
 import Image from "../../common/Image";
+import { useBioniqContext } from "../../../hooks/BioniqContext";
+import { useEffect } from "react";
+import { formatNumberWithPattern } from "../../../utils";
 
 export default function CoverFlowSlider() {
+  const{historicState,btcPriceState} = useBioniqContext();
+  useEffect(()=>{},[historicState])
   return (
     <div className="relative px-6 pb-16 sm:px-0">
       <Swiper
@@ -48,48 +53,48 @@ export default function CoverFlowSlider() {
         }}
         className="swiper coverflow-slider !py-5"
       >
-        {collections4.map((elm, i) => (
-          <SwiperSlide key={i}>
-            <article>
-              <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
-                <figure className="relative">
-                  <Link href={`/item/${elm.id}`}>
-                    <Image
-                      src={elm.imageSrc}
-                      alt="item 1"
-                      className="swiper-lazy h-[430px] w-full object-cover"
-                      height="430"
-                      width="379"
-                    />
-                    {/* <div className="swiper-lazy-preloader"></div> */}
-                  </Link>
-                </figure>
-                <div className="p-6">
-                  <div className="flex">
-                    <Link href={`/user/${elm.id}`} className="shrink-0">
-                      <Image
-                        width={40}
-                        height={40}
-                        src={elm.avatarSrc}
-                        alt="avatar"
-                        className="mr-4 h-10 w-10 rounded-full"
-                      />
-                    </Link>
-                    <div>
-                      <Link href={`/item/${elm.id}`} className="block">
-                        <span className="font-display text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white">
-                          {elm.title}
-                        </span>
-                      </Link>
-                      <a href="#" className="text-2xs text-accent">
-                        {elm.subTitle}
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </SwiperSlide>
+        {historicState && historicState.map((elm, i) => (
+    <SwiperSlide key={i}>
+    <article>
+      <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
+        <figure className="relative">
+          <Link href={`/item/${elm.item.id}`}>
+            <Image
+              src={elm.item.content_url}
+              alt="item 1"
+              className="swiper-lazy h-[430px] w-full object-cover"
+              height="430"
+              width="379"
+            />
+            {/* <div className="swiper-lazy-preloader"></div> */}
+          </Link>
+        </figure>
+        <div className="p-6">
+          <div className="flex">
+            <div>
+              <Link href={`/item/${elm.item.id}`} className="block">
+                <span className="font-display text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white flex items-center">
+                <img 
+                    src="/img/ckBTC.svg" 
+                    alt="ckBTC Icon" 
+                    className="ml-2 h-5 w-5" 
+                  />
+                  {formatNumberWithPattern(elm.metadata.amount)}
+                </span>
+                <span className="text-sm text-gray-500 ml-2">
+                  ({(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD)
+                </span>
+              </Link>
+              <a href="#" className="text-2xs text-accent">
+                {elm.metadata.buyer.slice(0, 5)}...{elm.metadata.buyer.slice(-5)}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </SwiperSlide>
+  
         ))}
       </Swiper>
 

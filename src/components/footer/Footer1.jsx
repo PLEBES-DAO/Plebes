@@ -15,7 +15,7 @@ export default function Footer1() {
               <Image
                 width={130}
                 height={28}
-                src="/img/plebes1b.svg"
+                src="/img/plebes1w.svg"
                 className="max-h-7 dark:hidden"
                 alt="Xhibiter | NFT Marketplace"
               />

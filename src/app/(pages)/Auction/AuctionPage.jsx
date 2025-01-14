@@ -10,12 +10,12 @@ import { useEffect,useState } from "react";
 export const metadata = {
   title: "Home 9 || Xhibiter | NFT Marketplace Nextjs Template",
 };
-export default function AuctionPage({login,liveAuction}) {
+export default function AuctionPage({login,liveAuction,setModalOpenT}) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <>
-      <Header1 bLogin={login} />
+      <Header1 bLogin={login} setModalOpen={setModalOpenT} />
       <main>
        <ItemDetails setModalOpen={setModalOpen} liveAuction={liveAuction} id={1}/>
        <BidModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
