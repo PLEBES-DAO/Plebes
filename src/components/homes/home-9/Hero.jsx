@@ -13,13 +13,13 @@ export default function Hero() {
       <div className="ml-auto mr-auto h-full max-w-[91rem] px-4">
         <div className="grid h-full items-center gap-4 md:grid-cols-12">
           <div className="col-span-5 flex h-full flex-col items-center justify-center py-10 md:items-start lg:py-20">
-            <h1 className="mx-4 mb-6 text-center font-display text-5xl text-white md:text-left lg:text-6xl">
+            <h1 className="mx-5 mb-6 text-center font-display text-5xl text-white md:text-left lg:text-6xl">
               Chihuahuas and frens for Public Goods
             </h1>
-            <p className="mx-4 mb-8 max-w-md text-center text-lg text-white md:text-left">
+            <p className="mx-5 mb-8 max-w-md text-center text-lg text-white md:text-left">
               Plebes is a DAO that promotes the use of Internet Computer Protocol by funding open-source technology, creative projects, and public goods through daily Reserved Ordinals auctions.
             </p>
-            <div className='mx-4 flex gap-3'>
+            <div className='mx- flex gap-3'>
               <a
               // onClick={createAuction}
                 href="http://plebes.xyz/auction"
