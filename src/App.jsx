@@ -55,7 +55,7 @@ function App() {
         <Route path="/auction" element={<AuctionPage liveAuction={liveAuction} login={login} setModalOpenT={setWithdralModal}  />} />
         <Route path="/profile" element={<OwnedPage login={login} inscriptions={inscriptions} loading={loading} setModalOpen={setWithdralModal}  />} />
         <Route path="/deposit" element={<Deposit login={login} setModalOpenT={setWithdralModal}  />} />
-        <Route path="/launchpad" element={<HomePage />} />
+        <Route path="/launchpad" element={<HomePage login={login} setModalOpenT={setWithdralModal} />} />
       </Routes>
       <ErrorModal modalOpen={modalOpen} setModalOpen={setModalOpen} error={error} resetError={resetError} />
       <TransferModal isOpen={wihdrawlModal} setModalOpen={setWithdralModal} />
