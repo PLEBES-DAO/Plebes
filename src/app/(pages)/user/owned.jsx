@@ -1,5 +1,5 @@
 import Footer1 from "../../../components/footer/Footer1";
-import Header1 from "../../../components/headers/Header1";
+import Navbar from "../../../components/headers/Navbar.jsx";
 import Owned from "../../../components/pages/user/Owned";
 import { useNavigate } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ export default function OwnedPage({ login, inscriptions, loading, setModalOpen }
 
     return (
         <>
-            <Header1 bLogin={login} setModalOpen={setModalOpen} />
+            <Navbar bLogin={login} setModalOpen={setModalOpen} />
             <main>
                 <Owned inscriptions={inscriptions} />
             </main>

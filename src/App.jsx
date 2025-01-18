@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import HomePage from "./app/(homes)/home-9/homePage";
+import HomePage from "./app/(homes)/launchpad/page.jsx";
 import Page from "./app/page";
 import AuctionPage from "./app/(pages)/Auction/AuctionPage";
 import OwnedPage from "./app/(pages)/user/owned.jsx";
@@ -55,8 +55,7 @@ function App() {
         <Route path="/auction" element={<AuctionPage liveAuction={liveAuction} login={login} setModalOpenT={setWithdralModal}  />} />
         <Route path="/profile" element={<OwnedPage login={login} inscriptions={inscriptions} loading={loading} setModalOpen={setWithdralModal}  />} />
         <Route path="/deposit" element={<Deposit login={login} setModalOpenT={setWithdralModal}  />} />
-        <Route path="/launch-dao" element={<HomePage />} />
-
+        <Route path="/launchpad" element={<HomePage />} />
       </Routes>
       <ErrorModal modalOpen={modalOpen} setModalOpen={setModalOpen} error={error} resetError={resetError} />
       <TransferModal isOpen={wihdrawlModal} setModalOpen={setWithdralModal} />

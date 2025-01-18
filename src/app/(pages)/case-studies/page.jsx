@@ -1,6 +1,6 @@
 import Partners from "@/components/common/Partners";
 import Footer1 from "@/components/footer/Footer1";
-import Header1 from "@/components/headers/Header1";
+import Header1 from "@/components/headers/Navbar";
 import CaseStudies from "@/components/pages/case-studies";
 
 export const metadata = {

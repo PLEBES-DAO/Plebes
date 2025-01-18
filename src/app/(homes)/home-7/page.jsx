@@ -1,5 +1,5 @@
 import Footer1 from "@/components/footer/Footer1";
-import Header1 from "@/components/headers/Header1";
+import Header1 from "@/components/headers/Navbar";
 import Partners from "@/components/common/Partners";
 import Blogs from "@/components/homes/home-7/Blogs";
 import Cta from "@/components/homes/home-7/Cta";
@@ -10,7 +10,6 @@ import Service from "@/components/homes/home-7/Service";
 import Testimonials from "@/components/common/Testimonials";
 
 export const metadata = {
-  title: "Home 7 || Xhibiter | NFT Marketplace Nextjs Template",
 };
 export default function HomePage7() {
   return (

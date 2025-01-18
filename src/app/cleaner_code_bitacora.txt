@@ -1,0 +1,5 @@
+el home es el home-9 de esta página
+
+prod intente ser la nueva carpeta donde mantengamos el nuevo codigo
+
+El navbar está acá: Plebes/src/components/headers/Navbar.jsx

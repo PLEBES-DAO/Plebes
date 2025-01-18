@@ -1,5 +1,5 @@
 import Footer1 from "../../../components/footer/Footer1";
-import Header1 from "../../../components/headers/Header1";
+import Navbar from "../../../components/headers/Navbar.jsx";
 
 import { AccountIdentifier, SubAccount } from "@dfinity/ledger-icp";
 import { useEffect, useState, useRef } from "react";
@@ -392,7 +392,7 @@ export default function AuctionPage({ login, setModalOpenT }) {
 
     return (
         <>
-            <Header1 bLogin={login} setModalOpen={setModalOpenT} />
+            <Navbar bLogin={login} setModalOpen={setModalOpenT} />
             <main>
                 <TokenRow />
             </main>

@@ -1,5 +1,5 @@
 import Footer1 from "@/components/footer/Footer1";
-import Header1 from "@/components/headers/Header1";
+import Header1 from "@/components/headers/Navbar";
 import Partners from "@/components/common/Partners";
 import CryptoPrice from "@/components/homes/home-11/CryptoPrice";
 import Features from "@/components/homes/home-11/Features";

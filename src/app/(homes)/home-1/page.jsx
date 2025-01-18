@@ -1,5 +1,5 @@
 import Footer1 from "../../../components/footer/Footer1";
-import Header1 from "../../../components/headers/Header1";
+import Navbar from "../../../components/headers/Navbar.jsx";
 import Categories from "../../../components/homes/common/Categories";
 import Collections from "../../../components/homes/common/Collections";
 import Hero from "../../../components/homes/home-1/Hero";
@@ -12,7 +12,7 @@ export const metadata = {
 export default function HomePage1() {
   return (
     <>
-      <Header1 />
+      <Navbar />
       <main>
         <Hero />
         <Collections />

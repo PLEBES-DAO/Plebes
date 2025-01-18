@@ -1,5 +1,5 @@
 import Footer1 from "@/components/footer/Footer1";
-import Header1 from "@/components/headers/Header1";
+import Header1 from "@/components/headers/Navbar";
 import Banner from "@/components/pages/edit-profile/Banner";
 import EditProfile from "@/components/pages/edit-profile/EditProfile";
 

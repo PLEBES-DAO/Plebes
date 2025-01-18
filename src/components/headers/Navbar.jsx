@@ -1,11 +1,10 @@
-"use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Profile from "./component/Profile";
 import Image from "../common/Image";
 import { useBioniqContext } from "../../hooks/BioniqContext";
 import { useNavigate } from "react-router-dom";
 
-export default function Header1({ bLogin, setModalOpen }) {
+export default function Navbar({ bLogin, setModalOpen }) {
   const navigate = useNavigate();
   const {
     login,
@@ -27,7 +26,6 @@ export default function Header1({ bLogin, setModalOpen }) {
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 0;
@@ -94,8 +92,8 @@ export default function Header1({ bLogin, setModalOpen }) {
   {!isLoggedIn && (
     <>
       <button
-        onClick={() => navigate("/launch-dao")}
-        className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
+          onClick={() => navigate("/launchpad")}
+          className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
       >
         Launch DAO
       </button>
@@ -174,8 +172,8 @@ export default function Header1({ bLogin, setModalOpen }) {
                   </svg>
                 </div>
                 <button
-                  onClick={() => console.log("Launch DAO clicked")}
-                  className="ml-4 h-10 px-4 text-sm font-medium text-white bg-blue-600 rounded-full transition hover:bg-blue-700 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-600"
+                    onClick={() => navigate("/launchpad")}
+                    className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
                 >
                   Launch DAO
                 </button>
