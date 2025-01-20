@@ -10,8 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dfinity/agent": "^1.0.1",
+    "@dfinity/agent": "^1.4.0",
     "@dfinity/ledger-icp": "^2.2.2",
+    "@dfinity/nns": "^8.1.0",
     "@dfinity/principal": "^1.0.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
