@@ -1,0 +1,30 @@
+.comic-sans {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+@keyframes fadeInDarken {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+.section {
+    opacity: 0;
+    animation: fadeInDarken 0.5s ease-in-out forwards;
+    transition: all 0.3s ease-in-out;
+}
+.section:hover {
+    transform: scale(1.02);
+}
+.animate-fadeOut {
+    animation: fadeOut 0.3s ease-in-out forwards;
+}
