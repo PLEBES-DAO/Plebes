@@ -1,6 +1,8 @@
 import Navbar from "../../../components/headers/Navbar.jsx";
 import PropTypes from 'prop-types';
 import './page.css';
+import './effects.css';
+
 const cardImages = [
     'img/plebe-cards/plebe-dao.jpg',
     'img/plebe-cards/plebe-header.jpg',
@@ -18,8 +20,10 @@ const CardWithImage = ({ imageIndex, children, className = "", onClick }) => (
         onClick={onClick}
         style={{ backgroundImage: `url('${cardImages[imageIndex]}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
-        {/* Overlay que se desvanece en hover */}
-        <div className="absolute inset-0 bg-[#0c112c]/90 transition-opacity duration-300 group-hover:opacity-0"></div>
+        {/* Filtro azul */}
+        <div className="absolute inset-0 blue-overlay group-hover:opacity-0"></div>
+        {/* Overlay oscuro */}
+        <div className="absolute inset-0 dark-overlay"></div>
         <div className="relative z-20 text-4xl font-bold text-white">
             {children}
         </div>
@@ -39,30 +43,29 @@ export default function Homepage({ login, setModalOpen }) {
             <Navbar bLogin={login} setModalOpen={setModalOpen} />
             <section className="relative h-screen">
                 <div className="p-10 h-full pt-24 grid grid-cols-1 md:grid-cols-4 gap-4 comics"
-                     style={{ backgroundImage: "url('/img/background.png')" }}
+                     style={{ backgroundImage: "url('/img/background.png')", backgroundRepeat: "no-repeat", backgroundPosition: "center center", backgroundAttachment: "fixed", backgroundSize: "cover" }}
                 >
                     {/* DAO/GOV Card */}
                     <div className="h-full dao-section">
                         <CardWithImage imageIndex={0}>
-                            <span className="comic-sans">DAO/GOV</span>
+                            <span className="comic-sans"> DAO/GOV </span>
                         </CardWithImage>
                     </div>
 
                     {/* Holders, Precio, Tesorería, Staking */}
                     <div className="md:col-span-2 h-full grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Large Holders Card */}
+                        {/* Holders Card */}
                         <CardWithImage imageIndex={1} className="md:col-span-2">
-                            <span className="comic-sans">Holders</span>
+                            <span className="comic-sans"> Holders </span>
                         </CardWithImage>
 
                         {/* Precio Card */}
                         <CardWithImage imageIndex={2}>
                             <span className="comic-sans"> Precio </span>
-                            </CardWithImage>
+                        </CardWithImage>
 
                         {/* Tesorería Card */}
-
-                        <CardWithImage imageIndex={3} className="row-span-full">
+                        <CardWithImage imageIndex={3} className="row-span-2">
                             <span className="comic-sans"> Tesorería </span>
                         </CardWithImage>
 
@@ -71,12 +74,10 @@ export default function Homepage({ login, setModalOpen }) {
                             <CardWithImage imageIndex={4}>
                                 <span className="comic-sans"> Staking </span>
                             </CardWithImage>
-                            <CardWithImage imageIndex={4}>
+                            <CardWithImage imageIndex={5}>
                                 <span className="comic-sans"> Staking 2 </span>
                             </CardWithImage>
-
                         </div>
-
                     </div>
 
                     {/* Holders and Precio Cards */}
