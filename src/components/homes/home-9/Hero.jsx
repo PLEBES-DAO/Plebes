@@ -1,8 +1,30 @@
-import { useBioniqContext } from '../../../hooks/BioniqContext'
-import { Link } from 'react-router-dom'
 
+import { useState, useEffect } from 'react';
+import { HttpAgent, Actor } from '@dfinity/agent';
+import { idlFactory } from './ckBTC_idl.js'; // Asegúrate de tener el IDL del contrato ckBTC
+import { useBioniqContext } from '../../../hooks/BioniqContext';
+import { Link } from 'react-router-dom';
 
 export default function Hero() {
+  const [ckBTCSaldo, setCkBTCSaldo] = useState(null);
+
+  useEffect(() => {
+    async function fetchCkBTCSaldo() {
+      const agent = new HttpAgent({ host: 'https://ic0.app' });
+      const canisterId = 'mxzaz-hqaaa-aaaar-qaada-cai';
+      const walletAddress = 'ycv6x-taztk-nu75u-k4xkg-5jthb-x525x-4tfk7-b6ino-avbls-hcbkv-sqe';
+
+      const ckBTCActor = Actor.createActor(idlFactory, {
+        agent,
+        canisterId,
+      });
+
+      const balance = await ckBTCActor.icrc1_balance_of({ owner: walletAddress });
+      setCkBTCSaldo(balance.toString());
+    }
+
+    fetchCkBTCSaldo();
+  }, []);
 
   return (
       <section className="relative h-screen">
@@ -50,6 +72,10 @@ export default function Hero() {
                 <div>
                   <h3 className="text-3xl font-bold"> Generic number </h3>
                   <p className="text-lg">Blocks processed</p>
+                </div>
+                <div className="mt-6">
+                  <h3 className="text-3xl font-bold">ckBTC Balance</h3>
+                  <p className="text-lg">{ckBTCSaldo !== null ? `${ckBTCSaldo} ckBTC` : 'Loading...'}</p>
                 </div>
               </div>
             </div>
