@@ -4,6 +4,7 @@ import { HttpAgent, Actor } from '@dfinity/agent';
 import { idlFactory } from './ckBTC_idl.js'; // Asegúrate de tener el IDL del contrato ckBTC
 import { useBioniqContext } from '../../../hooks/BioniqContext';
 import { Link } from 'react-router-dom';
+import { Principal } from '@dfinity/principal';
 
 export default function Hero() {
   const [ckBTCSaldo, setCkBTCSaldo] = useState(null);
@@ -19,7 +20,10 @@ export default function Hero() {
         canisterId,
       });
 
-      const balance = await ckBTCActor.icrc1_balance_of({ owner: walletAddress });
+      const balance = await ckBTCActor.icrc1_balance_of({
+        owner: Principal.fromText(walletAddress),
+        subaccount: []
+      });
       setCkBTCSaldo(balance.toString());
     }
 
@@ -61,18 +65,7 @@ export default function Hero() {
             {/* Stats Block */}
             <div className="relative col-span-6 col-start-7 hidden h-full md:flex items-center justify-center">
               <div className="bg-accent-lighter p-6 rounded-lg shadow-lg text-white text-center w-full max-w-md rounded-lg">
-                <div className="mb-6">
-                  <h3 className="text-3xl font-bold">Generic number</h3>
-                  <p className="text-lg">ICP R&D effort/years</p>
-                </div>
-                <div className="mb-6">
-                  <h3 className="text-3xl font-bold"> Generic number</h3>
-                  <p className="text-lg">ETH eq. TX/s</p>
-                </div>
-                <div>
-                  <h3 className="text-3xl font-bold"> Generic number </h3>
-                  <p className="text-lg">Blocks processed</p>
-                </div>
+
                 <div className="mt-6">
                   <h3 className="text-3xl font-bold">ckBTC Balance</h3>
                   <p className="text-lg">{ckBTCSaldo !== null ? `${ckBTCSaldo} ckBTC` : 'Loading...'}</p>
