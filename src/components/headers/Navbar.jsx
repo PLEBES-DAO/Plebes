@@ -50,7 +50,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
   return (
     <>
       <header
-        className={`js-page-header fixed top-0 z-20 w-full backdrop-blur transition-colors ${
+        className={`js-page-header fixed top-0 z-20 w-full backdrop-blur shadow-md transition-colors ${
           scrolled ? "js-page-header--is-sticky" : ""
         }`}
       >

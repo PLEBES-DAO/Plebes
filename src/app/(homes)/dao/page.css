@@ -1,0 +1,7 @@
+.comic-sans{
+    font-family: "Comic Sans MS";
+}
+
+.pink-gradient {
+    background: linear-gradient(to bottom right, rgba(255, 182, 193, 0.9), rgba(255, 164, 204, 0.8), rgba(255, 99, 132, 0.7));
+}

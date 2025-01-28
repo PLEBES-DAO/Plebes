@@ -2,6 +2,7 @@ import Navbar from "../../../components/headers/Navbar.jsx";
 import PropTypes from 'prop-types';
 import './page.css';
 import './effects.css';
+import {useNavigate} from "react-router-dom";
 
 const cardImages = [
     'img/plebe-cards/plebe-dao.jpg',
@@ -37,7 +38,11 @@ CardWithImage.propTypes = {
     onClick: PropTypes.func
 };
 
+
 export default function Homepage({ login, setModalOpen }) {
+
+    const navigate = useNavigate();
+
     return (
         <>
             <Navbar bLogin={login} setModalOpen={setModalOpen} />
@@ -46,8 +51,9 @@ export default function Homepage({ login, setModalOpen }) {
                      style={{ backgroundImage: "url('/img/background.png')", backgroundRepeat: "no-repeat", backgroundPosition: "center center", backgroundAttachment: "fixed", backgroundSize: "cover" }}
                 >
                     {/* DAO/GOV Card */}
-                    <div className="h-full dao-section">
-                        <CardWithImage imageIndex={0}>
+                    <div className="h-full dao-section" onClick={() => navigate("/dao")}
+                    >
+                        <CardWithImage imageIndex={0} >
                             <span className="comic-sans"> DAO/GOV </span>
                         </CardWithImage>
                     </div>

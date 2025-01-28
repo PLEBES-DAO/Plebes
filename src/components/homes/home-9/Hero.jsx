@@ -5,7 +5,7 @@ import { idlFactory } from './ckBTC_idl.js'; // Asegúrate de tener el IDL del c
 import { useBioniqContext } from '../../../hooks/BioniqContext';
 import { Link } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
-
+import './hero.css'
 export default function Hero() {
   const [ckBTCSaldo, setCkBTCSaldo] = useState(null);
 
@@ -64,11 +64,12 @@ export default function Hero() {
 
             {/* Stats Block */}
             <div className="relative col-span-6 col-start-7 hidden h-full md:flex items-center justify-center">
-              <div className="bg-accent-lighter p-6 rounded-lg shadow-lg text-white text-center w-full max-w-md rounded-lg">
-
+              <div className="bg-morado-translucido p-6 rounded-lg shadow-lg text-white text-center w-full max-w-md">
                 <div className="mt-6">
-                  <h3 className="text-3xl font-bold">ckBTC Balance</h3>
-                  <p className="text-lg">{ckBTCSaldo !== null ? `${ckBTCSaldo} ckBTC` : 'Loading...'}</p>
+                  <h3 className="text-3xl">Current ICP on treasury</h3>
+                  <p className="text-3xl font-bold">
+                    {ckBTCSaldo !== null ? `${ckBTCSaldo} ckBTC` : 'Loading...'}
+                  </p>
                 </div>
               </div>
             </div>
