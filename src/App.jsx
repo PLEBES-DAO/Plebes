@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import ErrorModal from "./components/modals/ErrorModal";
 import TransferModal from './components/modals/TransferckBTCModal.jsx';
 import DAO from "./app/(homes)/dao/page.jsx";
+import ProposalPage from "./app/(homes)/proposal_page/page.jsx";
 import {
   useState
 } from "react";
@@ -58,6 +59,7 @@ function App() {
         <Route path="/deposit" element={<Deposit login={login} setModalOpenT={setWithdralModal}  />} />
         <Route path="/launchpad" element={<HomePage login={login} setModalOpenT={setWithdralModal} />} />
         <Route path="/dao" element={<DAO login={login} setModalOpenT={setWithdralModal} />} />
+        <Route path="/proposal_page" element={<ProposalPage login={login} setModalOpenT={setWithdralModal} />} />
 
       </Routes>
       <ErrorModal modalOpen={modalOpen} setModalOpen={setModalOpen} error={error} resetError={resetError} />
