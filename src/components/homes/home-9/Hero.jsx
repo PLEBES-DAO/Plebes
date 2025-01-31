@@ -20,13 +20,12 @@ export default function Hero() {
               Plebes is a DAO that promotes the use of Internet Computer Protocol by funding open-source technology, creative projects, and public goods through daily Reserved Ordinals auctions.
             </p>
             <div className='flex gap-3'>
-              <a
-              // onClick={createAuction}
-                href="http://plebes.xyz/auction"
-                className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+              <Link
+                  to="/auction"
+                  className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
               >
                 Auction
-              </a>
+              </Link>
               <Link
                 to="/collections"
                 className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"

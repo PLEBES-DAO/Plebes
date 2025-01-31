@@ -35,7 +35,7 @@ export default function ItemDetails({ id, setModalOpen }) {
   if(!liveAuction){
     return (
       <>
-        <section className="relative pt-12 pb-24 lg:py-24">
+        <section className="relative pt-12 pb-24 lg:py-24 bg-cover"  style={{ backgroundImage: "url('/img/background.png')"}} >
           <picture className="pointer-events-none absolute inset-0 -z-10 dark:hidden">
             <Image
               width={1920}
@@ -45,7 +45,7 @@ export default function ItemDetails({ id, setModalOpen }) {
               className="h-full w-full"
             />
           </picture>
-          <div className="container">
+          <div className="container mt-16">
             {/* Item */}
             <div className="md:flex md:flex-wrap">
               {/* Image */}

@@ -13,7 +13,6 @@ import AggregatorTable from "../../../components/homes/home-13/AggregatorTable";
 
 import CoverFlowSlider from "../../../components/homes/home-4/CoverFlowSlider";
 
-
 import Hero from "../../../components/homes/home-9/Hero";
 import Intro from "../../../components/homes/home-9/Intro";
 import Partners from "../../../components/common/Partners2";
