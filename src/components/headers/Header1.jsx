@@ -1,11 +1,10 @@
-"use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Profile from "./component/Profile";
 import Image from "../common/Image";
 import { useBioniqContext } from "../../hooks/BioniqContext";
 import { useNavigate } from "react-router-dom";
 
-export default function Header1({ bLogin, setModalOpen }) {
+export default function Navbar({ bLogin, setModalOpen }) {
   const navigate = useNavigate();
   const {
     login,
@@ -17,7 +16,7 @@ export default function Header1({ bLogin, setModalOpen }) {
     isLoggedIn,
     wallets,
     ckBTCTotal,
-    balances
+    balances,
   } = useBioniqContext();
 
   useEffect(() => {
@@ -26,8 +25,7 @@ export default function Header1({ bLogin, setModalOpen }) {
 
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for dropdown
-
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 0;
@@ -36,7 +34,6 @@ export default function Header1({ bLogin, setModalOpen }) {
 
     window.addEventListener("scroll", handleScroll);
 
-    // Clean up event listener on component unmount
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -47,13 +44,13 @@ export default function Header1({ bLogin, setModalOpen }) {
   };
 
   const toggleDropdown = () => {
-    setIsDropdownOpen((prevState) => !prevState); // Toggle dropdown visibility using previous state
+    setIsDropdownOpen((prevState) => !prevState);
   };
 
   return (
     <>
       <header
-        className={`js-page-header fixed top-0 z-20 w-full backdrop-blur transition-colors ${
+        className={`js-page-header fixed top-0 z-20 w-full backdrop-blur shadow-md transition-colors ${
           scrolled ? "js-page-header--is-sticky" : ""
         }`}
       >
@@ -92,7 +89,61 @@ export default function Header1({ bLogin, setModalOpen }) {
           <div className="lg:visible fixed inset-0 z-10 ml-auto rtl:mr-auto rtl:ml-0 items-center bg-white opacity-0 dark:bg-jacarta-800 lg:relative lg:inset-auto lg:flex lg:bg-transparent lg:opacity-100 dark:lg:bg-transparent">
             {/* Actions */}
             <div className="ml-8 hidden lg:flex xl:ml-12">
-              {!isLoggedIn && (
+  {!isLoggedIn && (
+    <>
+    
+      <div
+        onClick={async () => {
+          await login();
+        }}
+        className="cursor-pointer rtl:ml-2 js-wallet group flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          className="h-4 w-4 fill-jacarta-700 transition-colors group-hover:fill-white group-focus:fill-white dark:fill-white"
+        >
+          <path fill="none" d="M0 0h24v24H0z" />
+          <path d="M22 6h-7a6 6 0 1 0 0 12h7v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2zm-7 2h8v8h-8a4 4 0 1 1 0-8zm0 3v2h3v-2h-3z" />
+        </svg>
+      </div>
+    </>
+  )}
+
+  {isLoggedIn && (
+    <div className="relative flex items-center">
+      
+      <Profile
+        wallets={wallets}
+        balances={balances}
+        setModalOpen={setModalOpen}
+        isOpen={isDropdownOpen}
+        toggleDropdown={toggleDropdown}
+      />
+    </div>
+  )}
+</div>
+          </div>
+
+          {/* Mobile Menu Toggle Button */}
+          <button className="lg:hidden ml-auto p-2" onClick={toggleMobileMenu}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              className="text-gray-700 dark:text-white"
+            >
+              <path d="M3 6h18M3 12h18M3 18h18" />
+            </svg>
+          </button>
+
+          {/* Mobile Menu Actions */}
+          <div className="ml-auto flex lg:hidden rtl:ml-0 rtl:mr-auto z-50">
+            {!isLoggedIn && (
+              <>
                 <div
                   onClick={async () => {
                     await login();
@@ -110,61 +161,23 @@ export default function Header1({ bLogin, setModalOpen }) {
                     <path d="M22 6h-7a6 6 0 1 0 0 12h7v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2zm-7 2h8v8h-8a4 4 0 1 1 0-8zm0 3v2h3v-2h-3z" />
                   </svg>
                 </div>
-              )}
-
-              {/* Profile Dropdown */}
-              {isLoggedIn && (
-                <div className="relative">
-                  <Profile wallets={wallets} balances={balances} setModalOpen={setModalOpen} isOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Mobile Menu Toggle Button */}
-          <button
-            className="lg:hidden ml-auto p-2"
-            onClick={toggleMobileMenu}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              className="text-gray-700 dark:text-white"
-            >
-              <path d="M3 6h18M3 12h18M3 18h18" />
-            </svg>
-          </button>
-
-          {/* Mobile Menu Actions */}
-          <div className="ml-auto flex lg:hidden rtl:ml-0 rtl:mr-auto z-50">
-            {/* Mobile Profile */}
-            {!isLoggedIn && (
-              <div
-                onClick={async () => {
-                  await login();
-                }}
-                className="cursor-pointer rtl:ml-2 js-wallet group flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                  className="h-4 w-4 fill-jacarta-700 transition-colors group-hover:fill-white group-focus:fill-white dark:fill-white"
-                >
-                  <path fill="none" d="M0 0h24v24H0z" />
-                  <path d="M22 6h-7a6 6 0 1 0 0 12h7v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2zm-7 2h8v8h-8a4 4 0 1 1 0-8zm0 3v2h3v-2h-3z" />
-                </svg>
-              </div>
+               
+              </>
             )}
 
-            {/* Mobile Profile */}
             {isLoggedIn && (
-              <div className="relative">
-                <Profile wallets={wallets} balances={balances} setModalOpen={setModalOpen} isOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
-              </div>
+              <>
+                <div className="relative">
+                  <Profile
+                    wallets={wallets}
+                    balances={balances}
+                    setModalOpen={setModalOpen}
+                    isOpen={isDropdownOpen}
+                    toggleDropdown={toggleDropdown}
+                  />
+                </div>
+               
+              </>
             )}
           </div>
         </div>
