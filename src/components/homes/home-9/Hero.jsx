@@ -7,6 +7,7 @@ import { Principal } from '@dfinity/principal';
 import './hero.css'
 export default function Hero() {
   const [icpBalance, setIcpBalance] = useState(null);
+  const [displayBalance, setDisplayBalance] = useState(null);
 
   useEffect(() => {
     async function fetchIcpBalance() {
@@ -29,6 +30,31 @@ export default function Hero() {
 
     fetchIcpBalance();
   }, []);
+
+  // Efecto para la animación cuando icpBalance cambia
+  useEffect(() => {
+    if (icpBalance === null) return;
+
+    const duration = 1500; // 3 segundos
+    const steps = 30; // Número de actualizaciones por segundo
+    const interval = duration / steps;
+    let step = 0;
+
+    const timer = setInterval(() => {
+      step++;
+      if (step === steps) {
+        setDisplayBalance(icpBalance);
+        clearInterval(timer);
+      } else {
+        // Genera un número aleatorio que se va acercando al valor final
+        const randomFactor = 1 - (step / steps);
+        const randomValue = icpBalance * (1 + (Math.random() - 0.5) * randomFactor);
+        setDisplayBalance(randomValue);
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [icpBalance]);
 
   return (
       <section className="relative h-screen">
@@ -68,9 +94,10 @@ export default function Hero() {
                 <div className="mt-6">
                   <h3 className="text-3xl">Current ICP on treasury</h3>
                   <p className="text-3xl font-bold">
-                    {icpBalance !== null ? `${icpBalance.toFixed(8)} ICP` : 'Loading...'}
+                    {displayBalance !== null 
+                      ? `${displayBalance.toFixed(8)} ICP` 
+                      : 'Loading...'}
                   </p>
-
                 </div>
               </div>
             </div>
