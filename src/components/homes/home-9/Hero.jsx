@@ -1,33 +1,33 @@
-
 import { useState, useEffect } from 'react';
 import { HttpAgent, Actor } from '@dfinity/agent';
-import { idlFactory } from './ckBTC_idl.js'; // Asegúrate de tener el IDL del contrato ckBTC
+import { idlFactory, e8sToDecimal } from './ckBTC_idl.js'; // Asegúrate de tener el IDL del contrato ckBTC
 import { useBioniqContext } from '../../../hooks/BioniqContext';
 import { Link } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import './hero.css'
 export default function Hero() {
-  const [ckBTCSaldo, setCkBTCSaldo] = useState(null);
+  const [icpBalance, setIcpBalance] = useState(null);
 
   useEffect(() => {
-    async function fetchCkBTCSaldo() {
+    async function fetchIcpBalance() {
       const agent = new HttpAgent({ host: 'https://ic0.app' });
-      const canisterId = 'mxzaz-hqaaa-aaaar-qaada-cai';
+      const canisterId = 'ryjl3-tyaaa-aaaaa-aaaba-cai'; // ICP Ledger canister ID
       const walletAddress = 'ycv6x-taztk-nu75u-k4xkg-5jthb-x525x-4tfk7-b6ino-avbls-hcbkv-sqe';
 
-      const ckBTCActor = Actor.createActor(idlFactory, {
+      const icpActor = Actor.createActor(idlFactory, {
         agent,
         canisterId,
       });
 
-      const balance = await ckBTCActor.icrc1_balance_of({
+      const balance = await icpActor.icrc1_balance_of({
         owner: Principal.fromText(walletAddress),
         subaccount: []
       });
-      setCkBTCSaldo(balance.toString());
+      const balanceNumber = Number(balance);
+      setIcpBalance(e8sToDecimal(balanceNumber));
     }
 
-    fetchCkBTCSaldo();
+    fetchIcpBalance();
   }, []);
 
   return (
@@ -68,8 +68,9 @@ export default function Hero() {
                 <div className="mt-6">
                   <h3 className="text-3xl">Current ICP on treasury</h3>
                   <p className="text-3xl font-bold">
-                    {ckBTCSaldo !== null ? `${ckBTCSaldo} ckBTC` : 'Loading...'}
+                    {icpBalance !== null ? `${icpBalance.toFixed(8)} ICP` : 'Loading...'}
                   </p>
+
                 </div>
               </div>
             </div>
