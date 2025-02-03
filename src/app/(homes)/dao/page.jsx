@@ -3,6 +3,7 @@ import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Importación de useNavigate
 import './page.css';
+import '../launchpad/effects.css'; // Añadir esta importación
 
 export default function Profile() {
     const navigate = useNavigate(); // Hook para navegación
@@ -25,7 +26,7 @@ export default function Profile() {
                      }}
                 >
                     {/* Primera columna */}
-                    <div className="rounded-xl flex items-center justify-center pink-gradient w-full max-h-full overflow-hidden">
+                    <div className="section rounded-xl flex items-center justify-center pink-gradient w-full max-h-full overflow-hidden">
                         <div
                             className="text-black sm:w-full md:col-span-1 rounded-xl shadow-lg p-6 overflow-y-auto max-h-[85vh]"
                         >
@@ -86,7 +87,7 @@ export default function Profile() {
                     </div>
 
                     {/* Segunda columna (ahora abarca las 3 columnas) */}
-                    <div className="flex flex-col items-center justify-center bg-white w-full md:col-span-2 rounded-xl p-3 max-h-full overflow-hidden">
+                    <div className="section flex flex-col items-center justify-center bg-white w-full md:col-span-2 rounded-xl p-3 max-h-full overflow-hidden">
                         <div className="flex flex-col justify-center items-center bg-jacarta-900 w-full m-2 h-[15vh] rounded-lg flex-shrink-0 p-4">
                             <h6 className="text-white text-4xl"> Welcome to PLEBES</h6>
                             <p className="text-white">
