@@ -21,9 +21,7 @@ const CardWithImage = ({ imageIndex, children, className = "", onClick }) => (
         onClick={onClick}
         style={{ backgroundImage: `url('${cardImages[imageIndex]}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
-        {/* Filtro azul */}
         <div className="absolute inset-0 blue-overlay group-hover:opacity-0"></div>
-        {/* Overlay oscuro */}
         <div className="absolute inset-0 dark-overlay"></div>
         <div className="relative z-20 text-4xl font-bold text-white">
             {children}
@@ -38,9 +36,7 @@ CardWithImage.propTypes = {
     onClick: PropTypes.func
 };
 
-
 export default function Homepage({ login, setModalOpen }) {
-
     const navigate = useNavigate();
 
     return (
@@ -51,9 +47,8 @@ export default function Homepage({ login, setModalOpen }) {
                      style={{ backgroundImage: "url('/img/background.png')", backgroundRepeat: "no-repeat", backgroundPosition: "center center", backgroundAttachment: "fixed", backgroundSize: "cover" }}
                 >
                     {/* DAO/GOV Card */}
-                    <div className="h-full dao-section" onClick={() => navigate("/dao")}
-                    >
-                        <CardWithImage imageIndex={0} >
+                    <div className="h-full dao-section" onClick={() => navigate("/dao")}>
+                        <CardWithImage imageIndex={0}>
                             <span className="comic-sans"> DAO/GOV </span>
                         </CardWithImage>
                     </div>
@@ -71,29 +66,25 @@ export default function Homepage({ login, setModalOpen }) {
                         </CardWithImage>
 
                         {/* Tesorería Card */}
-                        <CardWithImage imageIndex={3} className="row-span-2">
+                        <CardWithImage imageIndex={3} className="md:row-span-3">
                             <span className="comic-sans"> Tesorería </span>
                         </CardWithImage>
 
-                        {/* Staking and Staking 2 */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <CardWithImage imageIndex={4}>
-                                <span className="comic-sans"> Staking </span>
-                            </CardWithImage>
-                            <CardWithImage imageIndex={5}>
-                                <span className="comic-sans"> Staking 2 </span>
-                            </CardWithImage>
-                        </div>
+                        {/* Staking Cards */}
+                        <CardWithImage imageIndex={4} className="md:col-span-1">
+                            <span className="comic-sans"> Staking </span>
+                        </CardWithImage>
+                        <CardWithImage imageIndex={5} className="md:col-span-1">
+                            <span className="comic-sans"> Staking 2 </span>
+                        </CardWithImage>
                     </div>
 
                     {/* Holders and Precio Cards */}
-                    <div className="md:col-span-1 h-full grid grid-cols-1 md:grid-cols-1 grid-rows-6 gap-4">
-                        {/* Large Holders Card */}
+                    <div className="col-span-1 h-full grid grid-cols-1 md:grid-cols-1 grid-rows-6 gap-4">
                         <CardWithImage imageIndex={6} className="row-span-4">
                             <span className="comic-sans"> Holders </span>
                         </CardWithImage>
 
-                        {/* Precio Card */}
                         <CardWithImage imageIndex={7} className="row-span-2">
                             <span className="comic-sans"> Precio </span>
                         </CardWithImage>
