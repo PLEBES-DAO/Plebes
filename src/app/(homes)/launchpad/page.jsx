@@ -43,7 +43,7 @@ export default function Homepage({ login, setModalOpen }) {
         <>
             <Navbar bLogin={login} setModalOpen={setModalOpen} />
             <section className="relative h-screen">
-                <div className="p-10 h-full pt-24 grid grid-cols-1 md:grid-cols-4 gap-4 comics"
+                <div className="p-10 h-full pt-32 grid grid-cols-1 md:grid-cols-4 gap-4 comics"
                      style={{ backgroundImage: "url('/img/background.png')", backgroundRepeat: "no-repeat", backgroundPosition: "center center", backgroundAttachment: "fixed", backgroundSize: "cover" }}
                 >
                     {/* DAO/GOV Card */}

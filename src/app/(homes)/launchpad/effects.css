@@ -32,6 +32,11 @@
     transition: opacity 0.3s ease;
 }
 
+/* Al hacer hover, también ocultar el overlay oscuro */
+.section:hover .dark-overlay {
+    opacity: 0;
+}
+
 /* Texto de las tarjetas */
 .section .text {
     z-index: 20;
