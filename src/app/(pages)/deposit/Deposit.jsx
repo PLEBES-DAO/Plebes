@@ -1,16 +1,20 @@
 import Footer1 from "../../../components/footer/Footer1";
 import Navbar from "../../../components/headers/Navbar.jsx";
-
+import "./Deposit.css";
 import { AccountIdentifier, SubAccount } from "@dfinity/ledger-icp";
 import { useEffect, useState, useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
 import { useBioniqContext } from "../../../hooks/BioniqContext";
 
-
+const stepStyles = {
+  container: "transition-opacity duration-300 ease-in-out",
+  active: "opacity-100",
+  inactive: "opacity-0 hidden",
+};
 
 const TokenRow = () => {
-    const { wallets, buy } = useBioniqContext();
+    const { wallets, buy, balances } = useBioniqContext();
     const [amount, setAmount] = useState(0);
     const [fromToken, setFromToken] = useState("sol");
     const [loading, setLoading] = useState(false);
@@ -20,7 +24,8 @@ const TokenRow = () => {
     const [hasFetched, setHasFetched] = useState(false); // Track if the transaction has been fetched
     const [polling, setPolling] = useState(false); // Track polling state
     const [interval, setIntervalState] = useState(null); // Store interval reference
-
+    const [activeStep, setActiveStep] = useState(1);
+    const [showGameContainer, setShowGameContainer] = useState(false);
 
     // Fetch user transactions on component load
     useEffect(() => {
@@ -87,7 +92,8 @@ const TokenRow = () => {
     }, [polling]);
 
     const handleCreateExchange = async () => {
-       // setStatus("Awaiting deposit");
+        setShowGameContainer(true);
+        // setStatus("Awaiting deposit");
         const payload = {
             route: {
                 from: { symbol: fromToken, network: "mainnet" },
@@ -158,45 +164,229 @@ const TokenRow = () => {
 
     return (
         <section className="relative pt-20 pb-24 lg:py-24">
-            {/* Input Section */}
-            <div className="flex items-center gap-4 p-4 bg-jacarta-800 rounded-lg shadow-sm dark:bg-jacarta-700">
-                <div className="flex-1">
-                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
-                        Token
-                    </label>
-                    <select
-                        value={fromToken}
-                        onChange={(e) => setFromToken(e.target.value)}
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
-                    >
-                        <option value="sol">SOL</option>
-                        <option value="eth">ETH</option>
-                        <option value="btc">BTC</option>
-                        <option value="usdt">USDT</option>
-                    </select>
+            <div className="mx-4">
+                <span className="text-white">Plebes wallet</span>
+                <hr className="border-white"/>
+                {/* Balance section */}
+                <div className="mt-4 rounded-lg border border-white p-4">
+                    <span className="text-sm font-medium tracking-tight text-white">
+                        Balance
+                    </span>
+                    <div className="flex items-center flex-col">
+                        {/* BTC Balance */}
+                        <span className="text-lg font-bold text-green w-full mb-2">
+                            <img
+                                src="/img/BTC.svg"
+                                alt="BTC"
+                                className="inline-block h-4 w-4 mr-2"
+                            />
+                            {balances && balances[0] && formatNumberWithPattern(balances[0].available.fullAmount)}
+                        </span>
+                        {/* ckBTC Balance */}
+                        <span className="text-lg font-bold text-green w-full">
+                            <img
+                                src="/img/ckBTC.svg"
+                                alt="ckBTC"
+                                className="inline-block h-4 w-4 mr-2"
+                            />
+                            {balances && balances[1] && formatNumberWithPattern(balances[1].available.fullAmount)}
+                        </span>
+                    </div>
                 </div>
-
-                <div className="flex-1">
-                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
-                        Amount
-                    </label>
-                    <input
-                        type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
-                        placeholder="0.00"
-                    />
-                </div>
-
-                <button
-                    onClick={handleCreateExchange}
-                    className="px-4 py-2 bg-accent text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent"
-                    disabled={loading}
-                >
-                    {loading ? "Processing..." : "Start"}
-                </button>
             </div>
+            
+            <div className="mx-4">
+                <span className="text-white">Multichain deposit</span>
+                <hr className="border-white"/>
+            </div>
+            <div className="flex w-full">
+                {/* Left container */}
+                <div className="w-1/2 flex justify-start items-start mx-4 px-4">
+                    <div className={`w-full transition-opacity duration-500 ease-in-out ${showGameContainer ? 'opacity-100' : 'opacity-100'}`}>
+                        {!showGameContainer ? (
+                            // Original timeline content
+                            <div className="timeline-container">
+                                <div className="timeline-item flex">
+                                    {/* Left Column - Timeline Circles */}
+                                    <div className="flex flex-col items-center">
+                                        <div className="circle">1</div>
+                                        <div className="line"></div>
+                                        <div className="circle">2</div>
+                                        <div className="line"></div>
+                                        <div className="circle">3</div>
+                                        <div className="line"></div>
+                                        <div className="circle">4</div>
+                                    </div>
+
+                                    {/* Right Column - Form Elements */}
+                                    <div className="ml-8 flex-1">
+                                        {/* Step 1 */}
+                                        <div className="mb-8">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                                                        Select Token
+                                                    </label>
+                                                    <select
+                                                        value={fromToken}
+                                                        onChange={(e) => setFromToken(e.target.value)}
+                                                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
+                                                    >
+                                                        <option value="sol">SOL</option>
+                                                        <option value="eth">ETH</option>
+                                                        <option value="btc">BTC</option>
+                                                        <option value="usdt">USDT</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                                                        Select Network
+                                                    </label>
+                                                    <select
+                                                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
+                                                    >
+                                                        <option value="mainnet">Mainnet</option>
+                                                        <option value="testnet">Testnet</option>
+                                                        <option value="devnet">Devnet</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 2 */}
+                                        <div className="mb-8">
+                                            <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                                                Amount
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={amount}
+                                                onChange={(e) => setAmount(e.target.value)}
+                                                className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
+                                                placeholder="0.00"
+                                            />
+                                        </div>
+
+                                        {/* Step 3 */}
+                                        <div className="mb-8">
+                                            <button
+                                                onClick={handleCreateExchange}
+                                                className="px-4 py-2 bg-accent text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+                                                disabled={loading}
+                                            >
+                                                {loading ? "Processing..." : "Start"}
+                                            </button>
+                                        </div>
+
+                                        {/* Step 4 */}
+                                        <div>
+                                            <div className="mb-4">
+                                                <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                                                    Deposit to this Wallet
+                                                </label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="text"
+                                                        value={apiResponse?.details?.deposit?.address || '0x1234567890abcdef'}
+                                                        readOnly
+                                                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12"
+                                                    />
+                                                    <button
+                                                        onClick={() => navigator.clipboard.writeText(apiResponse?.details?.deposit?.address || '0x1234567890abcdef')}
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-accent hover:bg-accent-dark text-white rounded-md text-sm"
+                                                    >
+                                                        Copy
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                                                    Deposit this Quantity
+                                                </label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="text"
+                                                        value={apiResponse?.details?.deposit?.amount || '0.001 BTC'}
+                                                        readOnly
+                                                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12"
+                                                    />
+                                                    <button
+                                                        onClick={() => navigator.clipboard.writeText(apiResponse?.details?.deposit?.amount || '0.001 BTC')}
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-accent hover:bg-accent-dark text-white rounded-md text-sm"
+                                                    >
+                                                        Copy
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            // Game container with back button
+                            <div className="animate-fadeIn bg-jacarta-800 rounded-lg p-8 h-full relative">
+                                <button 
+                                    onClick={() => setShowGameContainer(false)}
+                                    className="absolute top-4 left-4 px-4 py-2 bg-accent text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+                                >
+                                    Back
+                                </button>
+                                <div className="flex items-center justify-center h-[800px]">
+                                    <h2 className="text-4xl font-bold text-white">Game Container</h2>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                
+                {/* Segunda mitad */}
+                <div className="w-1/2 flex flex-col justify-start items-center p-8">
+                    <div className="w-full max-w-md bg-jacarta-800 rounded-lg shadow-lg p-8 min-h-[800px]">
+                        {/* Progress bar with numbered circles */}
+                        <div className="relative w-full h-40">
+                            <div className="absolute w-full flex justify-between items-center px-12">
+                                <div className="h-1 bg-white absolute left-0 right-0 top-1/2 -translate-y-1/2 z-0"></div>
+                                {[1, 2, 3, 4].map((num) => (
+                                    <button
+                                        key={num}
+                                        onClick={() => setActiveStep(num)}
+                                        className={`w-12 h-12 text-lg font-bold rounded-full flex items-center justify-center z-10 cursor-pointer transition-colors duration-300 ${
+                                            activeStep >= num ? 'bg-accent text-white' : 'bg-white text-jacarta-800'
+                                        }`}
+                                    >
+                                        {num}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Step content */}
+                        <div className="mt-24 text-center text-white">
+                            <div className={`${stepStyles.container} ${activeStep === 1 ? stepStyles.active : stepStyles.inactive}`}>
+                                <h3 className="text-3xl font-bold mb-6">Awaiting deposit</h3>
+                                <p className="text-xl">Please send the specified amount to continue</p>
+                            </div>
+                            
+                            <div className={`${stepStyles.container} ${activeStep === 2 ? stepStyles.active : stepStyles.inactive}`}>
+                                <h3 className="text-3xl font-bold mb-6">Receiving ICP</h3>
+                                <p className="text-xl">Your deposit is being processed</p>
+                            </div>
+                            
+                            <div className={`${stepStyles.container} ${activeStep === 3 ? stepStyles.active : stepStyles.inactive}`}>
+                                <h3 className="text-3xl font-bold mb-6">Swapping ICP to ckBTC</h3>
+                                <p className="text-xl">Converting your tokens</p>
+                            </div>
+                            
+                            <div className={`${stepStyles.container} ${activeStep === 4 ? stepStyles.active : stepStyles.inactive}`}>
+                                <h3 className="text-3xl font-bold mb-6">Sending ckBTC to your wallet</h3>
+                                <p className="text-xl">Finalizing your transaction</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {/* Input Section */}
+         
 
             {/* Response Section */}
             {/* Response Section */}
