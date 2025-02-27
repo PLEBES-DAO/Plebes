@@ -578,21 +578,24 @@ const BioniqContextProvider = ({ children }) => {
 
   const createAuction = async (inscription) => {
     //let userInscriptions = inscriptions;
-    console.log("use inscriptions", inscriptions)
+    //console.log("use inscriptions", inscriptions)
+    console.log("create auction inscription",inscription)
     console.log("wallets in auction", wallets)
     try{
       setLoading(true)
+      await endAuction();
       let auctionResponse = await liveBioniqWalletApi.inscription.createAuction({
         resolvedBioniqUser: {
           currentWallets: wallets,
         },
         tokenMode: "ckBTC",
         inscription: inscription,
-        startAmount: { decimalAmount: 0.00001, tokenType: "ckBTC" },
+        startAmount: { decimalAmount: 0.00005, tokenType: "ckBTC" },
         utxoList: [],
         wrapFeeRate: { fullRate: 1000, tokenType: "Btc" },
-        auctionDuration: { seconds: 86400 }
+        auctionDuration: { seconds: 82800 }
       });
+      await saveCurrentAuction("plebes",inscription.id);
       console.log("auction response", auctionResponse)
       setLoading(false)
     }catch(e){
@@ -611,6 +614,7 @@ const BioniqContextProvider = ({ children }) => {
       inscription: inscription,
       tokenMode: "ckBTC"
     })
+    await endAuction();
     console.log('response', response, inscription)
   }
 
@@ -672,9 +676,9 @@ const BioniqContextProvider = ({ children }) => {
 
 
 
-  async function fetchInscriptionsAdmin() {
+  async function fetchUserInscriptions(user) {
     try {
-      const response = await fetch("https://api.bioniq.io/v2/inscriptions?address=bc1qz6dmmfrh9ejmn7fj2563lav7ze6pxck73a4vgy", {
+      const response = await fetch(`https://api.bioniq.io/v2/inscriptions?address=${user}&page=2&limit=100`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -740,6 +744,141 @@ const BioniqContextProvider = ({ children }) => {
 
 
 
+  const convertUsdToBtcOnDemand = async (usdAmount) => {
+    try {
+      const token = 'somfr7gidu5pw7gfzcoe';
+      const url = `https://api.freecryptoapi.com/v1/getData?symbol=BTC+ETH+SOL+ETHBTC@binance&token=${token}`;
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      const btcPriceFromApi = data.symbols[0].highest;
+      
+      return usdAmount / btcPriceFromApi;
+    } catch (error) {
+      console.error('Error converting USD to BTC:', error);
+      return null;
+    }
+  };
+
+
+  const convertBtcToUsd = async (btcBalance) => {
+    try {
+      const token = 'somfr7gidu5pw7gfzcoe';
+      const url = `https://api.freecryptoapi.com/v1/getData?symbol=BTC+ETH+SOL+ETHBTC@binance&token=${token}`;
+  
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`${response.status} - ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      // data.symbols[0].highest should contain the current BTC price in USD
+      const btcPriceFromApi = data.symbols[0].highest;
+      // Convert the given BTC balance to USD
+      const usdAmount = btcBalance * btcPriceFromApi;
+      console.log("usd amount",usdAmount)
+      return usdAmount;
+    } catch (error) {
+      console.error('Failed to convert BTC to USD:', error);
+      return null; // or throw error, depending on your needs
+    }
+  };
+  
+
+
+  const getCurrentAuction = async () => {
+    const url = `https://api.plebes.xyz/current-auction`;
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+      console.log("response",response)
+      let auction = await response.json();
+      console.log("current",auction)
+      let currentAuction = auction.assetId;
+      let getInscription = `https://api.bioniq.io/v2/inscription/${currentAuction}?protocol=ckBTC`;
+      const response2 = await fetch(getInscription, {
+        method: 'GET',
+      });
+      let currentAuctionInscriptionRes = await response2.json();
+      console.log("current Auction",currentAuctionInscriptionRes)
+      setLiveAuction(currentAuctionInscriptionRes);
+      let bidData = await getBidders(currentAuctionInscriptionRes);
+      setLiveAuctionBidders(bidData)
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  };
+
+
+  const setCurrentAuction = async () =>{
+    const url = `https://api.plebes.xyz/current-auction`;
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+      });
+      let auction = await response.data();
+      let currentAuction = auction.assetId;
+      let getInscription = `https://api.bioniq.io/v2/inscription/${currentAuction}?protocol=ckBTC`;
+      const response2 = await fetch(getInscription, {
+        method: 'GET',
+      });
+      let currentAuctionInscriptionRes = await response2.data();
+      setLiveAuction(currentAuctionInscriptionRes);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  };
+
+  async function saveCurrentAuction(password, assetId) {
+    const endpoint = "https://api.plebes.xyz/save-auction"; // Replace with your server's endpoint
+    console.log("password")
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password:password, assetId:assetId }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `Failed to save auction: ${errorData.error || response.statusText}`
+        );
+      }
+  
+      const data = await response.json();
+      console.log("Auction saved successfully:", data);
+      return data;
+    } catch (error) {
+      console.error("Error saving auction:", error.message);
+      throw error;
+    }
+  }
+  
+
+  async function endAuction() {
+    try {
+      const response = await fetch('https://api.plebes.xyz/end-auction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password: 'plebes' })
+      });
+      
+      // If the endpoint returns JSON, parse it
+      const data = await response.json();
+      console.log('Response:', data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
+
+
   const fetchFROMVPS = async () => {
     // Replace ACCESS_TOKEN with your actual token
     const url = `https://api.plebes.xyz/hello-world`;
@@ -773,6 +912,8 @@ const BioniqContextProvider = ({ children }) => {
       await fetchCryptoData()
       let historicArray = [];
       let history = await getHistory();
+      let currentAuction =   await getCurrentAuction();
+
       console.log("looking at history",history);
       if(history){
         console.log("in history")
@@ -787,17 +928,16 @@ const BioniqContextProvider = ({ children }) => {
       }
       setHistoricState(historicArray);
       console.log("historic array",historicArray);
-      let adInscriptions = await fetchInscriptionsAdmin();
-      console.log("ad inscriptions", adInscriptions)
+      //console.log("ad inscriptions", adInscriptions)
 
-      adInscriptions.results.forEach(async (item)=>{
-        if (item && item.listing_type === "auction" || item.listing_type === "bid") {
-          setLiveAuction(item)
-          let bidData = await getBidders(item);
-          console.log("bid data",bidData)
-          setLiveAuctionBidders(bidData)
-        }
-      })
+      // adInscriptions.results.forEach(async (item)=>{
+      //   if (item && item.listing_type === "auction" || item.listing_type === "bid") {
+      //     setLiveAuction(item)
+      //     let bidData = await getBidders(item);
+      //     console.log("bid data",bidData)
+      //     setLiveAuctionBidders(bidData)
+      //   }
+      // })
       // let adInscriptions = await liveBioniqWalletApi.inscription.getAdminInscriptions();
       // console.log("ad inscriptions", adInscriptions)
 
@@ -811,18 +951,20 @@ const BioniqContextProvider = ({ children }) => {
     }
     if (!liveBioniqWalletApi || !wallets) return
 
-    const _inscriptions =
-      await liveBioniqWalletApi.inscription.getAllUserInscriptions({
-        resolvedBioniqUser: {
-          currentWallets: wallets,
-        },
-        tokenMode: "ckBTC",
-      });
+    // const _inscriptions =
+    //   await liveBioniqWalletApi.inscription.getAllUserInscriptions({
+    //     resolvedBioniqUser: {
+    //       currentWallets: wallets,
+    //     },
+    //     tokenMode: "ckBTC",
+    //   });
 
-    console.log("@inscriptions after load all inscriptions", _inscriptions);
-    setInscriptions(_inscriptions);
+    // console.log("@inscriptions after load all inscriptions", _inscriptions);
+    let getInscriptions = await fetchUserInscriptions(wallets.BTC.walletAddress)
+    console.log("page 1 inscriptions",getInscriptions)
+    setInscriptions(getInscriptions.results);
     setLoading(false);
-    return _inscriptions;
+    return getInscriptions.restults;
   }, [liveBioniqWalletApi, wallets]);
 
   useEffect(() => {
@@ -891,7 +1033,9 @@ const BioniqContextProvider = ({ children }) => {
       buy,
       withdraw,
       swapStep,
-      setSwapStep
+      setSwapStep,
+      convertBtcToUsd,
+      convertUsdToBtcOnDemand
     }),
     [
       isLoading,
@@ -926,7 +1070,9 @@ const BioniqContextProvider = ({ children }) => {
       buy,
       withdraw,
       swapStep,
-      setSwapStep
+      setSwapStep,
+      convertBtcToUsd,
+      convertUsdToBtcOnDemand
     ]
   );
 

@@ -3,15 +3,21 @@ import { useBioniqContext } from '../../hooks/BioniqContext';
 import { formatNumberWithPattern } from '../../utils';
 
 export default function BidModal({ modalOpen, setModalOpen }) {
-  const { createAbid,balances,toDecilamAmounts } = useBioniqContext();
+  const { createAbid,balances,toDecilamAmounts,convertUsdToBtcOnDemand,convertBtcToUsd } = useBioniqContext();
+  const[ckBTCUSDBalance, setCkBTCUSD] = useState(null);
+
   const modalRef = useRef();
 
   // State to store the bid amount
-  const [bidAmount, setBidAmount] = useState('0.05');
+  const [bidAmount, setBidAmount] = useState('0.0');
+  const [bidAmountBTC,setBidAmountBTC] = useState(null);
 
   // onChange handler for the input field
-  const handleBidChange = (event) => {
+  const handleBidChange = async (event) => {
     setBidAmount(event.target.value);
+   let btc= await convertUsdToBtcOnDemand(event.target.value);
+   console.log("btc",btc);
+    setBidAmountBTC(btc.toString());
   };
 
   const handlePlaceBid = async () =>{
@@ -19,8 +25,38 @@ export default function BidModal({ modalOpen, setModalOpen }) {
     // if(bidAmount < formatNumberWithPattern(balances[1].available.fullAmount)){
     //   return "Your balance is insufficient to place a bid for this amount.";
     // }
-    await createAbid(bidAmount);
+    await createAbid(bidAmountBTC);
   };
+
+
+  useEffect(() => {
+    // 1) Define an async function inside the effect
+    const convertBalance = async () => {
+      try {
+        // e.g. parse the ckBTC balance as a number
+        const ckBtcBalance = formatNumberWithPattern(balances[1].available.fullAmount);
+  
+        // 2) Await the async conversion
+        const usdVal = await convertBtcToUsd(ckBtcBalance);
+  
+        // 3) Format the result
+        const usdValString = Number(usdVal).toFixed(2);
+  
+        console.log("usdValString", usdValString);
+  
+        // 4) Update state
+        setCkBTCUSD(usdValString);
+      } catch (err) {
+        console.error("Error converting ckBTC to USD:", err);
+      }
+    };
+  
+    // 5) Call that async function if balances exist
+    if (balances && balances[1]) {
+      convertBalance();
+    }
+  }, [balances]); // <- dependencies
+  
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -78,7 +114,7 @@ export default function BidModal({ modalOpen, setModalOpen }) {
                 </span>
               </div>
               <div className="relative mb-2 flex items-center rounded-lg border px-2">
-                <span className="mr-2">ckBTC</span>
+                <span className="mr-2">USD</span>
                 <input
                   type="text"
                   className="h-12 w-full focus:ring-inset focus:ring-accent"
@@ -89,7 +125,7 @@ export default function BidModal({ modalOpen, setModalOpen }) {
               </div>
 
               <div className="text-right">
-                <span className="text-sm">Balance: { balances && balances[1] &&  formatNumberWithPattern(balances[1].available.fullAmount) +"ckBTC"}</span>
+                <span className="text-sm">Balance: { ckBTCUSDBalance &&   ckBTCUSDBalance+" USD"}</span>
               </div>
 
               {/* Terms */}
