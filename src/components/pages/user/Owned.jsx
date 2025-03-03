@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useritems } from "../../../data/item";
 import tippy from "tippy.js";
-import { collections3 } from "../../../data/collections";
 import Image from "../../common/Image";
 import { useBioniqContext } from "../../../hooks/BioniqContext";
 
+// 1. Transfer Modal
 function TransferModal({ isOpen, onClose, onSend, selectedItem }) {
   const [address, setAddress] = useState("");
 
@@ -23,14 +22,13 @@ function TransferModal({ isOpen, onClose, onSend, selectedItem }) {
         />
         <button
           className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={() => onSend(address)}
+          onClick={() => {
+            onSend(address);
+          }}
         >
           Send
         </button>
-        <button
-          className="mt-2 text-gray-500"
-          onClick={onClose}
-        >
+        <button className="mt-2 text-gray-500" onClick={onClose}>
           Cancel
         </button>
       </div>
@@ -38,14 +36,47 @@ function TransferModal({ isOpen, onClose, onSend, selectedItem }) {
   );
 }
 
-function ConfirmationModal({ isOpen, onClose, onConfirm, message }) {
+// 2. Create Auction Confirmation Modal
+function CreateAuctionConfirmationModal({ isOpen, onClose, onConfirm }) {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div className="dark:bg-jacarta-700 rounded-lg p-6 max-w-sm w-full">
-        <h3 className="text-lg font-semibold mb-4">Confirm Action</h3>
-        <p className="mb-4">{message}</p>
+        <h3 className="text-lg font-semibold mb-4">Create Auction</h3>
+        <p className="mb-4">
+          Are you sure you want to <strong>create an auction</strong> for this item?
+        </p>
+        <div className="flex justify-end space-x-4">
+          <button
+            className="bg-gray-500 text-white px-4 py-2 rounded"
+            onClick={onClose}
+          >
+            No
+          </button>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+            onClick={onConfirm}
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 3. Cancel Auction Confirmation Modal
+function CancelAuctionConfirmationModal({ isOpen, onClose, onConfirm }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+      <div className="dark:bg-jacarta-700 rounded-lg p-6 max-w-sm w-full">
+        <h3 className="text-lg font-semibold mb-4">Cancel Auction</h3>
+        <p className="mb-4">
+          Are you sure you want to <strong>cancel the auction</strong> for this item?
+        </p>
         <div className="flex justify-end space-x-4">
           <button
             className="bg-gray-500 text-white px-4 py-2 rounded"
@@ -67,47 +98,87 @@ function ConfirmationModal({ isOpen, onClose, onConfirm, message }) {
 
 export default function Owned({ inscriptions }) {
   const { sendInscription, createAuction, cancelAuction } = useBioniqContext();
-  const [allItems, setAllItems] = useState(useritems);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState("");
+
+  // Track currently selected item for any action
   const [selectedItem, setSelectedItem] = useState(null);
 
+  // Transfer modal states
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+
+  // Create Auction confirmation modal states
+  const [isCreateAuctionModalOpen, setIsCreateAuctionModalOpen] = useState(false);
+
+  // Cancel Auction confirmation modal states
+  const [isCancelAuctionModalOpen, setIsCancelAuctionModalOpen] = useState(false);
+
+  // Initialize tippy tooltips
   useEffect(() => {
     tippy("[data-tippy-content]");
   }, []);
 
-  const handleOpenModal = (item) => {
+  // ----------------------------
+  // TRANSFER HANDLERS
+  // ----------------------------
+  const handleOpenTransferModal = (item) => {
     setSelectedItem(item);
-    setIsModalOpen(true);
+    setIsTransferModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseTransferModal = () => {
+    setIsTransferModalOpen(false);
     setSelectedItem(null);
   };
 
   const handleSend = (address) => {
     console.log(`Send item to address: ${address}`);
+    // Call the context function
     sendInscription(selectedItem, address);
-    setIsModalOpen(false);
+    // Close modal
+    setIsTransferModalOpen(false);
+    setSelectedItem(null);
   };
 
-  const handleCreateAuction = (item) => {
+  // ----------------------------
+  // CREATE AUCTION HANDLERS
+  // ----------------------------
+  const handleOpenCreateAuctionModal = (item) => {
     setSelectedItem(item);
-    setConfirmationMessage("Are you sure you want to create an auction for this item?");
-    setIsConfirmationOpen(true);
+    setIsCreateAuctionModalOpen(true);
+  };
+
+  const handleCloseCreateAuctionModal = () => {
+    setIsCreateAuctionModalOpen(false);
+    setSelectedItem(null);
   };
 
   const handleConfirmCreateAuction = () => {
     console.log("Auction created for:", selectedItem);
+    // Call the context function
     createAuction(selectedItem);
-    setIsConfirmationOpen(false);
+    // Close modal
+    setIsCreateAuctionModalOpen(false);
     setSelectedItem(null);
   };
 
-  const handleCancelConfirmation = () => {
-    setIsConfirmationOpen(false);
+  // ----------------------------
+  // CANCEL AUCTION HANDLERS
+  // ----------------------------
+  const handleOpenCancelAuctionModal = (item) => {
+    setSelectedItem(item);
+    setIsCancelAuctionModalOpen(true);
+  };
+
+  const handleCloseCancelAuctionModal = () => {
+    setIsCancelAuctionModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const handleConfirmCancelAuction = () => {
+    console.log("Auction canceled for:", selectedItem);
+    // Call the context function
+    cancelAuction(selectedItem);
+    // Close modal
+    setIsCancelAuctionModalOpen(false);
     setSelectedItem(null);
   };
 
@@ -122,39 +193,51 @@ export default function Owned({ inscriptions }) {
           className="h-full w-full"
         />
       </picture>
+
       <div className="container">
         <div className="tab-content">
           <div className="tab-pane fade" id="owned" role="tabpanel" aria-labelledby="owned-tab">
             <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
               {inscriptions &&
-                inscriptions.map((elm, i) => (
+                inscriptions.map((item, i) => (
                   <article key={i}>
                     <div className="block rounded-2.5xl border border-jacarta-100 bg-white p-[1.1875rem] transition-shadow hover:shadow-lg dark:border-jacarta-700 dark:bg-jacarta-700">
-                    <span className="font-display text-base text-jacarta-700 dark:text-white">
-                          {elm.collectionId}
-                        </span>
+                      <span className="font-display text-base text-jacarta-700 dark:text-white">
+                        {item.collection}
+                      </span>
                       <figure className="relative">
                         <Image
                           width={230}
                           height={230}
-                          src={elm.contentUrl}
-                          alt="item 5"
+                          src={item.content_url}
+                          alt="item"
                           className="w-full rounded-[0.625rem]"
                           loading="lazy"
                         />
                       </figure>
-                      <div className="mt-7 flex items-center justify-between">
+                      <div className="mt-7 flex items-center justify-between space-x-2">
+                        {/* Transfer Button */}
                         <button
                           className="bg-green-500 text-white px-4 py-2 rounded"
-                          onClick={() => handleOpenModal(elm)}
+                          onClick={() => handleOpenTransferModal(item)}
                         >
                           Transfer
                         </button>
+
+                        {/* Create Auction Button */}
                         <button
                           className="bg-blue-500 text-white px-4 py-2 rounded"
-                          onClick={() => handleCreateAuction(elm)}
+                          onClick={() => handleOpenCreateAuctionModal(item)}
                         >
                           Create Auction
+                        </button>
+
+                        {/* Cancel Auction Button (conditionally show if needed) */}
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded"
+                          onClick={() => handleOpenCancelAuctionModal(item)}
+                        >
+                          Cancel Auction
                         </button>
                       </div>
                     </div>
@@ -167,18 +250,24 @@ export default function Owned({ inscriptions }) {
 
       {/* Transfer Modal */}
       <TransferModal
-        isOpen={isModalOpen}
-        selectedItem={selectedItem}
-        onClose={handleCloseModal}
+        isOpen={isTransferModalOpen}
+        onClose={handleCloseTransferModal}
         onSend={handleSend}
+        selectedItem={selectedItem}
       />
 
-      {/* Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={isConfirmationOpen}
-        onClose={handleCancelConfirmation}
+      {/* Create Auction Confirmation Modal */}
+      <CreateAuctionConfirmationModal
+        isOpen={isCreateAuctionModalOpen}
+        onClose={handleCloseCreateAuctionModal}
         onConfirm={handleConfirmCreateAuction}
-        message={confirmationMessage}
+      />
+
+      {/* Cancel Auction Confirmation Modal */}
+      <CancelAuctionConfirmationModal
+        isOpen={isCancelAuctionModalOpen}
+        onClose={handleCloseCancelAuctionModal}
+        onConfirm={handleConfirmCancelAuction}
       />
     </section>
   );

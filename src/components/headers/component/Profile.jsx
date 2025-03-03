@@ -11,13 +11,39 @@ import { useNavigate } from "react-router-dom";
 
 export default function Profile({ wallets, balances, setModalOpen }) {
   const navigate = useNavigate();
-  const { logout, toDecimalAmounts, ckBTCTotal } = useBioniqContext();
+  const { logout, toDecimalAmounts, ckBTCTotal,convertBtcToUsd } = useBioniqContext();
   const [active1Language, setActiveLanguage] = useState(languages[0]);
   const [isOpen, setIsOpen] = useState(false); // State to control dropdown visibility
+  const [ckBTCUSD,setCkBTCUSD] = useState(null);
 
   useEffect(() => {
-    console.log("principal in profile");
-  }, [balances, ckBTCTotal]);
+    // 1) Define an async function inside the effect
+    const convertBalance = async () => {
+      try {
+        // e.g. parse the ckBTC balance as a number
+        const ckBtcBalance = formatNumberWithPattern(balances[1].available.fullAmount);
+  
+        // 2) Await the async conversion
+        const usdVal = await convertBtcToUsd(ckBtcBalance);
+  
+        // 3) Format the result
+        const usdValString = usdVal.toFixed(2);
+  
+        console.log("usdValString", usdValString);
+  
+        // 4) Update state
+        setCkBTCUSD(usdValString);
+      } catch (err) {
+        console.error("Error converting ckBTC to USD:", err);
+      }
+    };
+  
+    // 5) Call that async function if balances exist
+    if (balances && balances[1]) {
+      convertBalance();
+    }
+  }, [balances, ckBTCTotal]); // <- dependencies
+  
 
   useEffect(() => {
     tippy("[data-tippy-content]");
@@ -28,6 +54,7 @@ export default function Profile({ wallets, balances, setModalOpen }) {
     setIsOpen(prevState => !prevState); // Toggle dropdown visibility using previous state
   };
 
+  console.log("wallets",wallets)
   return (
     <div className="js-nav-dropdown group-dropdown relative">
       {/* Button to trigger dropdown */}
@@ -82,7 +109,29 @@ export default function Profile({ wallets, balances, setModalOpen }) {
             <path d="M7 7V3a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-4v3.993c0 .556-.449 1.007-1.007 1.007H3.007A1.006 1.006 0 0 1 2 20.993l.003-12.986C2.003 7.451 2.452 7 3.01 7H7zm2 0h6.993C16.549 7 17 7.449 17 8.007V15h3V4H9v3zM4.003 9L4 20h11V9H4.003z" />
           </svg>
         </button>
-
+        <button
+          className="js-copy-clipboard my-4 flex select-none items-center whitespace-nowrap px-5 font-display leading-none text-jacarta-700 dark:text-white"
+          data-tippy-content="Copy"
+        >
+          <span className="max-w-[10rem] overflow-hidden text-ellipsis">
+            <img
+              src="/img/ckBTC.svg"
+              alt="BTC"
+              className="inline-block h-4 w-4 mr-2"
+            />
+            {wallets && wallets.ckBTC.walletAddressForDisplay}
+          </span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            className="ml-1 mb-px h-4 w-4 fill-jacarta-500 dark:fill-jacarta-300"
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M7 7V3a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-4v3.993c0 .556-.449 1.007-1.007 1.007H3.007A1.006 1.006 0 0 1 2 20.993l.003-12.986C2.003 7.451 2.452 7 3.01 7H7zm2 0h6.993C16.549 7 17 7.449 17 8.007V15h3V4H9v3zM4.003 9L4 20h11V9H4.003z" />
+          </svg>
+        </button>
         <div className="mx-5 mb-6 rounded-lg border border-jacarta-100 p-4 dark:border-jacarta-600">
           <span className="text-sm font-medium tracking-tight dark:text-jacarta-200">
             Balance
@@ -94,7 +143,7 @@ export default function Profile({ wallets, balances, setModalOpen }) {
                 alt="ckBTC"
                 className="inline-block h-4 w-4 mr-2"
               />
-              {balances && balances[1] && formatNumberWithPattern(balances[1].available.fullAmount)}
+              {ckBTCUSD && ckBTCUSD } USD
             </span>
           </div>
         </div>

@@ -7,7 +7,92 @@ import { QRCodeSVG } from "qrcode.react";
 
 import { useBioniqContext } from "../../../hooks/BioniqContext";
 
-
+const tokenNetworkPairs = {
+    USDC: [
+        { token: "USDCARB", network: "Arbitrum" },
+        { token: "USDCBASE", network: "Base" },
+        { token: "USDC", network: "ETH" },
+        { token: "USDCMATIC", network: "matic" },
+        { token: "USDCNEAR", network: "Near" },
+        { token: "USDCOP", network: "Optimism" },
+        { token: "USDCSOL", network: "sol" },
+        { token: "USDCTRC20", network: "trx" }
+    ],
+    USDT: [
+        { token: "USDTCARB", network: "Arbitrum" },
+        { token: "USDTBASE", network: "Base" },
+        { token: "USDTERC20", network: "eth" },
+        { token: "USDTMATIC", network: "matic" },
+        { token: "USDTNEAR", network: "Near" },
+        { token: "USDTOP", network: "Optimism" },
+        { token: "USDTCSOL", network: "sol" },
+        { token: "USDTTRC20", network: "Tron" }
+    ],
+    ADA: [
+        { token: "ADA", network: "mainnet" }
+    ],
+    ALGO: [
+        { token: "ALGO", network: "mainnet" }
+    ],
+    APT: [
+        { token: "APT", network: "mainnet" }
+    ],
+    ARB: [
+        { token: "ARB", network: "mainnet" }
+    ],
+    AVAX: [
+        { token: "AVAX-C", network: "mainnet" }
+    ],
+    BTC: [
+        { token: "BTC", network: "mainnet" },
+        { token: "BTC-LIGHTNING", network: "mainnet" }
+    ],
+    BNB: [
+        { token: "BNB-BSC", network: "mainnet" }
+    ],
+    BUSD: [
+        { token: "BUSD", network: "mainnet" }
+    ],
+    DOGE: [
+        { token: "DOGE", network: "mainnet" }
+    ],
+    DOT: [
+        { token: "DOT", network: "mainnet" }
+    ],
+    ETH: [
+        { token: "ETHARB", network: "Arbitrum" },
+        { token: "ETHBASE", network: "Base" },
+        { token: "ETH", network: "Ethereum" },
+        { token: "ETHOP", network: "Optimism" }
+    ],
+    ICP: [
+        { token: "ICP", network: "mainnet" }
+    ],
+    NEAR: [
+        { token: "NEAR", network: "mainnet" }
+    ],
+    OP: [
+        { token: "OP", network: "mainnet" }
+    ],
+    SOL: [
+        { token: "SOL", network: "mainnet" }
+    ],
+    SUI: [
+        { token: "SUI", network: "mainnet" }
+    ],
+    TON: [
+        { token: "TON", network: "mainnet" }
+    ],
+    XLM: [
+        { token: "XLM", network: "mainnet" }
+    ],
+    XRP: [
+        { token: "XRP", network: "mainnet" }
+    ],
+    WLD: [
+        { token: "WLD", network: "mainnet" }
+    ]
+};
 
 const TokenRow = () => {
     const { wallets, buy } = useBioniqContext();
@@ -56,16 +141,16 @@ const TokenRow = () => {
                     const data = await response.json();
                     const transaction = data.transactions[0];
 
-                 
-                        if (transaction.details.status === "finished") {
-                            console.log("status finished")
-                            setPolling(false);
-                            await buy()
-                            handleDeleteExchange()
-                        }
-                        setApiResponse(transaction); // Update the transaction details
-                        setStatus(transaction.details.status);
-                 
+
+                    if (transaction.details.status === "finished") {
+                        console.log("status finished")
+                        setPolling(false);
+                        await buy()
+                        handleDeleteExchange()
+                    }
+                    setApiResponse(transaction); // Update the transaction details
+                    setStatus(transaction.details.status);
+
                 } catch (error) {
                     setPolling(false)
                     console.error("Failed to fetch transaction updates", error);
@@ -86,11 +171,33 @@ const TokenRow = () => {
         };
     }, [polling]);
 
+    const chooseNetwork = (symbol) => {
+        for (const [key, value] of Object.entries(tokenNetworkPairs)) {
+            const tokenPair = value.find(pair => pair.token.toLowerCase() === symbol.toLowerCase());
+            if (tokenPair) {
+                return tokenPair.network;
+            }
+        }
+        return "Mainnet"; // Default to Mainnet if no network is found
+    };
+
     const handleCreateExchange = async () => {
-       // setStatus("Awaiting deposit");
+        let network = chooseNetwork(fromToken);
+        let symbol;
+        symbol = fromToken;
+        if(fromToken.startsWith("USDC")){
+            symbol = "USDC";
+        }
+        if (fromToken.startsWith("USDT")) {
+            symbol = "USDT"; // Normalize USDT tokens
+        } 
+        if(fromToken.startsWith("ETH")){
+            symbol = "ETH"
+        }
+        console.log("network from choose network", network, fromToken);
         const payload = {
             route: {
-                from: { symbol: fromToken, network: "mainnet" },
+                from: { symbol, network },
                 to: { symbol: "icp", network: "mainnet" },
             },
             amount: parseFloat(amount),
@@ -101,7 +208,7 @@ const TokenRow = () => {
             }).toHex(),
             user_id: wallets?.ckBTC?.walletAddressForDisplay,
         };
-
+    
         try {
             setLoading(true);
             const response = await fetch("https://api.plebes.xyz/create-exchange", {
@@ -110,17 +217,15 @@ const TokenRow = () => {
                 body: JSON.stringify(payload),
             });
             const data = await response.json();
-            if(apiResponse?.details?.err){
+            if (apiResponse?.details?.err) {
                 throw new Error("error");
             }
             setApiResponse(data);
             setPolling(true);
-          //  setStatus("Receiving ICP");
         } catch (error) {
             console.error("API Request Failed", error);
-         //   setStatus("Error during deposit process");
         } finally {
-            setHasFetched(true); // Mark fetch as completed
+            setHasFetched(true);
             setLoading(false);
         }
     };
@@ -138,15 +243,15 @@ const TokenRow = () => {
                 // Successfully deleted transaction
                 setApiResponse(null); // Clear the transaction details
                 setPolling(false);
-             //   setStatus(""); // Clear status
+                //   setStatus(""); // Clear status
             } else {
                 // Handle error from the API
                 console.error("Failed to delete the transaction");
-             //   setStatus("Error deleting transaction. Please try again.");
+                //   setStatus("Error deleting transaction. Please try again.");
             }
         } catch (error) {
             console.error("Error deleting transaction:", error);
-         //   setStatus("Error deleting transaction. Please check your connection.");
+            //   setStatus("Error deleting transaction. Please check your connection.");
         } finally {
             setPolling(false);
             setLoading(false); // Hide loading state
@@ -169,10 +274,13 @@ const TokenRow = () => {
                         onChange={(e) => setFromToken(e.target.value)}
                         className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
                     >
-                        <option value="sol">SOL</option>
-                        <option value="eth">ETH</option>
-                        <option value="btc">BTC</option>
-                        <option value="usdt">USDT</option>
+                        {Object.entries(tokenNetworkPairs).map(([token, networks]) => (
+                            networks.map((networkPair, index) => (
+                                <option key={`${token}-${index}`} value={networkPair.token}>
+                                    {token} ({networkPair.network})
+                                </option>
+                            ))
+                        ))}
                     </select>
                 </div>
 
@@ -218,6 +326,9 @@ const TokenRow = () => {
                                 <QRCodeSVG value={apiResponse.details.deposit.address} size={300} />
                                 <span className="block text-jacarta-100 break-all">
                                     {apiResponse.details.deposit.address}
+                                </span>
+                                <span>
+                                    Network:{apiResponse.details.deposit.network}
                                 </span>
                             </div>
 
@@ -338,19 +449,17 @@ const SwapSteps = () => {
                             className="flex items-center space-x-4 p-3 rounded-lg bg-jacarta-700"
                         >
                             <div
-                                className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                                    step.id <= swapStep
+                                className={`flex items-center justify-center w-8 h-8 rounded-full ${step.id <= swapStep
                                         ? "bg-green-500 text-white"
                                         : "bg-gray-500 text-gray-300"
-                                }`}
+                                    }`}
                             >
                                 {step.id < swapStep ? <FaCheck /> : step.id}
                             </div>
                             <div className="flex items-center space-x-2">
                                 <p
-                                    className={`text-sm font-medium ${
-                                        step.id <= swapStep ? "text-white" : "text-jacarta-400"
-                                    }`}
+                                    className={`text-sm font-medium ${step.id <= swapStep ? "text-white" : "text-jacarta-400"
+                                        }`}
                                 >
                                     {step.title}
                                 </p>
@@ -388,7 +497,7 @@ export const metadata = {
     title: "Home 9 || Xhibiter | NFT Marketplace Nextjs Template",
 };
 export default function AuctionPage({ login, setModalOpenT }) {
-   // const [modalOpen, setModalOpen] = useState(false);
+    // const [modalOpen, setModalOpen] = useState(false);
 
     return (
         <>
