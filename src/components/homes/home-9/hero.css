@@ -1,0 +1,83 @@
+/* Estilo general para las tarjetas */
+.section {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    animation: fadeInDarken 0.5s ease-in-out forwards;
+}
+.bg-morado-translucido {
+    background-color: rgba(65, 11, 11, 0.697); /* Morado más intenso con 50% de opacidad */
+}
+
+
+/* Efecto de escala al hacer hover */
+.section:hover {
+    transform: scale(1.05);
+}
+
+/* Fondo azul translúcido inicial */
+.section .blue-overlay {
+    background-color: rgba(59, 130, 246, 0.4); /* Equivalente a bg-blue-500/40 */
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Ocultar filtro azul al hacer hover */
+.section:hover .blue-overlay {
+    opacity: 0;
+}
+
+/* Overlay oscuro que desaparece al hacer hover */
+.section .dark-overlay {
+    background-color: rgba(12, 17, 44, 0.9); /* Equivalente a bg-[#0c112c]/90 */
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Texto de las tarjetas */
+.section .text {
+    z-index: 20;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Animación inicial de opacidad */
+@keyframes fadeInDarken {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Estilo del fondo general */
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.comics {
+    display: grid;
+    gap: 1rem;
+}
+
+.comic-sans {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+/* Diseño responsivo */
+@media (min-width: 768px) {
+    .section {
+        border-radius: 0.5rem;
+    }
+}

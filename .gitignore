@@ -28,3 +28,6 @@ dist-ssr
 
 .env
 .mops
+bioniq/
+package-lock.json
+src/hooks/BioniqContext.jsx

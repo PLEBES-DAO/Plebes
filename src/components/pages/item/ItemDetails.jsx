@@ -297,7 +297,7 @@ export default function ItemDetails({ id, setModalOpen }) {
               </div>
 
               <p className="mb-10 dark:text-jacarta-300">
-                Today's Plebes, make sure to bid good!
+                The Plebe of the day! Place your bids! The round starts at just $5!
               </p>
 
               {/* Creator / Owner */}

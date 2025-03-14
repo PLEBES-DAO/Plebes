@@ -7,20 +7,9 @@ export const socials = [
   },
   {
     id: 2,
-    icon: "openchat",
-    href: "https://oc.app/community/g2zzl-paaaa-aaaaf-bm2ga-cai",
-    src :"openchat.svg"
+    icon: "discord",
+    href: "https://discord.gg/atEUDmnXVC",
+    src :"discord.svg"
   },
-  {
-    id: 3,
-    icon: "dscvr",
-    href: "https://dscvr.one/u/plebes",
-    src :"dscvr.svg"
-  },
-  {
-    id: 4,
-    icon: "medium",
-    href: "https://medium.com/@plebes",
-    src :"medium.svg"
-  },
+
 ];

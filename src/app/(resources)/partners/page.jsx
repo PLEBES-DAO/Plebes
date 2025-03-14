@@ -1,5 +1,5 @@
 import Footer1 from "@/components/footer/Footer1";
-import Header1 from "@/components/headers/Header1";
+import Header1 from "@/components/headers/Navbar";
 import Benefits from "@/components/resources/partners/Benefits";
 import Collcetions from "@/components/resources/partners/Collcetions";
 import Faq from "@/components/resources/partners/Faq";

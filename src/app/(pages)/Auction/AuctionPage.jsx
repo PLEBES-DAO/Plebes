@@ -1,5 +1,5 @@
 import Footer1 from "../../../components/footer/Footer1";
-import Header1 from "../../../components/headers/Header1";
+import Navbar from "../../../components/headers/Navbar.jsx";
 import BidModal from "../../../components/modals/BidModal";
 
 import ItemDetails from "../../../components/pages/item/ItemDetails";
@@ -15,7 +15,7 @@ export default function AuctionPage({login,liveAuction,setModalOpenT}) {
 
   return (
     <>
-      <Header1 bLogin={login} setModalOpen={setModalOpenT} />
+      <Navbar bLogin={login} setModalOpen={setModalOpenT} />
       <main>
        <ItemDetails setModalOpen={setModalOpen} liveAuction={liveAuction} id={1}/>
        <BidModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
