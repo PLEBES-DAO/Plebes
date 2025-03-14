@@ -133,6 +133,7 @@ const BioniqContextProvider = ({ children }) => {
   const[ btcPriceState, setBtcPrice] = useState(null);
   const[identity , setIdentity] = useState(null);
   const[swapStep,setSwapStep] = useState(0);
+  const[address,setAddress] = useState(null);
   const isLoading = useMemo(() => {
     return !web3Auth || !bioniqAuthClient || !liveBioniqWalletApi;
   }, [web3Auth, bioniqAuthClient, liveBioniqWalletApi]);
@@ -487,7 +488,6 @@ const BioniqContextProvider = ({ children }) => {
           wallet: _wallets[walletType],
           tokenMode: walletType,
         });
-
         _balances = _balances.concat(balances);
         console.log("balances in wallet", _balances)
       }
@@ -643,6 +643,10 @@ const BioniqContextProvider = ({ children }) => {
       });
       const _identity = await liveBioniqWalletApi.wallet.exportII(userConnection.privateKey);
       console.log("getting wallets in reload wallets", _wallets)
+    let address=  AccountIdentifier.fromPrincipal({
+        principal: _wallets.ckBTC.walletPrincipal,
+    }).toHex()
+      console.log('looking for address',address)
       setWallets(_wallets);
       setIdentity(_identity)
 
