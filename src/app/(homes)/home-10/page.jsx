@@ -1,5 +1,5 @@
 import Footer1 from "@/components/footer/Footer1";
-import Header1 from "@/components/headers/Header1";
+import Header1 from "@/components/headers/Navbar";
 import Features from "@/components/homes/home-10/Features";
 import Hero from "@/components/homes/home-10/Hero";
 import Promo from "@/components/homes/home-10/Promo";

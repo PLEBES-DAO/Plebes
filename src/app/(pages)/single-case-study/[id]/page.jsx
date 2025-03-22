@@ -1,6 +1,6 @@
 import Partners from "@/components/common/Partners";
 import Footer1 from "@/components/footer/Footer1";
-import Header1 from "@/components/headers/Header1";
+import Header1 from "@/components/headers/Navbar";
 import Testimonials from "@/components/common/Testimonials";
 import Approach from "@/components/pages/case-studies/Approach";
 import Post from "@/components/pages/case-studies/Post";
