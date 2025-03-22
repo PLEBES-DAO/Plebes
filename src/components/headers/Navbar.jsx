@@ -92,7 +92,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
   {!isLoggedIn && (
     <>
       <button
-          onClick={() => navigate("/launchpad")}
+          onClick={() => navigate("/deposit")}
           className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
       >
         Launch DAO

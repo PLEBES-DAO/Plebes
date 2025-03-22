@@ -72,20 +72,29 @@ export default function Hero() {
               <p className="mx-5 mb-8 max-w-md text-center text-lg text-white md:text-left">
                 Plebes is a DAO that promotes the use of Internet Computer Protocol by funding open-source technology, creative projects, and public goods through daily Reserved Ordinals auctions.
               </p>
-              <div className="flex gap-3">
-                <a
-                    href="http://plebes.xyz/auction"
-                    className="rounded-full mx-5 bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                >
-                  Auction
-                </a>
-                <Link
-                    to="/collections"
-                    className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                >
-                  Whitepaper
-                </Link>
-              </div>
+              <div className="flex flex-wrap justify-center gap-3 md:justify-start">
+              <a
+                href="http://plebes.xyz/auction"
+                className="rounded-full bg-accent py-3 px-6 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark sm:px-8"
+              >
+                Auction
+              </a>
+              <a
+                href="https://www.papermark.io/view/cm7npsir50005guzpwy90shui"
+                className="rounded-full bg-accent py-3 px-6 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark sm:px-8"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Pitch Deck
+              </a>
+              <a
+                className="rounded-full bg-accent py-3 px-6 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark sm:px-8"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Whitepaper (Soon)
+              </a>
+            </div>
             </div>
 
             {/* Stats Block */}

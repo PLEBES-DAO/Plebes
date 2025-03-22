@@ -434,7 +434,7 @@ const TokenRow = () => {
       : "none";
 
   return (
-    <section className="relative pt-20 pb-24 lg:py-24">
+    <section className="relative  lg:py-24">
       <div className="mx-4 mb-4 text-white">
         {wallets?.ckBTC?.walletAddressForDisplay
           ? `Wallet connected: ${wallets.ckBTC.walletAddressForDisplay}`
@@ -464,7 +464,7 @@ const TokenRow = () => {
               </div>
 
               {/* Form */}
-              <div className="ml-8 flex-1">
+              <div className="md w-md: ml-8 flex-1">
                 {/* Select token+network */}
                 <div className="mb-8">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -473,9 +473,6 @@ const TokenRow = () => {
                         Select Token
                       </label>
                       <div className="flex items-center space-x-2">
-                        {tokenLogo && (
-                          <img src={tokenLogo} alt={selectedToken} className="h-6 w-6" />
-                        )}
                         <select
                           value={selectedToken}
                           onChange={(e) => {
@@ -490,6 +487,9 @@ const TokenRow = () => {
                             </option>
                           ))}
                         </select>
+                        {tokenLogo && (
+                          <img src={tokenLogo} alt={selectedToken} className="h-6 w-6" />
+                        )}
                       </div>
                     </div>
                     <div>
