@@ -7,716 +7,215 @@ import { QRCodeSVG } from "qrcode.react";
 import { FaCheck } from "react-icons/fa";
 import { useBioniqContext } from "../../../hooks/BioniqContext";
 
-<<<<<<< HEAD
 const enableBlurIfNoWallet = false; // Poner en true para activar el efecto Blur cuando no hay wallet activada
 
 // Tokens con logos y redes
 const aggregatorTokens = {
-    // USDC
-    USDC: {
-      logo: "/src/assets/img/coins/usdc.svg",
-      networks: [
-        { aggregatorSymbol: "USDCARB", displayToken: "USDC", displayNetwork: "Arbitrum" },
-        { aggregatorSymbol: "USDCBASE", displayToken: "USDC", displayNetwork: "Base" },
-        { aggregatorSymbol: "USDC", displayToken: "USDC", displayNetwork: "Ethereum" },
-        { aggregatorSymbol: "USDCMATIC", displayToken: "USDC", displayNetwork: "Polygon" },
-        { aggregatorSymbol: "USDCNEAR", displayToken: "USDC", displayNetwork: "Near" },
-        { aggregatorSymbol: "USDCOP", displayToken: "USDC", displayNetwork: "Optimism" },
-        { aggregatorSymbol: "USDCSOL", displayToken: "USDC", displayNetwork: "Solana" },
-        { aggregatorSymbol: "USDCTRC20", displayToken: "USDC", displayNetwork: "Tron" },
-      ],
-    },
-  
-    // USDT
-    USDT: {
-      logo: "/src/assets/img/CoinsPlebes/USDT.svg",
-      networks: [
-        { aggregatorSymbol: "USDTCARB", displayToken: "USDT", displayNetwork: "Arbitrum" },
-        { aggregatorSymbol: "USDTBASE", displayToken: "USDT", displayNetwork: "Base" },
-        { aggregatorSymbol: "USDTERC20", displayToken: "USDT", displayNetwork: "Ethereum" },
-        { aggregatorSymbol: "USDTMATIC", displayToken: "USDT", displayNetwork: "Polygon" },
-        { aggregatorSymbol: "USDTNEAR", displayToken: "USDT", displayNetwork: "Near" },
-        { aggregatorSymbol: "USDTOP", displayToken: "USDT", displayNetwork: "Optimism" },
-        { aggregatorSymbol: "USDTCSOL", displayToken: "USDT", displayNetwork: "Solana" },
-        { aggregatorSymbol: "USDTTRC20", displayToken: "USDT", displayNetwork: "Tron" },
-      ],
-    },
-  
-    // BTC
-    BTC: {
-      logo: "/src/assets/img/CoinsPlebes/BTC.svg",
-      networks: [
-        { aggregatorSymbol: "BTC", displayToken: "BTC", displayNetwork: "Bitcoin" },
-        { aggregatorSymbol: "BTC-LIGHTNING", displayToken: "BTC", displayNetwork: "Lightning" },
-      ],
-    },
-  
-    // ETH
-    ETH: {
-      logo: "/src/assets/img/CoinsPlebes/ETH.svg",
-      networks: [
-        { aggregatorSymbol: "ETHARB", displayToken: "ETH", displayNetwork: "Arbitrum" },
-        { aggregatorSymbol: "ETHBASE", displayToken: "ETH", displayNetwork: "Base" },
-        { aggregatorSymbol: "ETH", displayToken: "ETH", displayNetwork: "Ethereum" },
-        { aggregatorSymbol: "ETHOP", displayToken: "ETH", displayNetwork: "Optimism" },
-      ],
-    },
-  
-    // ADA
-    ADA: {
-      logo: "/src/assets/img/CoinsPlebes/ADA.svg",
-      networks: [
-        { aggregatorSymbol: "ADA", displayToken: "ADA", displayNetwork: "Cardano" },
-      ],
-    },
-  
-    // ALGO
-    ALGO: {
-      logo: "/src/assets/img/CoinsPlebes/ALGO.svg",
-      networks: [
-        { aggregatorSymbol: "ALGO", displayToken: "ALGO", displayNetwork: "Algorand" },
-      ],
-    },
-  
-    // APT
-    APT: {
-      logo: "/src/assets/img/CoinsPlebes/APT.svg",
-      networks: [
-        { aggregatorSymbol: "APT", displayToken: "APT", displayNetwork: "Aptos" },
-      ],
-    },
-  
-    // ARB
-    ARB: {
-      logo: "/src/assets/img/CoinsPlebes/ARB.svg",
-      networks: [
-        { aggregatorSymbol: "ARB", displayToken: "ARB", displayNetwork: "Arbitrum" },
-      ],
-    },
-  
-    // AVAX
-    AVAX: {
-      logo: "/src/assets/img/CoinsPlebes/AVAX.svg",
-      networks: [
-        { aggregatorSymbol: "AVAX-C", displayToken: "AVAX", displayNetwork: "Avalanche (C-Chain)" },
-      ],
-    },
-  
-    // BNB
-    BNB: {
-      logo: "/src/assets/img/CoinsPlebes/BNB.svg",
-      networks: [
-        { aggregatorSymbol: "BNB-BSC", displayToken: "BNB", displayNetwork: "Binance Smart Chain (BSC)" },
-      ],
-    },
-  
-    // BUSD
-    BUSD: {
-      logo: "/src/assets/img/CoinsPlebes/BUSD.svg",
-      networks: [
-        { aggregatorSymbol: "BUSD", displayToken: "BUSD", displayNetwork: "Binance Smart Chain (BSC)" },
-      ],
-    },
-  
-    // DOGE
-    DOGE: {
-      logo: "/src/assets/img/CoinsPlebes/DOGE.svg",
-      networks: [
-        { aggregatorSymbol: "DOGE", displayToken: "DOGE", displayNetwork: "Dogecoin" },
-      ],
-    },
-  
-    // DOT
-    DOT: {
-      logo: "/src/assets/img/CoinsPlebes/DOT.svg",
-      networks: [
-        { aggregatorSymbol: "DOT", displayToken: "DOT", displayNetwork: "Polkadot" },
-      ],
-    },
-  
-    // ICP
-    ICP: {
-      logo: "/src/assets/img/CoinsPlebes/ICP.svg",
-      networks: [
-        { aggregatorSymbol: "ICP", displayToken: "ICP", displayNetwork: "Internet Computer" },
-      ],
-    },
-  
-    // NEAR
-    NEAR: {
-      logo: "/src/assets/img/CoinsPlebes/NEAR.svg",
-      networks: [
-        { aggregatorSymbol: "NEAR", displayToken: "NEAR", displayNetwork: "Near" },
-      ],
-    },
-  
-    // OP
-    OP: {
-      logo: "/src/assets/img/CoinsPlebes/OP.svg",
-      networks: [
-        { aggregatorSymbol: "OP", displayToken: "OP", displayNetwork: "Optimism" },
-      ],
-    },
-  
-    // SOL
-    SOL: {
-      logo: "/src/assets/img/CoinsPlebes/SOL.svg",
-      networks: [
-        { aggregatorSymbol: "SOL", displayToken: "SOL", displayNetwork: "Solana" },
-      ],
-    },
-  
-    // SUI
-    SUI: {
-      logo: "/src/assets/img/CoinsPlebes/SUI.svg",
-      networks: [
-        { aggregatorSymbol: "SUI", displayToken: "SUI", displayNetwork: "Sui" },
-      ],
-    },
-  
-    // TON
-    TON: {
-      logo: "/src/assets/img/CoinsPlebes/TON.svg",
-      networks: [
-        { aggregatorSymbol: "TON", displayToken: "TON", displayNetwork: "Toncoin" },
-      ],
-    },
-  
-    // XLM
-    XLM: {
-      logo: "/src/assets/img/CoinsPlebes/XLM.svg",
-      networks: [
-        { aggregatorSymbol: "XLM", displayToken: "XLM", displayNetwork: "Stellar" },
-      ],
-    },
-  
-    // XRP
-    XRP: {
-      logo: "/src/assets/img/CoinsPlebes/XRP.svg",
-      networks: [
-        { aggregatorSymbol: "XRP", displayToken: "XRP", displayNetwork: "Ripple" },
-      ],
-    },
-  
-    // WLD
-    WLD: {
-      logo: "/src/assets/img/CoinsPlebes/WLD.svg",
-      networks: [
-        { aggregatorSymbol: "WLD", displayToken: "WLD", displayNetwork: "Worldcoin" },
-      ],
-    },
-  };  
+  // USDC
+  USDC: {
+    logo: "/img/coins/usdc.svg",
+    networks: [
+      { aggregatorSymbol: "USDCARB", displayToken: "USDC", displayNetwork: "Arbitrum" },
+      { aggregatorSymbol: "USDCBASE", displayToken: "USDC", displayNetwork: "Base" },
+      { aggregatorSymbol: "USDC", displayToken: "USDC", displayNetwork: "eth" },
+      { aggregatorSymbol: "USDCMATIC", displayToken: "USDC", displayNetwork: "matic" },
+      { aggregatorSymbol: "USDCNEAR", displayToken: "USDC", displayNetwork: "Near" },
+      { aggregatorSymbol: "USDCOP", displayToken: "USDC", displayNetwork: "Optimism" },
+      { aggregatorSymbol: "USDCSOL", displayToken: "USDC", displayNetwork: "sol" },
+      { aggregatorSymbol: "USDCTRC20", displayToken: "USDC", displayNetwork: "trx" },
+    ],
+  },
+
+  // USDT
+  USDT: {
+    logo: "/img/coins/usdt.svg",
+    networks: [
+      { aggregatorSymbol: "USDTCARB", displayToken: "USDT", displayNetwork: "Arbitrum" },
+      { aggregatorSymbol: "USDTBASE", displayToken: "USDT", displayNetwork: "base" },
+      { aggregatorSymbol: "USDTERC20", displayToken: "USDT", displayNetwork: "eth" },
+      { aggregatorSymbol: "USDTMATIC", displayToken: "USDT", displayNetwork: "matic" },
+      { aggregatorSymbol: "USDTNEAR", displayToken: "USDT", displayNetwork: "Near" },
+      { aggregatorSymbol: "USDTOP", displayToken: "USDT", displayNetwork: "Optimism" },
+      { aggregatorSymbol: "USDTCSOL", displayToken: "USDT", displayNetwork: "sol" },
+      { aggregatorSymbol: "USDTTRC20", displayToken: "USDT", displayNetwork: "trx" },
+    ],
+  },
+
+  // BTC
+  BTC: {
+    logo: "/img/coins/btc.svg",
+    networks: [
+      { aggregatorSymbol: "BTC", displayToken: "BTC", displayNetwork: "Bitcoin" },
+      { aggregatorSymbol: "BTC-LIGHTNING", displayToken: "BTC", displayNetwork: "Lightning" },
+    ],
+  },
+
+  // ETH
+  ETH: {
+    logo: "/img/coins/eth.svg",
+    networks: [
+      { aggregatorSymbol: "ETHARB", displayToken: "ETH", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "ETHBASE", displayToken: "ETH", displayNetwork: "Base" },
+      { aggregatorSymbol: "ETH", displayToken: "ETH", displayNetwork: "Ethereum" },
+      { aggregatorSymbol: "ETHOP", displayToken: "ETH", displayNetwork: "Optimism" },
+    ],
+  },
+
+  // ADA
+  ADA: {
+    logo: "/img/coins/ada.svg",
+    networks: [
+      { aggregatorSymbol: "ADA", displayToken: "ADA", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // ALGO
+  ALGO: {
+    logo: "/img/coins/algo.svg",
+    networks: [
+      { aggregatorSymbol: "ALGO", displayToken: "ALGO", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // APT
+  APT: {
+    logo: "/img/coinplebes/APT.svg",
+    networks: [
+      { aggregatorSymbol: "APT", displayToken: "APT", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // ARB
+  ARB: {
+    logo: "/img/coinplebes/ARB.svg",
+    networks: [
+      { aggregatorSymbol: "ARB", displayToken: "ARB", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // AVAX
+  AVAX: {
+    logo: "/img/coins/avax.svg",
+    networks: [
+      { aggregatorSymbol: "AVAX-C", displayToken: "AVAX", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // BNB
+  BNB: {
+    logo: "/img/coins/bnb.svg",
+    networks: [
+      { aggregatorSymbol: "BNB-BSC", displayToken: "BNB", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // BUSD
+  BUSD: {
+    logo: "/img/coinplebes/BUSD.svg",
+    networks: [
+      { aggregatorSymbol: "BUSD", displayToken: "BUSD", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // DOGE
+  DOGE: {
+    logo: "/img/coins/doge.svg",
+    networks: [
+      { aggregatorSymbol: "DOGE", displayToken: "DOGE", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // DOT
+  DOT: {
+    logo: "/img/coins/dot.svg",
+    networks: [
+      { aggregatorSymbol: "DOT", displayToken: "DOT", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // ICP
+  ICP: {
+    logo: "/img/coins/icp.svg",
+    networks: [
+      { aggregatorSymbol: "ICP", displayToken: "ICP", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // NEAR
+  NEAR: {
+    logo: "/img/coinplebes/NEAR.svg",
+    networks: [
+      { aggregatorSymbol: "NEAR", displayToken: "NEAR", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // OP
+  OP: {
+    logo: "/img/coinplebes/OP.svg",
+    networks: [
+      { aggregatorSymbol: "OP", displayToken: "OP", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // SOL
+  SOL: {
+    logo: "/img/coinplebes/SOL.svg",
+    networks: [
+      { aggregatorSymbol: "SOL", displayToken: "SOL", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // SUI
+  SUI: {
+    logo: "/img/coinplebes/sui.svg",
+    networks: [
+      { aggregatorSymbol: "SUI", displayToken: "SUI", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // TON
+  TON: {
+    logo: "/img/coinplebes/TON.svg",
+    networks: [
+      { aggregatorSymbol: "TON", displayToken: "TON", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // XLM
+  XLM: {
+    logo: "/img/coinplebes/XLM.svg",
+    networks: [
+      { aggregatorSymbol: "XLM", displayToken: "XLM", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // XRP
+  XRP: {
+    logo: "/img/coinplebes/XRP.svg",
+    networks: [
+      { aggregatorSymbol: "XRP", displayToken: "XRP", displayNetwork: "mainnet" },
+    ],
+  },
+
+  // WLD
+  WLD: {
+    logo: "/img/coinplebes/WLD.svg",
+    networks: [
+      { aggregatorSymbol: "WLD", displayToken: "WLD", displayNetwork: "mainnet" },
+    ],
+  },
+};
 
 // “minimum deposit”
 async function fetchMinDepositExample(symbol, network, isUSD) {
   // Placeholder: en producción se conectaría con el backend
   return isUSD ? "10 USD" : "0.01 " + symbol;
 }
-=======
-const tokenNetworkPairs = {
-    USDC: [
-        { token: "USDCARB", network: "Arbitrum" },
-        { token: "USDCBASE", network: "Base" },
-        { token: "USDC", network: "ETH" },
-        { token: "USDCMATIC", network: "matic" },
-        { token: "USDCNEAR", network: "Near" },
-        { token: "USDCOP", network: "Optimism" },
-        { token: "USDCSOL", network: "sol" },
-        { token: "USDCTRC20", network: "trx" }
-    ],
-    USDT: [
-        { token: "USDTCARB", network: "Arbitrum" },
-        { token: "USDTBASE", network: "Base" },
-        { token: "USDTERC20", network: "eth" },
-        { token: "USDTMATIC", network: "matic" },
-        { token: "USDTNEAR", network: "Near" },
-        { token: "USDTOP", network: "Optimism" },
-        { token: "USDTCSOL", network: "sol" },
-        { token: "USDTTRC20", network: "Tron" }
-    ],
-    ADA: [
-        { token: "ADA", network: "mainnet" }
-    ],
-    ALGO: [
-        { token: "ALGO", network: "mainnet" }
-    ],
-    APT: [
-        { token: "APT", network: "mainnet" }
-    ],
-    ARB: [
-        { token: "ARB", network: "mainnet" }
-    ],
-    AVAX: [
-        { token: "AVAX-C", network: "mainnet" }
-    ],
-    BTC: [
-        { token: "BTC", network: "mainnet" },
-        { token: "BTC-LIGHTNING", network: "mainnet" }
-    ],
-    BNB: [
-        { token: "BNB-BSC", network: "mainnet" }
-    ],
-    BUSD: [
-        { token: "BUSD", network: "mainnet" }
-    ],
-    DOGE: [
-        { token: "DOGE", network: "mainnet" }
-    ],
-    DOT: [
-        { token: "DOT", network: "mainnet" }
-    ],
-    ETH: [
-        { token: "ETHARB", network: "Arbitrum" },
-        { token: "ETHBASE", network: "Base" },
-        { token: "ETH", network: "Ethereum" },
-        { token: "ETHOP", network: "Optimism" }
-    ],
-    ICP: [
-        { token: "ICP", network: "mainnet" }
-    ],
-    NEAR: [
-        { token: "NEAR", network: "mainnet" }
-    ],
-    OP: [
-        { token: "OP", network: "mainnet" }
-    ],
-    SOL: [
-        { token: "SOL", network: "mainnet" }
-    ],
-    SUI: [
-        { token: "SUI", network: "mainnet" }
-    ],
-    TON: [
-        { token: "TON", network: "mainnet" }
-    ],
-    XLM: [
-        { token: "XLM", network: "mainnet" }
-    ],
-    XRP: [
-        { token: "XRP", network: "mainnet" }
-    ],
-    WLD: [
-        { token: "WLD", network: "mainnet" }
-    ]
-};
 
-const TokenRow = () => {
-    const { wallets, buy } = useBioniqContext();
-    const [amount, setAmount] = useState(0);
-    const [fromToken, setFromToken] = useState("sol");
-    const [loading, setLoading] = useState(false);
-    const [status, setStatus] = useState("");
-    const [apiResponse, setApiResponse] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [hasFetched, setHasFetched] = useState(false); // Track if the transaction has been fetched
-    const [polling, setPolling] = useState(false); // Track polling state
-    const [interval, setIntervalState] = useState(null); // Store interval reference
-
-
-    // Fetch user transactions on component load
-    useEffect(() => {
-        const fetchUserTransactions = async () => {
-            if (!wallets?.ckBTC?.walletAddressForDisplay) return;
-
-            try {
-                const response = await fetch(
-                    `https://api.plebes.xyz/user-transactions/${wallets.ckBTC.walletAddressForDisplay}`
-                );
-                const data = await response.json();
-                const transaction = data.transactions[0];
-                setApiResponse(transaction);
-                setPolling(true)
-                setStatus(transaction ? transaction.details.status : ""); // Set initial status only if a transaction exists
-            } catch (error) {
-                console.error("Failed to fetch user transactions", error);
-            }
-        };
-
-        fetchUserTransactions();
-    }, [wallets]);
-    //status ->waiting->sending->finished
-    // Poll the server every second if a transaction exists
-    useEffect(() => {
-        if (polling) {
-            //  setPolling(true); // Start polling when there's a transaction
-            setIntervalState(setInterval(async () => {
-                try {
-                    const response = await fetch(
-                        `https://api.plebes.xyz/user-transactions/${wallets.ckBTC.walletAddressForDisplay}`
-                    );
-                    const data = await response.json();
-                    const transaction = data.transactions[0];
-
-
-                    if (transaction.details.status === "finished") {
-                        console.log("status finished")
-                        setPolling(false);
-                        await buy()
-                        handleDeleteExchange()
-                    }
-                    setApiResponse(transaction); // Update the transaction details
-                    setStatus(transaction.details.status);
-
-                } catch (error) {
-                    setPolling(false)
-                    console.error("Failed to fetch transaction updates", error);
-                }
-            }, 1000)); // Poll every second
-        } else {
-            clearInterval(interval);
-
-        }
-        // Clean up polling on component unmount or when transaction is not present
-        return () => {
-            console.log("before clearing the interval")
-            if (!polling) {
-                console.log("inside clear interval if")
-                clearInterval(interval);
-            }
-            //setPolling(false); // Stop polling when transaction is removed or status is updated
-        };
-    }, [polling]);
-
-    const chooseNetwork = (symbol) => {
-        for (const [key, value] of Object.entries(tokenNetworkPairs)) {
-            const tokenPair = value.find(pair => pair.token.toLowerCase() === symbol.toLowerCase());
-            if (tokenPair) {
-                return tokenPair.network;
-            }
-        }
-        return "Mainnet"; // Default to Mainnet if no network is found
-    };
-
-    const handleCreateExchange = async () => {
-        let network = chooseNetwork(fromToken);
-        let symbol;
-        symbol = fromToken;
-        if(fromToken.startsWith("USDC")){
-            symbol = "USDC";
-        }
-        if (fromToken.startsWith("USDT")) {
-            symbol = "USDT"; // Normalize USDT tokens
-        } 
-        if(fromToken.startsWith("ETH")){
-            symbol = "ETH"
-        }
-        console.log("network from choose network", network, fromToken);
-        const payload = {
-            route: {
-                from: { symbol, network },
-                to: { symbol: "icp", network: "mainnet" },
-            },
-            amount: parseFloat(amount),
-            estimation: "direct",
-            rate: "floating",
-            address: AccountIdentifier.fromPrincipal({
-                principal: wallets.ckBTC.walletPrincipal,
-            }).toHex(),
-            user_id: wallets?.ckBTC?.walletAddressForDisplay,
-        };
-    
-        try {
-            setLoading(true);
-            const response = await fetch("https://api.plebes.xyz/create-exchange", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-            const data = await response.json();
-            if (apiResponse?.details?.err) {
-                throw new Error("error");
-            }
-            setApiResponse(data);
-            setPolling(true);
-        } catch (error) {
-            console.error("API Request Failed", error);
-        } finally {
-            setHasFetched(true);
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteExchange = async () => {
-        if (!wallets?.ckBTC?.walletAddressForDisplay) return; // Ensure user wallet is available
-        try {
-            setLoading(true); // Show loading state during the request
-            const response = await fetch(
-                `https://api.plebes.xyz/delete-transaction/${wallets.ckBTC.walletAddressForDisplay}`,
-                { method: "GET" }
-            );
-
-            if (response.ok) {
-                // Successfully deleted transaction
-                setApiResponse(null); // Clear the transaction details
-                setPolling(false);
-                //   setStatus(""); // Clear status
-            } else {
-                // Handle error from the API
-                console.error("Failed to delete the transaction");
-                //   setStatus("Error deleting transaction. Please try again.");
-            }
-        } catch (error) {
-            console.error("Error deleting transaction:", error);
-            //   setStatus("Error deleting transaction. Please check your connection.");
-        } finally {
-            setPolling(false);
-            setLoading(false); // Hide loading state
-            setShowModal(false); // Close the confirmation modal
-        }
-    };
-
-    const isError = hasFetched ? !apiResponse?.details?.deposit?.address : false // Only show error after fetching
-
-    return (
-        <section className="relative pt-20 pb-24 lg:py-24">
-            {/* Input Section */}
-            <div className="flex items-center gap-4 p-4 bg-jacarta-800 rounded-lg shadow-sm dark:bg-jacarta-700">
-                <div className="flex-1">
-                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
-                        Token
-                    </label>
-                    <select
-                        value={fromToken}
-                        onChange={(e) => setFromToken(e.target.value)}
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
-                    >
-                        {Object.entries(tokenNetworkPairs).map(([token, networks]) => (
-                            networks.map((networkPair, index) => (
-                                <option key={`${token}-${index}`} value={networkPair.token}>
-                                    {token} ({networkPair.network})
-                                </option>
-                            ))
-                        ))}
-                    </select>
-                </div>
-
-                <div className="flex-1">
-                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
-                        Amount
-                    </label>
-                    <input
-                        type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
-                        placeholder="0.00"
-                    />
-                </div>
-
-                <button
-                    onClick={handleCreateExchange}
-                    className="px-4 py-2 bg-accent text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent"
-                    disabled={loading}
-                >
-                    {loading ? "Processing..." : "Start"}
-                </button>
-            </div>
-
-            {/* Response Section */}
-            {/* Response Section */}
-            {!isError && apiResponse?.details && (
-                <div>
-                    <div className="mt-6 p-4 bg-jacarta-800 rounded-lg shadow-sm dark:bg-jacarta-700 relative">
-                        <h2 className="text-lg font-medium text-jacarta-100 mb-4">
-                            Exchange Details
-                        </h2>
-                        <button
-                            onClick={() => setShowModal(true)}
-                            className="absolute top-4 right-4 text-red-500 hover:text-red-700"
-                        >
-                            X
-                        </button>
-                        <div className="grid grid-cols-1 gap-4">
-                            {/* QR Code and Address Section */}
-                            <div className="flex flex-col items-center gap-2">
-                                <QRCodeSVG value={apiResponse.details.deposit.address} size={300} />
-                                <span className="block text-jacarta-100 break-all">
-                                    {apiResponse.details.deposit.address}
-                                </span>
-                                <span>
-                                    Network:{apiResponse.details.deposit.network}
-                                </span>
-                            </div>
-
-                            {/* Deposit Amount Section */}
-                            <div className="flex flex-col items-center">
-                                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100">
-                                    Deposit Amount:
-                                </span>
-                                <span className="text-jacarta-100">
-                                    {apiResponse.details.deposit.amount}{" "}
-                                    {apiResponse.details.deposit.symbol?.toUpperCase() || ""}
-                                </span>
-                            </div>
-
-                            {/* Status Section */}
-                            <div className="flex flex-col items-center">
-                                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100">
-                                    Status:
-                                </span>
-                                <span className="text-jacarta-100">{status}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Render SwapSteps component */}
-                    <SwapSteps />
-                </div>
-            )}
-
-
-            {isError && (
-                <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
-                    <p className="text-red-100">
-                        <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
-                    </p>
-                </div>
-            )}
-
-            {/* Loading Spinner with Status */}
-            {loading && (
-                <div className="flex items-center justify-center mt-4">
-                    <div className="spinner-border animate-spin text-accent" role="status">
-                        <span className="sr-only">Loading...</span>
-                    </div>
-                    <span className="ml-2 text-jacarta-100">{status}</span>
-                </div>
-            )}
-
-            {/* Confirmation Modal */}
-            {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-                        <h3 className="text-lg font-medium text-gray-800 mb-4">
-                            Are you sure you want to delete this exchange details?
-                        </h3>
-                        <p className="text-gray-600 mb-4">
-                            If you already deposited, wait for the deposit to go through, or you
-                            will need to manually convert your funds.
-                        </p>
-                        <div className="flex justify-end gap-4">
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleDeleteExchange}
-                                className="px-4 py-2 bg-red-500 text-gray-800 rounded-lg hover:bg-red-600"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </section>
-    );
-
-
-};
-
-
-
-import { FaCheck } from "react-icons/fa";
-
-const SwapSteps = () => {
-    const { swapStep, setSwapStep } = useBioniqContext(); // Access `swapStep` and `setSwapStep` from the context.
-
-    useEffect(() => {
-    }, [swapStep]);
-
-    const steps = [
-        { id: 1, title: "Approve ICP" },
-        { id: 2, title: "Deposit ICP" },
-        { id: 3, title: "Swap ICP for ckBTC" },
-        { id: 4, title: "Withdraw ckBTC" },
-        { id: 5, title: "Finished" },
-    ];
-
-    // Hide the modal if `swapStep` is 0
-    if (swapStep === 0) {
-        return null;
-    }
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="max-w-md mx-auto p-6 bg-jacarta-800 rounded-lg shadow-lg">
-                <h2 className="text-lg font-medium text-white mb-4">Swap Details</h2>
-                <p className="text-sm text-jacarta-300 mb-6">
-                    If you have sufficient balance in the swap pool, you may be able to swap
-                    directly without needing to deposit.
-                </p>
-                <div className="space-y-4">
-                    {steps.map((step) => (
-                        <div
-                            key={step.id}
-                            className="flex items-center space-x-4 p-3 rounded-lg bg-jacarta-700"
-                        >
-                            <div
-                                className={`flex items-center justify-center w-8 h-8 rounded-full ${step.id <= swapStep
-                                        ? "bg-green-500 text-white"
-                                        : "bg-gray-500 text-gray-300"
-                                    }`}
-                            >
-                                {step.id < swapStep ? <FaCheck /> : step.id}
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <p
-                                    className={`text-sm font-medium ${step.id <= swapStep ? "text-white" : "text-jacarta-400"
-                                        }`}
-                                >
-                                    {step.title}
-                                </p>
-                                {step.id === swapStep && (
-                                    <div className="swiper-lazy-preloader animate-spin-slow"></div>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <button
-                    onClick={() => {
-                        setSwapStep(0); // Reset `swapStep` to hide the modal
-                    }}
-                    className="mt-6 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                >
-                    Close
-                </button>
-            </div>
-        </div>
-    );
-};
-
-
-
-
-
-
-
-
-
->>>>>>> bioniq
-
-// Mapeo de “status” -> step 2..5 (porque step 1 es “Connect Wallet”)
-function mapStatusToStep(status) {
-  if (!status) return 2; // step 2 => "Awaiting deposit"
-  if (status === "waiting") return 2;    // awaiting deposit
-  if (status === "receiving") return 3;  // receiving tokens
-  if (status === "swapping") return 4;   // swapping tokens
-  if (status === "sending" || status === "finished") return 5; // sending / balance updated
-  return 2;
-}
 
 export const metadata = {
   title: "Deposit Page",
 };
-<<<<<<< HEAD
-=======
-export default function AuctionPage({ login, setModalOpenT }) {
-    // const [modalOpen, setModalOpen] = useState(false);
->>>>>>> bioniq
 
 export default function AuctionPage({ login, setModalOpenT }) {
   return (
@@ -731,7 +230,8 @@ export default function AuctionPage({ login, setModalOpenT }) {
 }
 
 const TokenRow = () => {
-  const { wallets, buy } = useBioniqContext();
+
+  const { wallets, buy ,swapStep} = useBioniqContext();
   const [selectedToken, setSelectedToken] = useState("USDC");
   const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
   const [amount, setAmount] = useState("");
@@ -747,6 +247,15 @@ const TokenRow = () => {
 
   // Step en la caja derecha (1..5). 1 => “Connect wallet”
   const [rightStep, setRightStep] = useState(1);
+
+  function mapStatusToStep(status) {
+    if (!status) return 2; // step 2 => "Awaiting deposit"
+    if (status === "waiting") return 2;    // awaiting deposit
+    if (status === "confirming" || status === "exchanging" || status === "sending" || status === "verifying" )  return 3;  // receiving tokens
+    if (status === "finished" && swapStep > 0) return 4;   // swapping tokens
+    if (status === "finished") return 5; // sending / balance updated
+    return 2;
+  }
 
   // Al montar, si hay tx existente, la recuperamos
   useEffect(() => {
@@ -812,7 +321,7 @@ const TokenRow = () => {
       setRightStep(1);
       return;
     }
-    
+
     const st = mapStatusToStep(status);
     setRightStep(st);
   }, [status, wallets]);
@@ -849,8 +358,8 @@ const TokenRow = () => {
       console.error("Invalid network selection");
       return;
     }
-    const aggregatorSymbol = netOption.aggregatorSymbol;
-    const aggregatorNetwork = netOption.displayNetwork.toLowerCase();
+    const aggregatorSymbol = netOption.displayToken;
+    const aggregatorNetwork = netOption.displayNetwork;
 
     const depositAddress = AccountIdentifier.fromPrincipal({
       principal: wallets.ckBTC.walletPrincipal,
@@ -861,7 +370,7 @@ const TokenRow = () => {
         from: { symbol: aggregatorSymbol, network: aggregatorNetwork },
         to: { symbol: "icp", network: "mainnet" },
       },
-      amount: parseFloat(String(amount)) || 0,
+      amount: parseFloat(amount) || 0,
       estimation: useUsd ? "usd" : "direct",
       rate: "floating",
       address: depositAddress,
@@ -916,8 +425,8 @@ const TokenRow = () => {
   // Logo de token actual
   const tokenObj = aggregatorTokens[selectedToken];
   const tokenLogo = tokenObj?.logo || "";
+  console.log("logo now",tokenLogo)
 
- 
   // Blur si no hay wallet conectada
   const leftBoxBlur =
     enableBlurIfNoWallet && !wallets?.ckBTC?.walletAddressForDisplay
@@ -937,15 +446,15 @@ const TokenRow = () => {
         <hr className="border-white" />
       </div>
 
-      <div className="flex w-full">
+      <div className="flex flex-col lg:flex-row w-full">
         <div
-          className="w-1/2 flex justify-start items-start mx-4 px-4"
+          className="w-full lg:w-1/2 flex justify-start items-start mx-4 px-4"
           style={{ filter: leftBoxBlur }}
         >
           <div className="timeline-container w-full">
             <div className="timeline-item flex">
-              <div className="flex flex-col items-center">
-                <div className="circle">1</div>
+            <div className="hidden md:flex flex-col items-center">
+            <div className="circle">1</div>
                 <div className="line"></div>
                 <div className="circle">2</div>
                 <div className="line" style={{ height: "5.5rem" }}></div>
@@ -958,7 +467,7 @@ const TokenRow = () => {
               <div className="ml-8 flex-1">
                 {/* Select token+network */}
                 <div className="mb-8">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
                         Select Token
@@ -1002,19 +511,19 @@ const TokenRow = () => {
                   </div>
                 </div>
 
-               {/* Amount + toggle USD */}
-<div className="mb-8">
-  <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
-    {useUsd ? "Amount (USD)" : "Amount (Token)"}
-  </label>
+                {/* Amount + toggle USD */}
+                <div className="mb-8">
+                  <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                    {useUsd ? "Amount (USD)" : "Amount (Token)"}
+                  </label>
 
-  {/* Contenedor relativo para poder posicionar el botón con absolute */}
-  <div className="relative inline-block">
-    <input
-      type="number"
-      value={amount}
-      onChange={(e) => setAmount(e.target.value)}
-      className="
+                  {/* Contenedor relativo para poder posicionar el botón con absolute */}
+                  <div className="relative inline-block">
+                    <input
+                      type="number"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      className="
         w-32
         p-2
         pr-10
@@ -1027,13 +536,13 @@ const TokenRow = () => {
         text-jacarta-100
         dark:bg-jacarta-600
       "
-      placeholder={useUsd ? "0.00 USD" : "0.00"}
-    />
+                      placeholder={useUsd ? "0.00 USD" : "0.00"}
+                    />
 
-    {/* Botón con ícono posicionado dentro del input */}
-    <button
-      onClick={() => setUseUsd(!useUsd)}
-      className="
+                    {/* Botón con ícono posicionado dentro del input */}
+                    <button
+                      onClick={() => setUseUsd(!useUsd)}
+                      className="
         absolute
         top-1/2
         -translate-y-1/2
@@ -1043,29 +552,29 @@ const TokenRow = () => {
         text-white
         rounded
       "
-    >
-      {/* Ícono de intercambio (Heroicons ‘switch-vertical’) */}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M4 8l4-4m0 0l4 4m-4-4v12m6 0l4 4m0 0l4-4m-4 4V4"
-        />
-      </svg>
-    </button>
-  </div>
+                    >
+                      {/* Ícono de intercambio (Heroicons ‘switch-vertical’) */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M4 8l4-4m0 0l4 4m-4-4v12m6 0l4 4m0 0l4-4m-4 4V4"
+                        />
+                      </svg>
+                    </button>
+                  </div>
 
-  <p className="text-xs text-gray-400 mt-1">
-    Minimum deposit: {minDeposit || "0.00"}
-  </p>
-</div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Minimum deposit: {minDeposit || "0.00"}
+                  </p>
+                </div>
 
 
                 {/* Start button */}
@@ -1079,8 +588,8 @@ const TokenRow = () => {
                   </button>
                 </div>
 
-                 {/* Deposit Info */}
-                 <div>
+                {/* Deposit Info */}
+                <div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
                       Deposit to this wallet
@@ -1098,7 +607,7 @@ const TokenRow = () => {
                         onClick={() =>
                           navigator.clipboard.writeText(
                             apiResponse?.details?.deposit?.address ||
-                              "0x1234567890abcdef"
+                            "0x1234567890abcdef"
                           )
                         }
                         className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-accent hover:bg-accent-dark text-white rounded-md text-sm"
@@ -1108,7 +617,7 @@ const TokenRow = () => {
                     </div>
                   </div>
 
-                  
+
                   {apiResponse?.details?.deposit?.extra_id && (
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
@@ -1142,9 +651,8 @@ const TokenRow = () => {
                         type="text"
                         value={
                           apiResponse?.details?.deposit?.amount
-                            ? `${apiResponse.details.deposit.amount} on ${
-                                aggregatorTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
-                              }`
+                            ? `${apiResponse.details.deposit.amount} on ${aggregatorTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
+                            }`
                             : "0.00"
                         }
                         readOnly
@@ -1169,7 +677,7 @@ const TokenRow = () => {
         </div>
 
         {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
-        <div className="w-1/2 flex flex-col justify-start items-center p-8">
+        <div className="w-full lg:w-1/2 flex flex-col justify-start items-center p-8">
           <div className="w-full max-w-md bg-jacarta-800 rounded-lg shadow-lg p-8 min-h-[800px]">
             <div className="relative w-full h-40">
               <div className="absolute w-full flex justify-between items-center px-12">
@@ -1179,9 +687,8 @@ const TokenRow = () => {
                   return (
                     <div
                       key={num}
-                      className={`w-12 h-12 text-lg font-bold rounded-full flex items-center justify-center z-10 transition-colors duration-300 ${
-                        isActive ? "bg-accent text-white" : "bg-white text-jacarta-800"
-                      }`}
+                      className={`w-12 h-12 text-lg font-bold rounded-full flex items-center justify-center z-10 transition-colors duration-300 ${isActive ? "bg-accent text-white" : "bg-white text-jacarta-800"
+                        }`}
                     >
                       {num}
                     </div>
@@ -1337,10 +844,10 @@ const TokenRow = () => {
   );
 };
 
-function SwapSteps() {
+function SwapSteps({ tokenName = "ICP" }) {
   const { swapStep, setSwapStep } = useBioniqContext();
 
-  useEffect(() => {}, [swapStep]);
+  useEffect(() => { }, [swapStep]);
 
   const steps = [
     { id: 1, title: `Approve ${tokenName}` },
@@ -1367,19 +874,17 @@ function SwapSteps() {
               className="flex items-center space-x-4 p-3 rounded-lg bg-jacarta-700"
             >
               <div
-                className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                  step.id <= swapStep
+                className={`flex items-center justify-center w-8 h-8 rounded-full ${step.id <= swapStep
                     ? "bg-green-500 text-white"
                     : "bg-gray-500 text-gray-300"
-                }`}
+                  }`}
               >
                 {step.id < swapStep ? <FaCheck /> : step.id}
               </div>
               <div className="flex items-center space-x-2">
                 <p
-                  className={`text-sm font-medium ${
-                    step.id <= swapStep ? "text-white" : "text-jacarta-400"
-                  }`}
+                  className={`text-sm font-medium ${step.id <= swapStep ? "text-white" : "text-jacarta-400"
+                    }`}
                 >
                   {step.title}
                 </p>

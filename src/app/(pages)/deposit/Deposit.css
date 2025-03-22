@@ -42,3 +42,46 @@
 .animate-fadeIn {
     animation: fadeIn 0.5s ease-in-out;
 }
+
+/* Add this to your Deposit.css file */
+@media (max-width: 768px) {
+    .timeline-container {
+      padding: 0;
+    }
+  
+    .circle {
+      width: 30px;
+      height: 30px;
+      font-size: 14px;
+    }
+  
+    .line {
+      height: 20px !important;
+    }
+  
+    .ml-8 {
+      margin-left: 0;
+    }
+  
+    .px-12 {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  
+    .w-12 {
+      width: 30px;
+      height: 30px;
+    }
+  
+    .h-40 {
+      height: 100px;
+    }
+  
+    .mt-24 {
+      margin-top: 2rem;
+    }
+  
+    .min-h-800px {
+      min-height: auto;
+    }
+  }
