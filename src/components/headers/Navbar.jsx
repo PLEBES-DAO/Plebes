@@ -95,7 +95,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
           onClick={() => navigate("/deposit")}
           className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
       >
-        Launch DAO
+      Deposit
       </button>
       <div
         onClick={async () => {
@@ -123,7 +123,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
         onClick={() => console.log("Launch DAO clicked")}
         className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
       >
-        Launch DAO
+      Deposit
       </button>
       <Profile
         wallets={wallets}
@@ -172,10 +172,10 @@ export default function Navbar({ bLogin, setModalOpen }) {
                   </svg>
                 </div>
                 <button
-                    onClick={() => navigate("/launchpad")}
+                    onClick={() => navigate("/deposit")}
                     className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
                 >
-                  Launch DAO
+                Deposit
                 </button>
               </>
             )}
@@ -195,7 +195,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
                   onClick={() => console.log("Launch DAO clicked")}
                   className="ml-4 h-10 px-4 text-sm font-medium text-white bg-blue-600 rounded-full transition hover:bg-blue-700 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-600"
                 >
-                  Launch DAO
+                Deposit
                 </button>
               </>
             )}

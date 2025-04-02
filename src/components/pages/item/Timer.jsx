@@ -63,24 +63,22 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
   }
 };
 
-export default function Timer({timerStamp=null}) {
+export default function Timer({ expiryDate = null }) {
   const [showTimer, setShowTimer] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(
-    new Date(
-      new Date().getTime() +
-        Math.floor(Math.random() * 24 * 60 * 60 * 1000 * 365)
-    ).toISOString()
-  );
+  const [remainingTime, setRemainingTime] = useState(null);
+
   useEffect(() => {
-    if(timerStamp){
-      let stamp = new Date(timerStamp * 1000).toISOString();
-      console.log("stamp",stamp)
-      console.log("timerStamp",timerStamp)
-      setRemainingTime(stamp)
+    if (expiryDate) {
+      console.log("expiry",expiryDate)
+      // The expiryDate is already in ISO format, so we can use it directly
+      setRemainingTime(expiryDate);
+      setShowTimer(true);
     }
-    setShowTimer(true);
-  }, [timerStamp]);
-  return (
-    <>{showTimer && <Countdown date={remainingTime} renderer={renderer} />}</>
-  );
+  }, [expiryDate]);
+
+  if (!showTimer || !remainingTime) {
+    return null;
+  }
+
+  return <Countdown date={remainingTime} renderer={renderer} />;
 }

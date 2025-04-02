@@ -134,6 +134,7 @@ const BioniqContextProvider = ({ children }) => {
   const[identity , setIdentity] = useState(null);
   const[swapStep,setSwapStep] = useState(0);
   const[address,setAddress] = useState(null);
+  const[auctionExpiry,setAuctionExpiry] = useState(null);
   const isLoading = useMemo(() => {
     return !web3Auth || !bioniqAuthClient || !liveBioniqWalletApi;
   }, [web3Auth, bioniqAuthClient, liveBioniqWalletApi]);
@@ -495,6 +496,59 @@ const BioniqContextProvider = ({ children }) => {
     setBalances(_balances);
   };
 
+
+
+  async function placeBid(address, amount) {
+    const url = `https://api.plebes.xyz/place-bid`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ address, amount }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error('Error:', data.error);
+        return false;
+      }
+      
+      return true; // Success
+    } catch (error) {
+      console.error('Failed to place bid:', error);
+      return false;
+    }
+  }
+
+  function decimalToBigNat(decimal) {
+    // 1. Convert to string to avoid floating-point issues
+    const decimalStr = decimal.toString();
+  
+    // 2. Check if it's in scientific notation (e.g., "8.461361795742727e-17")
+    if (decimalStr.includes('e-')) {
+      const [base, exponent] = decimalStr.split('e-');
+      const [integerPart, fractionalPart = ''] = base.split('.');
+      const totalDigits = integerPart.length + fractionalPart.length;
+      const zerosNeeded = parseInt(exponent) - fractionalPart.length;
+      const fullNumberStr = integerPart + fractionalPart + '0'.repeat(zerosNeeded);
+      return BigInt(fullNumberStr);
+    }
+  
+    // 3. Handle normal decimal notation (e.g., "0.00008461361795742727")
+    if (decimalStr.includes('.')) {
+      const [, fractionalPart] = decimalStr.split('.');
+      return BigInt(fractionalPart);
+    }
+  
+    // 4. If no decimal, return as BigInt
+    return BigInt(decimalStr);
+  }
+
+
   // async bid({inscription, bidAmount, resolvedBioniqUser, tokenMode})
   const createAbid = async (amount) => {
     console.log("creating a bid?")
@@ -503,8 +557,11 @@ const BioniqContextProvider = ({ children }) => {
     let resolvedBioniqUser = { currentWallets: wallets };
     setLoading(true);
     try {
+      const nat = await decimalToBigNat(bidAmount.decimalAmount)
       let bidResponse = await liveBioniqWalletApi.inscription.bid({ resolvedBioniqUser, bidAmount, inscription: inscriptionToSend, tokenMode: "ckBTC" })
-      console.log("response",bidResponse)
+      console.log("bid",wallets["BTC"].walletAddressForDisplay,bidAmount.decimalAmount)
+      let place = await placeBid(wallets["BTC"].walletAddressForDisplay,Number(nat));
+      console.log("place bid",place)
       setError("bid created sucessfully, It will take a few minutes to show up in bidders");
       reloadBalances()
     } catch (e) {
@@ -788,7 +845,38 @@ const BioniqContextProvider = ({ children }) => {
     }
   };
   
+  function bigNatToDecimal(number, originalDecimalLength) {
+    // 1. Convert the number to a string (avoids scientific notation)
+    const numStr = number.toString();
+  
+    // 2. Pad with leading zeros if needed (to match the original decimal length)
+    const paddedStr = numStr.padStart(originalDecimalLength, '0');
+  
+    // 3. Insert the decimal point
+    const decimalStr = `0.0000${paddedStr}`;
+  
+    return decimalStr;
+  }
 
+
+  async function processBids(auction) {
+    try {
+      const newBids = await Promise.all(
+        auction.bids.map(async (bid) => {
+          const decimal = bigNatToDecimal(bid.amount);
+          const usd = await convertBtcToUsd(decimal);
+          return {
+            address: bid.address,
+            amount: usd
+          };
+        })
+      );
+      return newBids;
+    } catch (error) {
+      console.error("Error processing bids:", error);
+      throw error; // Re-throw the error if you want calling code to handle it
+    }
+  }
 
   const getCurrentAuction = async () => {
     const url = `https://api.plebes.xyz/current-auction`;
@@ -807,8 +895,11 @@ const BioniqContextProvider = ({ children }) => {
       let currentAuctionInscriptionRes = await response2.json();
       console.log("current Auction",currentAuctionInscriptionRes)
       setLiveAuction(currentAuctionInscriptionRes);
-      let bidData = await getBidders(currentAuctionInscriptionRes);
-      setLiveAuctionBidders(bidData)
+      //let bidData = await getBidders(currentAuctionInscriptionRes);
+      let newbids = await processBids(auction);
+      console.log("new bids",newbids)
+      setLiveAuctionBidders(newbids)
+      setAuctionExpiry(auction.expiryDate)
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
@@ -1039,7 +1130,8 @@ const BioniqContextProvider = ({ children }) => {
       swapStep,
       setSwapStep,
       convertBtcToUsd,
-      convertUsdToBtcOnDemand
+      convertUsdToBtcOnDemand,
+      auctionExpiry
     }),
     [
       isLoading,
@@ -1076,7 +1168,8 @@ const BioniqContextProvider = ({ children }) => {
       swapStep,
       setSwapStep,
       convertBtcToUsd,
-      convertUsdToBtcOnDemand
+      convertUsdToBtcOnDemand,
+      auctionExpiry
     ]
   );
 

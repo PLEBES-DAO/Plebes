@@ -8,12 +8,12 @@ import { useEffect } from "react";
 import { useBioniqContext } from "../../../hooks/BioniqContext";
 
 export default function ItemDetails({ id, setModalOpen }) {
-  const { liveAuction, liveAuctionBidders } = useBioniqContext();
+  const { liveAuction, liveAuctionBidders,auctionExpiry } = useBioniqContext();
   const item = allItems.filter((elm) => elm.id == id)[0] || allItems[0];
   useEffect(() => {
 
-  }, [liveAuction, liveAuctionBidders])
-  console.log("live auction in item details", liveAuction)
+  }, [liveAuction, liveAuctionBidders,auctionExpiry])
+  console.log("live auction in item details", liveAuction,auctionExpiry)
  
 
 
@@ -314,7 +314,7 @@ export default function ItemDetails({ id, setModalOpen }) {
                     <span className="js-countdown-ends-label text-sm text-jacarta-400 dark:text-jacarta-300">
                       Auction ends in
                     </span>
-                    { liveAuction && <Timer timerStamp={liveAuction.auction_expiry} /> }
+                    { liveAuction && <Timer expiryDate={auctionExpiry} /> }
                   </div>
                 </div>
 

@@ -4,6 +4,19 @@ import { useBioniqContext } from "../../../hooks/BioniqContext";
 import { formatNumberWithPattern } from "../../../utils";
 
 
+function bigNatToDecimal(number, originalDecimalLength) {
+    // 1. Convert the number to a string (avoids scientific notation)
+    const numStr = number.toString();
+  
+    // 2. Pad with leading zeros if needed (to match the original decimal length)
+    const paddedStr = numStr.padStart(originalDecimalLength, '0');
+  
+    // 3. Insert the decimal point
+    const decimalStr = `0.${paddedStr}`;
+  
+    return decimalStr;
+  }
+
 export default function Offers({ liveAuctionBidders }) {
     const{toDecimalAmounts} = useBioniqContext();
     return (
@@ -37,14 +50,14 @@ export default function Offers({ liveAuctionBidders }) {
                         title={elm.bidder}  // Tooltip text here
                     >
                         <span className="text-sm font-medium tracking-tight text-green truncate">
-                            {elm.bidder}
+                            {elm.address}
                         </span>
                     </div>
                     <div
                         className="flex items-center border-t border-jacarta-100 py-4 px-4 dark:border-jacarta-600"
                         role="cell"
                     >
-                        {formatNumberWithPattern(elm.amount)} ckBTC
+                        {elm.amount} USD
                     </div>
                 </div>
             ))}
