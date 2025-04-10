@@ -5,6 +5,9 @@ import { useBioniqContext } from '../../../hooks/BioniqContext';
 import { Link } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import './hero.css'
+// Import sum.svg logo
+import sumLogo from '../../../assets/img/dao/sum.svg';
+
 export default function Hero() {
   const [icpBalance, setIcpBalance] = useState(null);
   const [displayBalance, setDisplayBalance] = useState(null);
@@ -66,9 +69,9 @@ export default function Hero() {
           <div className="grid h-full items-center gap-4 md:grid-cols-12">
             {/* Text Content */}
             <div className="col-span-5 flex h-full flex-col items-center justify-center py-10 md:items-start lg:py-20">
-              <h1 className="mx-5 mb-6 text-center font-display text-5xl text-white md:text-left lg:text-6xl">
-                Chihuahuas and frens for Public Goods
-              </h1>
+              <div className="mx-5 mb-6">
+                <img src={sumLogo} alt="Plebes Logo" className="w-full max-w-md" />
+              </div>
               <p className="mx-5 mb-8 max-w-md text-center text-lg text-white md:text-left">
                 Plebes is a DAO that promotes the use of Internet Computer Protocol by funding open-source technology, creative projects, and public goods through daily Reserved Ordinals auctions.
               </p>
