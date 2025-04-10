@@ -73,7 +73,7 @@ export default function Hero() {
                 <img src={sumLogo} alt="Plebes Logo" className="w-full max-w-md" />
               </div>
               <p className="mx-5 mb-8 max-w-md text-center text-lg text-white md:text-left">
-                Plebes is a DAO that promotes the use of Internet Computer Protocol by funding open-source technology, creative projects, and public goods through daily Reserved Ordinals auctions.
+ Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
               </p>
               <div className="flex gap-3">
                 <a
