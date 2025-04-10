@@ -48,7 +48,7 @@ function App() {
       {/* Conditionally render the loading overlay */}
       {loading && (
         <>
-          {false && <div className="swiper-lazy-preloader animate-spin-slow"></div>} //Solución a Bug de Preloader
+          {false && <div className="swiper-lazy-preloader animate-spin-slow"></div>}
         </>
       )}
 
