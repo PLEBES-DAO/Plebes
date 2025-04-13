@@ -13,7 +13,13 @@ export default defineConfig({
       plugins: [tailwindcss()],
     },
     },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'esnext',
+      }
+    },
     build: {
+      target: 'esnext', 
 			rollupOptions: {
 				plugins: [inject({ Buffer: ['Buffer', 'Buffer'] })],
 			},
