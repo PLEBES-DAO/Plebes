@@ -7,6 +7,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { FaCheck } from "react-icons/fa";
 import { useBioniqContext } from "../../../hooks/BioniqContext";
 import "../../../components/homes/home-9/Munro.css";
+import connectWalletGif from "../../../assets/img/dao/gif.gif";
 
 const enableBlurIfNoWallet = false; // Poner en true para activar el efecto Blur cuando no hay wallet activada
 
@@ -16,14 +17,14 @@ const aggregatorTokens = {
   USDC: {
     logo: "/img/coins/usdc.svg",
     networks: [
-      { aggregatorSymbol: "USDCARB", displayToken: "USDC", displayNetwork: "Arbitrum" },
-      { aggregatorSymbol: "USDCBASE", displayToken: "USDC", displayNetwork: "Base" },
-      { aggregatorSymbol: "USDC", displayToken: "USDC", displayNetwork: "eth" },
-      { aggregatorSymbol: "USDCMATIC", displayToken: "USDC", displayNetwork: "matic" },
-      { aggregatorSymbol: "USDCNEAR", displayToken: "USDC", displayNetwork: "Near" },
-      { aggregatorSymbol: "USDCOP", displayToken: "USDC", displayNetwork: "Optimism" },
-      { aggregatorSymbol: "USDCSOL", displayToken: "USDC", displayNetwork: "sol" },
-      { aggregatorSymbol: "USDCTRC20", displayToken: "USDC", displayNetwork: "trx" },
+      { aggregatorSymbol: "USDCARB", displayToken: "USDC", displayNetwork: "ARBITRUM" },
+      { aggregatorSymbol: "USDCBASE", displayToken: "USDC", displayNetwork: "BASE" },
+      { aggregatorSymbol: "USDC", displayToken: "USDC", displayNetwork: "ETHEREUM" },
+      { aggregatorSymbol: "USDCMATIC", displayToken: "USDC", displayNetwork: "MATIC" },
+      { aggregatorSymbol: "USDCNEAR", displayToken: "USDC", displayNetwork: "NEAR" },
+      { aggregatorSymbol: "USDCOP", displayToken: "USDC", displayNetwork: "OPTIMISM" },
+      { aggregatorSymbol: "USDCSOL", displayToken: "USDC", displayNetwork: "SOLANA" },
+      { aggregatorSymbol: "USDCTRC20", displayToken: "USDC", displayNetwork: "TRON" },
     ],
   },
 
@@ -31,14 +32,14 @@ const aggregatorTokens = {
   USDT: {
     logo: "/img/coins/usdt.svg",
     networks: [
-      { aggregatorSymbol: "USDTCARB", displayToken: "USDT", displayNetwork: "Arbitrum" },
-      { aggregatorSymbol: "USDTBASE", displayToken: "USDT", displayNetwork: "base" },
-      { aggregatorSymbol: "USDTERC20", displayToken: "USDT", displayNetwork: "eth" },
-      { aggregatorSymbol: "USDTMATIC", displayToken: "USDT", displayNetwork: "matic" },
-      { aggregatorSymbol: "USDTNEAR", displayToken: "USDT", displayNetwork: "Near" },
-      { aggregatorSymbol: "USDTOP", displayToken: "USDT", displayNetwork: "Optimism" },
-      { aggregatorSymbol: "USDTCSOL", displayToken: "USDT", displayNetwork: "sol" },
-      { aggregatorSymbol: "USDTTRC20", displayToken: "USDT", displayNetwork: "trx" },
+      { aggregatorSymbol: "USDTCARB", displayToken: "USDT", displayNetwork: "ARBITRUM" },
+      { aggregatorSymbol: "USDTBASE", displayToken: "USDT", displayNetwork: "BASE" },
+      { aggregatorSymbol: "USDTERC20", displayToken: "USDT", displayNetwork: "ETHEREUM" },
+      { aggregatorSymbol: "USDTMATIC", displayToken: "USDT", displayNetwork: "MATIC" },
+      { aggregatorSymbol: "USDTNEAR", displayToken: "USDT", displayNetwork: "NEAR" },
+      { aggregatorSymbol: "USDTOP", displayToken: "USDT", displayNetwork: "OPTIMISM" },
+      { aggregatorSymbol: "USDTCSOL", displayToken: "USDT", displayNetwork: "SOLANA" },
+      { aggregatorSymbol: "USDTTRC20", displayToken: "USDT", displayNetwork: "TRON" },
     ],
   },
 
@@ -46,8 +47,8 @@ const aggregatorTokens = {
   BTC: {
     logo: "/img/coins/btc.svg",
     networks: [
-      { aggregatorSymbol: "BTC", displayToken: "BTC", displayNetwork: "Bitcoin" },
-      { aggregatorSymbol: "BTC-LIGHTNING", displayToken: "BTC", displayNetwork: "Lightning" },
+      { aggregatorSymbol: "BTC", displayToken: "BTC", displayNetwork: "BITCOIN" },
+      { aggregatorSymbol: "BTC-LIGHTNING", displayToken: "BTC", displayNetwork: "LIGHTNING" },
     ],
   },
 
@@ -55,10 +56,10 @@ const aggregatorTokens = {
   ETH: {
     logo: "/img/coins/eth.svg",
     networks: [
-      { aggregatorSymbol: "ETHARB", displayToken: "ETH", displayNetwork: "mainnet" },
-      { aggregatorSymbol: "ETHBASE", displayToken: "ETH", displayNetwork: "Base" },
-      { aggregatorSymbol: "ETH", displayToken: "ETH", displayNetwork: "Ethereum" },
-      { aggregatorSymbol: "ETHOP", displayToken: "ETH", displayNetwork: "Optimism" },
+      { aggregatorSymbol: "ETHARB", displayToken: "ETH", displayNetwork: "MAINET" },
+      { aggregatorSymbol: "ETHBASE", displayToken: "ETH", displayNetwork: "BASE" },
+      { aggregatorSymbol: "ETH", displayToken: "ETH", displayNetwork: "ETHEREUM" },
+      { aggregatorSymbol: "ETHOP", displayToken: "ETH", displayNetwork: "OPTIMISM" },
     ],
   },
 
@@ -66,7 +67,7 @@ const aggregatorTokens = {
   ADA: {
     logo: "/img/coins/ada.svg",
     networks: [
-      { aggregatorSymbol: "ADA", displayToken: "ADA", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "ADA", displayToken: "ADA", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -74,7 +75,7 @@ const aggregatorTokens = {
   ALGO: {
     logo: "/img/coins/algo.svg",
     networks: [
-      { aggregatorSymbol: "ALGO", displayToken: "ALGO", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "ALGO", displayToken: "ALGO", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -82,7 +83,7 @@ const aggregatorTokens = {
   APT: {
     logo: "/img/coinplebes/APT.svg",
     networks: [
-      { aggregatorSymbol: "APT", displayToken: "APT", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "APT", displayToken: "APT", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -90,7 +91,7 @@ const aggregatorTokens = {
   ARB: {
     logo: "/img/coinplebes/ARB.svg",
     networks: [
-      { aggregatorSymbol: "ARB", displayToken: "ARB", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "ARB", displayToken: "ARB", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -98,7 +99,7 @@ const aggregatorTokens = {
   AVAX: {
     logo: "/img/coins/avax.svg",
     networks: [
-      { aggregatorSymbol: "AVAX-C", displayToken: "AVAX", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "AVAX-C", displayToken: "AVAX", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -106,7 +107,7 @@ const aggregatorTokens = {
   BNB: {
     logo: "/img/coins/bnb.svg",
     networks: [
-      { aggregatorSymbol: "BNB-BSC", displayToken: "BNB", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "BNB-BSC", displayToken: "BNB", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -114,7 +115,7 @@ const aggregatorTokens = {
   BUSD: {
     logo: "/img/coinplebes/BUSD.svg",
     networks: [
-      { aggregatorSymbol: "BUSD", displayToken: "BUSD", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "BUSD", displayToken: "BUSD", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -122,7 +123,7 @@ const aggregatorTokens = {
   DOGE: {
     logo: "/img/coins/doge.svg",
     networks: [
-      { aggregatorSymbol: "DOGE", displayToken: "DOGE", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "DOGE", displayToken: "DOGE", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -130,7 +131,7 @@ const aggregatorTokens = {
   DOT: {
     logo: "/img/coins/dot.svg",
     networks: [
-      { aggregatorSymbol: "DOT", displayToken: "DOT", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "DOT", displayToken: "DOT", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -138,7 +139,7 @@ const aggregatorTokens = {
   ICP: {
     logo: "/img/coins/icp.svg",
     networks: [
-      { aggregatorSymbol: "ICP", displayToken: "ICP", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "ICP", displayToken: "ICP", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -146,7 +147,7 @@ const aggregatorTokens = {
   NEAR: {
     logo: "/img/coinplebes/NEAR.svg",
     networks: [
-      { aggregatorSymbol: "NEAR", displayToken: "NEAR", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "NEAR", displayToken: "NEAR", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -154,7 +155,7 @@ const aggregatorTokens = {
   OP: {
     logo: "/img/coinplebes/OP.svg",
     networks: [
-      { aggregatorSymbol: "OP", displayToken: "OP", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "OP", displayToken: "OP", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -162,7 +163,7 @@ const aggregatorTokens = {
   SOL: {
     logo: "/img/coinplebes/SOL.svg",
     networks: [
-      { aggregatorSymbol: "SOL", displayToken: "SOL", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "SOL", displayToken: "SOL", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -170,7 +171,7 @@ const aggregatorTokens = {
   SUI: {
     logo: "/img/coinplebes/sui.svg",
     networks: [
-      { aggregatorSymbol: "SUI", displayToken: "SUI", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "SUI", displayToken: "SUI", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -178,7 +179,7 @@ const aggregatorTokens = {
   TON: {
     logo: "/img/coinplebes/TON.svg",
     networks: [
-      { aggregatorSymbol: "TON", displayToken: "TON", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "TON", displayToken: "TON", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -186,7 +187,7 @@ const aggregatorTokens = {
   XLM: {
     logo: "/img/coinplebes/XLM.svg",
     networks: [
-      { aggregatorSymbol: "XLM", displayToken: "XLM", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "XLM", displayToken: "XLM", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -194,7 +195,7 @@ const aggregatorTokens = {
   XRP: {
     logo: "/img/coinplebes/XRP.svg",
     networks: [
-      { aggregatorSymbol: "XRP", displayToken: "XRP", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "XRP", displayToken: "XRP", displayNetwork: "MAINNET" },
     ],
   },
 
@@ -202,7 +203,7 @@ const aggregatorTokens = {
   WLD: {
     logo: "/img/coinplebes/WLD.svg",
     networks: [
-      { aggregatorSymbol: "WLD", displayToken: "WLD", displayNetwork: "mainnet" },
+      { aggregatorSymbol: "WLD", displayToken: "WLD", displayNetwork: "MAINNET" },
     ],
   },
 };
@@ -455,10 +456,19 @@ const TokenRow = () => {
 
   return (
     <section className="relative h-screen">
-      <div className="mx-4 pt-32 mb-4 text-white">
-        {wallets?.ckBTC?.walletAddressForDisplay
-          ? `Wallet connected: ${wallets.ckBTC.walletAddressForDisplay}`
-          : "Account not detected. Please log in."}
+      <div className="flex justify-center mx-4 pt-32 mb-4">
+        <div 
+          className="px-6 py-3 rounded-lg text-white munro-small-text text-center"
+          style={{
+            backgroundColor: wallets?.ckBTC?.walletAddressForDisplay ? 'rgba(22, 163, 74, 0.2)' : 'rgba(220, 38, 38, 0.2)',
+            border: wallets?.ckBTC?.walletAddressForDisplay ? '2px solid #16a34a' : '2px solid #dc2626',
+            minWidth: '300px'
+          }}
+        >
+          {wallets?.ckBTC?.walletAddressForDisplay
+            ? `Wallet connected: ${wallets.ckBTC.walletAddressForDisplay}`
+            : "Account not detected. Please log in."}
+        </div>
       </div>
 
       <div className="mx-4">
@@ -474,7 +484,7 @@ const TokenRow = () => {
             <div className="timeline-item flex">
             <div className="hidden md:flex flex-col items-center">
             <div className={`circle munro-small ${rightStep >= 1 ? 'active' : ''}`}>1</div>
-                <div className="line"></div>
+                <div className="line" style={{ height: "8rem" }}></div>
                 <div className={`circle munro-small ${rightStep >= 2 ? 'active' : ''}`}>2</div>
                 <div className="line" style={{ height: "5.5rem" }}></div>
                 <div className={`circle munro-small ${rightStep >= 3 ? 'active' : ''}`}>3</div>
@@ -498,7 +508,7 @@ const TokenRow = () => {
                             setSelectedToken(e.target.value);
                             setSelectedNetworkIndex(0);
                           }}
-                          className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
+                          className="w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
                         >
                           {Object.keys(aggregatorTokens).map((tk) => (
                             <option key={tk} value={tk}>
@@ -507,7 +517,7 @@ const TokenRow = () => {
                           ))}
                         </select>
                         {tokenLogo && (
-                          <img src={tokenLogo} alt={selectedToken} className="h-6 w-6" />
+                          <img src={tokenLogo} alt="Token Logo" className="w-4 h-4" />
                         )}
                       </div>
                     </div>
@@ -518,7 +528,7 @@ const TokenRow = () => {
                       <select
                         value={selectedNetworkIndex}
                         onChange={(e) => setSelectedNetworkIndex(Number(e.target.value))}
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
+                        className="w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
                       >
                         {tokenObj?.networks.map((opt, idx) => (
                           <option key={idx} value={idx}>
@@ -721,7 +731,10 @@ const TokenRow = () => {
             <div className="mt-24 text-center text-white">
               {rightStep === 1 && (
                 <div>
-                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Connect Wallet</h3>
+                  <h3 className="text-3xl font-bold mb-6 munro-small-heading">Connect Wallet</h3>
+                  <div className="flex justify-center mb-6">
+                    <img src={connectWalletGif} alt="Connect Wallet" className="w-48 h-48 rounded-lg" />
+                  </div>
                   <p className="text-xl munro-small-text">Unlock multichain deposits</p>
                 </div>
               )}

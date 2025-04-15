@@ -1,25 +1,37 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from 'tailwindcss';
-import inject from '@rollup/plugin-inject';
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
     nodePolyfills({
-      // To add only specific polyfills, add them here
-      include: ['stream', 'util'],
+      // Moved to the first position
+      // Removed the include array
+      // include: ['stream', 'util', 'global', 'process'],
       // Whether to polyfill specific globals
       globals: {
         Buffer: true,
         global: true,
         process: true,
       },
+      // Explicitly enable protocol imports
+      protocolImports: true,
     }),
+    react(),
+    // TailwindCSS plugin applied via postcss config, no need to list here unless specific config needed
   ],
+  resolve: {
+    alias: {
+      // Add aliases for problematic modules
+      process: "node-stdlib-browser/process",
+      buffer: "node-stdlib-browser/buffer",
+      util: "node-stdlib-browser/util", // Add util just in case
+      stream: "node-stdlib-browser/stream", // Add stream just in case
+    }
+  },
   server: {
     proxy: {
       '/api/bioniq': {
@@ -45,9 +57,6 @@ export default defineConfig({
       }
     },
     build: {
-      target: 'esnext', 
-			rollupOptions: {
-				plugins: [inject({ Buffer: ['Buffer', 'Buffer'] })],
-			},
+      target: 'esnext',
 		},
 })
