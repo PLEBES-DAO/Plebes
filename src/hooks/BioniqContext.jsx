@@ -739,7 +739,7 @@ const BioniqContextProvider = ({ children }) => {
 
   async function fetchUserInscriptions(user) {
     try {
-      const response = await fetch(`https://api.bioniq.io/v2/inscriptions?address=${user}&page=2&limit=100`, {
+      const response = await fetch(`/api/bioniq/inscriptions?address=${user}&page=2&limit=100`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -755,27 +755,30 @@ const BioniqContextProvider = ({ children }) => {
       return data;
     } catch (error) {
       console.error("Fetch Error:", error);
+      return { results: [] }; // Return empty results on error
     }
   }
 
   async function getHistory() {
-    try{
-      const response = await fetch("https://api.bioniq.io/v2/events?type=sale&collection=plebes&hasInscription=true&page=1&limit=20&protocol=ckBTC", {
+    try {
+      const response = await fetch("/api/bioniq/events?type=sale&collection=plebes&hasInscription=true&page=1&limit=20&protocol=ckBTC", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
         }
       });
-      console.log("response in fetch history",response)
+      
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
+        console.warn("Failed to fetch history:", response.status, response.statusText);
+        return { results: [] };
       }
   
       const data = await response.json();
-      console.log("Fetched history Data:", data);
+      console.log("Fetched History Data:", data);
       return data;
-    }catch(error){
-      console.log("error",error)
+    } catch (error) {
+      console.error("Error fetching history:", error);
+      return { results: [] }; // Return empty results instead of failing
     }
   }
 
@@ -926,7 +929,7 @@ const BioniqContextProvider = ({ children }) => {
   };
 
   async function saveCurrentAuction(password, assetId) {
-    const endpoint = "https://api.plebes.xyz/save-auction"; // Replace with your server's endpoint
+    const endpoint = "/api/plebes/save-auction"; // Replace with your server's endpoint
     console.log("password")
     try {
       const response = await fetch(endpoint, {
@@ -956,7 +959,7 @@ const BioniqContextProvider = ({ children }) => {
 
   async function endAuction() {
     try {
-      const response = await fetch('https://api.plebes.xyz/end-auction', {
+      const response = await fetch('/api/plebes/end-auction', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -1070,7 +1073,7 @@ const BioniqContextProvider = ({ children }) => {
   const login = useCallback(async () => {
     console.log("inside the bionic login", bioniqAuthClient);
     if (!bioniqAuthClient) return;
-    console.log("inside the bioniq login after the if authclient");
+    console.log("inside the bionic login after the if authclient");
     const bioniqAuthClientLoginResult = await bioniqAuthClient.login(
       "open-login"
     );

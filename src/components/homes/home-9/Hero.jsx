@@ -119,110 +119,6 @@ export default function Hero() {
                   Whitepaper
                 </Link>
               </div>
-              
-              {/* CoverFlow Slider */}
-              <div className="w-full mt-8">
-                <div className="relative px-6 pb-16 sm:px-0">
-                  <Swiper
-                    breakpoints={{
-                      100: {
-                        slidesPerView: 1,
-                      },
-                      575: {
-                        slidesPerView: 2,
-                      },
-                      992: {
-                        slidesPerView: 3,
-                      },
-                    }}
-                    slidesPerGroupAuto
-                    effect={"coverflow"}
-                    grabCursor={true}
-                    centeredSlides={true}
-                    loop={true}
-                    coverflowEffect={{
-                      rotate: 30,
-                      stretch: 0,
-                      depth: 100,
-                      modifier: 1,
-                      slideShadows: true,
-                    }}
-                    pagination={{
-                      clickable: true,
-                    }}
-                    modules={[EffectCoverflow, Navigation]}
-                    navigation={{
-                      nextEl: ".snbn7-hero",
-                      prevEl: ".snbp7-hero",
-                    }}
-                    className="swiper coverflow-slider !py-5"
-                  >
-                    {historicState && historicState.map((elm, i) => (
-                      <SwiperSlide key={i}>
-                        <article>
-                          <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
-                            <figure className="relative">
-                              <Link to={`/item/${elm.item.id}`}>
-                                <Image
-                                  src={elm.item.content_url}
-                                  alt="item"
-                                  className="swiper-lazy h-[320px] w-full object-cover"
-                                  height="320"
-                                  width="280"
-                                />
-                              </Link>
-                            </figure>
-                            <div className="p-6">
-                              <div className="flex">
-                                <div>
-                                  <Link to={`/item/${elm.item.id}`} className="block">
-                                    <span className="font-display text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white flex items-center">
-                                      <img
-                                        src="/img/ckBTC.svg"
-                                        alt="ckBTC Icon"
-                                        className="ml-2 h-5 w-5"
-                                      />
-                                      {" "+(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD              
-                                    </span>
-                                  </Link>
-                                  <a href="#" className="text-2xs text-accent">
-                                    {elm.metadata.buyer.slice(0, 5)}...{elm.metadata.buyer.slice(-5)}
-                                  </a>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </article>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-
-                  <div className="snbp7-hero swiper-button-prev group absolute top-1/2 left-4 z-10 -mt-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-base shadow-white-volume">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      className="fill-jacarta-700 group-hover:fill-accent"
-                    >
-                      <path fill="none" d="M0 0h24v24H0z" />
-                      <path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z" />
-                    </svg>
-                  </div>
-                  <div className="snbn7-hero swiper-button-next group absolute top-1/2 right-4 z-10 -mt-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-base shadow-white-volume">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      height="24"
-                      className="fill-jacarta-700 group-hover:fill-accent"
-                    >
-                      <path fill="none" d="M0 0h24v24H0z" />
-                      <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Stats Block */}
@@ -251,9 +147,127 @@ export default function Hero() {
                 )}
               </div>
             </div>
-            
           </div>
-          
+        </div>
+        
+        {/* CoverFlow Slider - Full Width */}
+        <div className="w-full absolute bottom-0 left-0 right-0">
+          <div className="relative px-0">
+            <Swiper
+              breakpoints={{
+                100: {
+                  slidesPerView: 1,
+                },
+                575: {
+                  slidesPerView: 2,
+                },
+                992: {
+                  slidesPerView: 3,
+                },
+                1200: {
+                  slidesPerView: 4,
+                },
+                1400: {
+                  slidesPerView: 5,
+                },
+              }}
+              slidesPerGroupAuto
+              effect={"coverflow"}
+              grabCursor={true}
+              centeredSlides={historicState && historicState.length > 0}
+              loop={false}
+              coverflowEffect={{
+                rotate: 30,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: true,
+              }}
+              pagination={{
+                clickable: true,
+              }}
+              modules={[EffectCoverflow, Navigation]}
+              navigation={{
+                nextEl: ".snbn7-hero",
+                prevEl: ".snbp7-hero",
+              }}
+              className="swiper coverflow-slider !py-5 w-full"
+            >
+              {historicState && historicState.length > 0 ? historicState.map((elm, i) => (
+                <SwiperSlide key={i}>
+                  <article>
+                    <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
+                      <figure className="relative">
+                        <Link to={`/item/${elm.item.id}`}>
+                          <Image
+                            src={elm.item.content_url}
+                            alt="item"
+                            className="swiper-lazy h-[320px] w-full object-cover"
+                            height="200"
+                            width="280"
+                          />
+                        </Link>
+                      </figure>
+                      <div className="p-6">
+                        <div className="flex">
+                          <div>
+                            <Link to={`/item/${elm.item.id}`} className="block">
+                              <span className="font-display text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white flex items-center">
+                                <img
+                                  src="/img/ckBTC.svg"
+                                  alt="ckBTC Icon"
+                                  className="ml-2 h-5 w-5"
+                                />
+                                {" "+(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD              
+                              </span>
+                            </Link>
+                            <a href="#" className="text-2xs text-accent">
+                              {elm.metadata.buyer.slice(0, 5)}...{elm.metadata.buyer.slice(-5)}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                </SwiperSlide>
+              )) : (
+                <SwiperSlide>
+                  <article>
+                    <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
+                      <div className="p-6 text-center">
+                        <p className="text-lg">No historical transactions available</p>
+                      </div>
+                    </div>
+                  </article>
+                </SwiperSlide>
+              )}
+            </Swiper>
+
+            <div className="snbp7-hero swiper-button-prev group absolute top-1/2 left-4 z-10 -mt-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-base shadow-white-volume">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                className="fill-jacarta-700 group-hover:fill-accent"
+              >
+                <path fill="none" d="M0 0h24v24H0z" />
+                <path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z" />
+              </svg>
+            </div>
+            <div className="snbn7-hero swiper-button-next group absolute top-1/2 right-4 z-10 -mt-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-base shadow-white-volume">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                className="fill-jacarta-700 group-hover:fill-accent"
+              >
+                <path fill="none" d="M0 0h24v24H0z" />
+                <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" />
+              </svg>
+            </div>
+          </div>
         </div>
       </section>
   );
