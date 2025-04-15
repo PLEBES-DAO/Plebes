@@ -204,7 +204,7 @@ export default function Hero() {
                             alt="item"
                             className="swiper-lazy h-[320px] w-full object-cover"
                             height="200"
-                            width="280"
+                            width="300"
                           />
                         </Link>
                       </figure>
