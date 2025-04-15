@@ -95,63 +95,9 @@ export default function Hero() {
             className="absolute inset-0 -z-10 h-full w-full bg-cover bg-center"
             style={{ backgroundImage: "url('/img/background.png')" }}
         />
-        <div className="ml-auto mr-auto h-full max-w-[91rem] px-4">
-          <div className="grid h-full items-center gap-4 md:grid-cols-12">
-            {/* Text Content */}
-            <div className="col-span-5 flex h-full flex-col items-center justify-center py-10 md:items-start lg:py-20">
-              <div className="mx-5 mb-6">
-                <img src={sumLogo} alt="Plebes Logo" className="w-full max-w-md" />
-              </div>
-              <p className="mx-5 mb-8 max-w-md text-center text-lg text-white md:text-left">
- Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
-              </p>
-              <div className="flex gap-3 mb-8">
-                <a
-                    href="http://plebes.xyz/auction"
-                    className="rounded-full mx-5 bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                >
-                  Auction
-                </a>
-                <Link
-                    to="/collections"
-                    className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
-                >
-                  Whitepaper
-                </Link>
-              </div>
-            </div>
-
-            {/* Stats Block */}
-            <div className="relative col-span-6 col-start-7 hidden h-full md:flex items-center justify-center">
-              <div className={`stats-card bg-morado-translucido p-8 rounded-lg shadow-lg text-white text-center w-full max-w-md transition-all duration-300 ${balanceIncreased ? 'balance-increase-pulse' : ''}`}>
-                <h3 className="text-3xl font-bold mb-4">Treasury Balance</h3>
-                
-                {isLoading ? (
-                  <div className="loading-animation">
-                    <div className="loading-spinner"></div>
-                    <p className="mt-2">Fetching balance...</p>
-                  </div>
-                ) : (
-                  <div className="balance-display">
-                    <div className="flex justify-center items-center">
-                      <span className="icp-icon">
-                        <img src={icpLogo} alt="ICP" className="icp-logo" />
-                      </span>
-                      <p className="text-4xl font-light tracking-wider">
-                        {displayBalance !== null 
-                          ? displayBalance.toFixed(8)
-                          : '0.00000000'}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
         
-        {/* CoverFlow Slider - Full Width */}
-        <div className="w-full absolute bottom-0 left-0 right-0">
+        {/* CoverFlow Slider - Full Width with lower z-index */}
+        <div className="w-full absolute bottom-0 left-0 right-0 -z-5">
           <div className="relative px-0">
             <Swiper
               breakpoints={{
@@ -266,6 +212,61 @@ export default function Hero() {
                 <path fill="none" d="M0 0h24v24H0z" />
                 <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" />
               </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div className="ml-auto mr-auto h-full max-w-[91rem] px-4 relative z-10">
+          <div className="grid h-full items-center gap-4 md:grid-cols-12">
+            {/* Text Content */}
+            <div className="col-span-5 flex h-full flex-col items-center justify-center py-10 md:items-start lg:py-20">
+              <div className="mx-5 mb-6">
+                <img src={sumLogo} alt="Plebes Logo" className="w-full max-w-md" />
+              </div>
+              <p className="mx-5 mb-8 max-w-md text-center text-lg text-white md:text-left">
+ Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
+              </p>
+              <div className="flex gap-3 mb-8">
+                <a
+                    href="http://plebes.xyz/auction"
+                    className="rounded-full mx-5 bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                >
+                  Auction
+                </a>
+                <Link
+                    to="/collections"
+                    className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                >
+                  Whitepaper
+                </Link>
+              </div>
+            </div>
+
+            {/* Stats Block */}
+            <div className="relative col-span-6 col-start-7 hidden h-full md:flex items-center justify-center">
+              <div className={`stats-card bg-morado-translucido p-8 rounded-lg shadow-lg text-white text-center w-full max-w-md transition-all duration-300 ${balanceIncreased ? 'balance-increase-pulse' : ''}`}>
+                <h3 className="text-3xl font-bold mb-4">Treasury Balance</h3>
+                
+                {isLoading ? (
+                  <div className="loading-animation">
+                    <div className="loading-spinner"></div>
+                    <p className="mt-2">Fetching balance...</p>
+                  </div>
+                ) : (
+                  <div className="balance-display">
+                    <div className="flex justify-center items-center">
+                      <span className="icp-icon">
+                        <img src={icpLogo} alt="ICP" className="icp-logo" />
+                      </span>
+                      <p className="text-4xl font-light tracking-wider">
+                        {displayBalance !== null 
+                          ? displayBalance.toFixed(8)
+                          : '0.00000000'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
