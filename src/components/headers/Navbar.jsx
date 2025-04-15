@@ -71,7 +71,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
                 height={28}
                 src="/img/plebes1b.svg"
                 className="max-h-7 dark:hidden"
-                alt="Xhibiter | NFT Marketplace"
+                alt="Plebes DAO"
               />
             </picture>
             <picture className="hidden dark:block">
@@ -80,7 +80,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
                 height={28}
                 src="/img/plebes1w.svg"
                 className="hidden max-h-7 dark:block"
-                alt="Xhibiter | NFT Marketplace"
+                alt="Plebes DAO"
               />
             </picture>
           </div>
@@ -93,7 +93,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
     <>
       <button
           onClick={() => navigate("/deposit")}
-          className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
+          className="pitch-deck-button mr-4 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text"
       >
       Deposit
       </button>
@@ -101,14 +101,14 @@ export default function Navbar({ bLogin, setModalOpen }) {
         onClick={async () => {
           await login();
         }}
-        className="cursor-pointer rtl:ml-2 js-wallet group flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
+        className="pitch-deck-button cursor-pointer rtl:ml-2 js-wallet group flex h-10 w-10 items-center justify-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           width="24"
           height="24"
-          className="h-4 w-4 fill-jacarta-700 transition-colors group-hover:fill-white group-focus:fill-white dark:fill-white"
+          className="h-4 w-4 fill-white"
         >
           <path fill="none" d="M0 0h24v24H0z" />
           <path d="M22 6h-7a6 6 0 1 0 0 12h7v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2zm-7 2h8v8h-8a4 4 0 1 1 0-8zm0 3v2h3v-2h-3z" />
@@ -121,7 +121,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
     <div className="relative flex items-center">
       <button
         onClick={() => console.log("Launch DAO clicked")}
-        className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
+        className="pitch-deck-button mr-4 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text"
       >
       Deposit
       </button>
@@ -158,14 +158,14 @@ export default function Navbar({ bLogin, setModalOpen }) {
                   onClick={async () => {
                     await login();
                   }}
-                  className="cursor-pointer rtl:ml-2 js-wallet group flex h-10 w-10 items-center justify-center rounded-full border border-jacarta-100 bg-white transition-colors hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:hover:bg-accent"
+                  className="pitch-deck-button cursor-pointer rtl:ml-2 js-wallet group flex h-10 w-10 items-center justify-center"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     width="24"
                     height="24"
-                    className="h-4 w-4 fill-jacarta-700 transition-colors group-hover:fill-white group-focus:fill-white dark:fill-white"
+                    className="h-4 w-4 fill-white"
                   >
                     <path fill="none" d="M0 0h24v24H0z" />
                     <path d="M22 6h-7a6 6 0 1 0 0 12h7v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2zm-7 2h8v8h-8a4 4 0 1 1 0-8zm0 3v2h3v-2h-3z" />
@@ -173,7 +173,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
                 </div>
                 <button
                     onClick={() => navigate("/deposit")}
-                    className="mr-4 h-10 px-4 text-sm font-medium text-jacarta-700 bg-white rounded-full border border-jacarta-100 transition hover:border-transparent hover:bg-accent focus:border-transparent focus:bg-accent dark:border-transparent dark:bg-white/[.15] dark:text-white dark:hover:bg-accent"
+                    className="pitch-deck-button ml-4 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text"
                 >
                 Deposit
                 </button>
@@ -193,7 +193,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
                 </div>
                 <button
                   onClick={() => console.log("Launch DAO clicked")}
-                  className="ml-4 h-10 px-4 text-sm font-medium text-white bg-blue-600 rounded-full transition hover:bg-blue-700 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-600"
+                  className="pitch-deck-button ml-4 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text"
                 >
                 Deposit
                 </button>

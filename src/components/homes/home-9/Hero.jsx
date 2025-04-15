@@ -5,6 +5,7 @@ import { useBioniqContext } from '../../../hooks/BioniqContext';
 import { Link } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
 import './hero.css'
+import './Munro.css'
 // Import sum.svg logo
 import sumLogo from '../../../assets/img/dao/sum.svg';
 import icpLogo from '../../../assets/img/hero/icp_icon.png';
@@ -158,7 +159,7 @@ export default function Hero() {
                         <div className="flex">
                           <div>
                             <Link to={`/item/${elm.item.id}`} className="block">
-                              <span className="font-display text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white flex items-center">
+                              <span className="font-display text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white flex items-center munro-small-text">
                                 <img
                                   src="/img/ckBTC.svg"
                                   alt="ckBTC Icon"
@@ -167,7 +168,7 @@ export default function Hero() {
                                 {" "+(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD              
                               </span>
                             </Link>
-                            <a href="#" className="text-2xs text-accent">
+                            <a href="#" className="text-2xs text-accent munro-narrow-text">
                               {elm.metadata.buyer.slice(0, 5)}...{elm.metadata.buyer.slice(-5)}
                             </a>
                           </div>
@@ -181,7 +182,7 @@ export default function Hero() {
                   <article>
                     <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
                       <div className="p-6 text-center">
-                        <p className="text-lg">No historical transactions available</p>
+                        <p className="text-lg munro-regular-text">No historical transactions available</p>
                       </div>
                     </div>
                   </article>
@@ -223,19 +224,19 @@ export default function Hero() {
               <div className="mx-5 mb-6">
                 <img src={sumLogo} alt="Plebes Logo" className="w-full max-w-md" />
               </div>
-              <p className="mx-5 mb-8 max-w-md text-center text-lg text-white md:text-left">
+              <p className="mx-5 mb-8 max-w-md text-center text-3xl text-white md:text-left munro-regular-text">
  Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
               </p>
               <div className="flex gap-3 mb-8">
                 <a
                     href="http://plebes.xyz/auction"
-                    className="rounded-full mx-5 bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                    className="pitch-deck-button text-xl mx-5 py-3 px-8 text-center font-semibold text-white transition-all munro-narrow"
                 >
                   Auction
                 </a>
                 <Link
                     to="/collections"
-                    className="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+                    className="pitch-deck-button text-xl py-3 px-8 text-center font-semibold text-white transition-all munro-narrow"
                 >
                   Whitepaper
                 </Link>
@@ -245,20 +246,19 @@ export default function Hero() {
             {/* Stats Block */}
             <div className="relative col-span-6 col-start-7 hidden h-full md:flex items-center justify-center">
               <div className={`stats-card bg-morado-translucido p-8 rounded-lg shadow-lg text-white text-center w-full max-w-md transition-all duration-300 ${balanceIncreased ? 'balance-increase-pulse' : ''}`}>
-                <h3 className="text-3xl font-bold mb-4">Treasury Balance</h3>
+                <h3 className="text-3xl font-bold mb-4 munro-regular-heading">Treasury Balance</h3>
                 
                 {isLoading ? (
                   <div className="loading-animation">
                     <div className="loading-spinner"></div>
-                    <p className="mt-2">Fetching balance...</p>
+                    <p className="mt-2 munro-small-text">Fetching balance...</p>
                   </div>
                 ) : (
                   <div className="balance-display">
                     <div className="flex justify-center items-center">
                       <span className="icp-icon">
-                        <img src={icpLogo} alt="ICP" className="icp-logo" />
                       </span>
-                      <p className="text-4xl font-light tracking-wider">
+                      <p className="text-3xl font-light tracking-wider munro-regular-text">
                         {displayBalance !== null 
                           ? displayBalance.toFixed(8)
                           : '0.00000000'}

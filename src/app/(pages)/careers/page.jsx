@@ -5,9 +5,6 @@ import PageTitle from "@/components/pages/career/PageTitle";
 import Perks from "@/components/pages/career/Perks";
 import Positions from "@/components/pages/career/Positions";
 
-export const metadata = {
-  title: "Careers || Xhibiter | NFT Marketplace Nextjs Template",
-};
 
 export default function CareerPage() {
   return (

@@ -9,6 +9,104 @@
     background-color: rgba(65, 11, 11, 0.697); /* Morado más intenso con 50% de opacidad */
 }
 
+/* Pitch Deck Button Styling - Pixel Art Border */
+.pitch-deck-button {
+    position: relative;
+    background: linear-gradient(90deg, #4338ca, #7c3aed);
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+    border: 2px solid transparent;
+}
+
+.pitch-deck-button::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(90deg, #5b21b6, #9333ea, #8b5cf6, #c026d3);
+    border-radius: 9999px;
+    z-index: -1;
+    background-size: 400% 400%;
+    animation: borderAnimation 3s ease infinite;
+}
+
+.pitch-deck-button::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 9999px;
+    border: 2px solid white;
+    border-style: solid;
+    filter: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='pixelate'><feFlood x='0' y='0' height='1' width='1' flood-color='white' result='color'/><feComponentTransfer in='SourceAlpha'><feFuncA type='discrete' tableValues='0 1 1 1'/></feComponentTransfer><feComposite operator='in' in='color'/></filter></svg>#pixelate");
+    pointer-events: none;
+}
+
+@keyframes borderAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.pitch-deck-button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* Wallet Icon Style for perfect centering */
+.js-wallet svg {
+    display: block;
+    margin: auto;
+}
+
+/* Gradient border button styling */
+.gradient-border {
+    position: relative;
+    background: linear-gradient(to right, #6037a9, #7638c2);
+    padding: 3px !important;
+    border-radius: 9999px;
+    display: inline-block;
+    z-index: 1;
+}
+
+.gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    padding: 2px;
+    background: linear-gradient(45deg, #6037a9, #ff5158);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1;
+}
+
+.gradient-border:hover::before {
+    background: linear-gradient(45deg, #7a47d5, #ff6c73);
+}
+
+.gradient-border > * {
+    display: block;
+    background-color: transparent;
+    border-radius: 9999px;
+    padding: 0.75rem 2rem;
+}
 
 /* Efecto de escala al hacer hover */
 .section:hover {

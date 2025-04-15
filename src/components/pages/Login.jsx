@@ -22,7 +22,7 @@ export default function Login() {
               height={28}
               src="/img/logo_white.png"
               className="inline-block max-h-7"
-              alt="Xhibiter | NFT Marketplace"
+              alt="Plebes DAO"
             />
           </Link>
         </div>

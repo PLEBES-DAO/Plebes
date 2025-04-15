@@ -2,10 +2,6 @@ import Footer1 from "@/components/footer/Footer1";
 import Header1 from "@/components/headers/Navbar";
 import Blogs from "@/components/resources/Blogs";
 
-export const metadata = {
-  title: "Blog || Xhibiter | NFT Marketplace Nextjs Template",
-};
-
 export default function BlogPage() {
   return (
     <>

@@ -433,7 +433,7 @@ export default function Create() {
                     Set this item as explicit and sensitive content.
                     <span
                       className="inline-block"
-                      data-tippy-content="Setting your asset as explicit and sensitive content, like pornography and other not safe for work (NSFW) content, will protect users with safe search while browsing Xhibiter."
+                      data-tippy-content="Setting your asset as explicit and sensitive content, like pornography and other not safe for work (NSFW) content, will protect users with safe search while browsing."
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -472,7 +472,7 @@ export default function Create() {
                 The number of items that can be minted. No gas cost to you!
                 <span
                   className="inline-block"
-                  data-tippy-content="Setting your asset as explicit and sensitive content, like pornography and other not safe for work (NSFW) content, will protect users with safe search while browsing Xhibiter."
+                  data-tippy-content="Setting your asset as explicit and sensitive content, like pornography and other not safe for work (NSFW) content, will protect users with safe search while browsing."
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

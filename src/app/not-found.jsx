@@ -2,9 +2,7 @@ import Footer1 from "@/components/footer/Footer1";
 import Header1 from "@/components/headers/Navbar";
 import NotFound from "@/components/pages/404";
 
-export const metadata = {
-  title: "Not Found || Xhibiter | NFT Marketplace Nextjs Template",
-};
+
 export default function NotFoundPage() {
   return (
     <>

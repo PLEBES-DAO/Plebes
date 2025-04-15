@@ -22,12 +22,39 @@
     align-items: center;
     font-size: 24px;
     margin: 10px 0;
+    position: relative;
+    font-family: 'Munro Small', sans-serif !important;
+    color: #4338ca;
+    font-weight: bold;
+    border: 2px solid #7c3aed;
 }
 
 .line {
     width: 2px;
     height: 40px;
-    background-color: white;
+    background: linear-gradient(180deg, #7c3aed, #4338ca);
+}
+
+/* Estilos de los select e inputs */
+select, input[type="text"], input[type="number"] {
+    font-family: 'Munro Small', sans-serif !important;
+    background-image: linear-gradient(45deg, #1f1d3380, #2d2a5a80);
+    border: 1px solid #7c3aed !important;
+    color: white !important;
+}
+
+/* Estilo para las opciones de select */
+option {
+    font-family: 'Munro Small', sans-serif !important;
+    background-color: #1f1d33;
+    color: white;
+}
+
+/* Paso activo en la línea de tiempo */
+.circle.active {
+    background: linear-gradient(90deg, #4338ca, #7c3aed);
+    color: white;
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
 }
 
 @keyframes fadeIn {
@@ -41,6 +68,27 @@
 
 .animate-fadeIn {
     animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Animación de pulso para botones al hacer hover */
+@keyframes buttonPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pitch-deck-button:hover {
+    animation: buttonPulse 1s infinite;
+}
+
+/* Estilo para el QR code */
+.grid-cols-1 svg {
+    border: 4px solid white;
+    background: white;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
 }
 
 /* Add this to your Deposit.css file */

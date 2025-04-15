@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { FaCheck } from "react-icons/fa";
 import { useBioniqContext } from "../../../hooks/BioniqContext";
+import "../../../components/homes/home-9/Munro.css";
 
 const enableBlurIfNoWallet = false; // Poner en true para activar el efecto Blur cuando no hay wallet activada
 
@@ -206,7 +207,7 @@ const aggregatorTokens = {
   },
 };
 
-// “minimum deposit”
+// "minimum deposit"
 async function fetchMinDepositExample(symbol, network, isUSD) {
   // Placeholder: en producción se conectaría con el backend
   return isUSD ? "10 USD" : "0.01 " + symbol;
@@ -222,6 +223,25 @@ export default function AuctionPage({ login, setModalOpenT }) {
     <>
       <Navbar bLogin={login} setModalOpen={setModalOpenT} />
       <main>
+        {/* Background with overlay */}
+        <div 
+          className="fixed inset-0 -z-10" 
+          style={{ 
+            backgroundImage: "url('/img/background.png')", 
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          {/* Semi-transparent overlay with #0d102d base color */}
+          <div 
+            className="absolute inset-0" 
+            style={{ 
+              backgroundColor: "#0d102d", 
+              opacity: 0.90,
+            }}
+          ></div>
+        </div>
+        
         <TokenRow />
       </main>
       <Footer1 />
@@ -245,7 +265,7 @@ const TokenRow = () => {
   const [useUsd, setUseUsd] = useState(false);
   const [minDeposit, setMinDeposit] = useState("");
 
-  // Step en la caja derecha (1..5). 1 => “Connect wallet”
+  // Step en la caja derecha (1..5). 1 => "Connect wallet"
   const [rightStep, setRightStep] = useState(1);
 
   function mapStatusToStep(status) {
@@ -434,19 +454,18 @@ const TokenRow = () => {
       : "none";
 
   return (
-    <section className="relative  lg:py-24">
-      <div className="mx-4 mb-4 text-white">
+    <section className="relative h-screen">
+      <div className="mx-4 pt-32 mb-4 text-white">
         {wallets?.ckBTC?.walletAddressForDisplay
           ? `Wallet connected: ${wallets.ckBTC.walletAddressForDisplay}`
           : "Account not detected. Please log in."}
       </div>
 
       <div className="mx-4">
-        <span className="text-white">Multichain deposit</span>
-        <hr className="border-white" />
+        <span className="text-white munro-regular-heading">Multichain deposit</span>
       </div>
 
-      <div className="flex flex-col lg:flex-row w-full">
+      <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)]">
         <div
           className="w-full lg:w-1/2 flex justify-start items-start mx-4 px-4"
           style={{ filter: leftBoxBlur }}
@@ -454,13 +473,13 @@ const TokenRow = () => {
           <div className="timeline-container w-full">
             <div className="timeline-item flex">
             <div className="hidden md:flex flex-col items-center">
-            <div className="circle">1</div>
+            <div className={`circle munro-small ${rightStep >= 1 ? 'active' : ''}`}>1</div>
                 <div className="line"></div>
-                <div className="circle">2</div>
+                <div className={`circle munro-small ${rightStep >= 2 ? 'active' : ''}`}>2</div>
                 <div className="line" style={{ height: "5.5rem" }}></div>
-                <div className="circle">3</div>
+                <div className={`circle munro-small ${rightStep >= 3 ? 'active' : ''}`}>3</div>
                 <div className="line" style={{ height: "1.5rem" }}></div>
-                <div className="circle">4</div>
+                <div className={`circle munro-small ${rightStep >= 4 ? 'active' : ''}`}>4</div>
               </div>
 
               {/* Form */}
@@ -469,7 +488,7 @@ const TokenRow = () => {
                 <div className="mb-8">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
                         Select Token
                       </label>
                       <div className="flex items-center space-x-2">
@@ -479,7 +498,7 @@ const TokenRow = () => {
                             setSelectedToken(e.target.value);
                             setSelectedNetworkIndex(0);
                           }}
-                          className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
+                          className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
                         >
                           {Object.keys(aggregatorTokens).map((tk) => (
                             <option key={tk} value={tk}>
@@ -493,13 +512,13 @@ const TokenRow = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
                         Select Network
                       </label>
                       <select
                         value={selectedNetworkIndex}
                         onChange={(e) => setSelectedNetworkIndex(Number(e.target.value))}
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600"
+                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
                       >
                         {tokenObj?.networks.map((opt, idx) => (
                           <option key={idx} value={idx}>
@@ -513,7 +532,7 @@ const TokenRow = () => {
 
                 {/* Amount + toggle USD */}
                 <div className="mb-8">
-                  <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                  <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
                     {useUsd ? "Amount (USD)" : "Amount (Token)"}
                   </label>
 
@@ -535,6 +554,7 @@ const TokenRow = () => {
         focus:border-accent
         text-jacarta-100
         dark:bg-jacarta-600
+        munro-small
       "
                       placeholder={useUsd ? "0.00 USD" : "0.00"}
                     />
@@ -551,9 +571,10 @@ const TokenRow = () => {
         bg-accent
         text-white
         rounded
+        munro-narrow
       "
                     >
-                      {/* Ícono de intercambio (Heroicons ‘switch-vertical’) */}
+                      {/* Ícono de intercambio (Heroicons 'switch-vertical') */}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5"
@@ -571,7 +592,7 @@ const TokenRow = () => {
                     </button>
                   </div>
 
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400 mt-1 munro-small-text">
                     Minimum deposit: {minDeposit || "0.00"}
                   </p>
                 </div>
@@ -581,7 +602,7 @@ const TokenRow = () => {
                 <div className="mb-8">
                   <button
                     onClick={handleCreateExchange}
-                    className="px-4 py-2 bg-accent text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent"
+                    className="pitch-deck-button px-4 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
                     disabled={loading || !wallets?.ckBTC?.walletAddressForDisplay}
                   >
                     {loading ? "Processing..." : "Start"}
@@ -591,7 +612,7 @@ const TokenRow = () => {
                 {/* Deposit Info */}
                 <div>
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
                       Deposit to this wallet
                     </label>
                     <div className="relative">
@@ -601,7 +622,7 @@ const TokenRow = () => {
                           apiResponse?.details?.deposit?.address || "0x1234567890abcdef"
                         }
                         readOnly
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12"
+                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
                       />
                       <button
                         onClick={() =>
@@ -610,7 +631,7 @@ const TokenRow = () => {
                             "0x1234567890abcdef"
                           )
                         }
-                        className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-accent hover:bg-accent-dark text-white rounded-md text-sm"
+                        className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
                       >
                         Copy
                       </button>
@@ -620,7 +641,7 @@ const TokenRow = () => {
 
                   {apiResponse?.details?.deposit?.extra_id && (
                     <div className="mb-4">
-                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
                         Memo
                       </label>
                       <div className="relative">
@@ -628,13 +649,13 @@ const TokenRow = () => {
                           type="text"
                           value={apiResponse.details.deposit.extra_id}
                           readOnly
-                          className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12"
+                          className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
                         />
                         <button
                           onClick={() =>
                             navigator.clipboard.writeText(apiResponse.details.deposit.extra_id)
                           }
-                          className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-accent hover:bg-accent-dark text-white rounded-md text-sm"
+                          className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
                         >
                           Copy
                         </button>
@@ -643,7 +664,7 @@ const TokenRow = () => {
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100">
+                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
                       Deposit this quantity
                     </label>
                     <div className="relative">
@@ -656,7 +677,7 @@ const TokenRow = () => {
                             : "0.00"
                         }
                         readOnly
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12"
+                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
                       />
                       <button
                         onClick={() =>
@@ -664,7 +685,7 @@ const TokenRow = () => {
                             apiResponse?.details?.deposit?.amount || "0.00"
                           )
                         }
-                        className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-accent hover:bg-accent-dark text-white rounded-md text-sm"
+                        className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
                       >
                         Copy
                       </button>
@@ -678,7 +699,7 @@ const TokenRow = () => {
 
         {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
         <div className="w-full lg:w-1/2 flex flex-col justify-start items-center p-8">
-          <div className="w-full max-w-md bg-jacarta-800 rounded-lg shadow-lg p-8 min-h-[800px]">
+          <div className="w-full max-w-md bg-jacarta-800 rounded-lg shadow-lg p-8 min-h-[600px]">
             <div className="relative w-full h-40">
               <div className="absolute w-full flex justify-between items-center px-12">
                 <div className="h-1 bg-white absolute left-0 right-0 top-1/2 -translate-y-1/2 z-0"></div>
@@ -687,7 +708,7 @@ const TokenRow = () => {
                   return (
                     <div
                       key={num}
-                      className={`w-12 h-12 text-lg font-bold rounded-full flex items-center justify-center z-10 transition-colors duration-300 ${isActive ? "bg-accent text-white" : "bg-white text-jacarta-800"
+                      className={`w-12 h-12 text-lg font-bold rounded-full flex items-center justify-center z-10 transition-colors duration-300 munro-small ${isActive ? "bg-accent text-white" : "bg-white text-jacarta-800"
                         }`}
                     >
                       {num}
@@ -700,41 +721,41 @@ const TokenRow = () => {
             <div className="mt-24 text-center text-white">
               {rightStep === 1 && (
                 <div>
-                  <h3 className="text-3xl font-bold mb-6">Connect Wallet</h3>
-                  <p className="text-xl">Unlock multichain deposits</p>
+                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Connect Wallet</h3>
+                  <p className="text-xl munro-small-text">Unlock multichain deposits</p>
                 </div>
               )}
               {rightStep === 2 && (
                 <div>
-                  <h3 className="text-3xl font-bold mb-6">Awaiting deposit</h3>
-                  <p className="text-xl">Send the specified amount to continue</p>
+                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Awaiting deposit</h3>
+                  <p className="text-xl munro-small-text">Send the specified amount to continue</p>
                 </div>
               )}
               {rightStep === 3 && (
                 <div>
-                  <h3 className="text-3xl font-bold mb-6">Receiving tokens</h3>
-                  <p className="text-xl">Your deposit is being processed</p>
+                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Receiving tokens</h3>
+                  <p className="text-xl munro-small-text">Your deposit is being processed</p>
                 </div>
               )}
               {rightStep === 4 && (
                 <div>
-                  <h3 className="text-3xl font-bold mb-6">
+                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">
                     Swapping tokens to ckBTC
                   </h3>
-                  <p className="text-xl">Converting your tokens</p>
+                  <p className="text-xl munro-small-text">Converting your tokens</p>
                 </div>
               )}
               {rightStep === 5 && (
                 <div>
                   {status === "finished" ? (
                     <>
-                      <h3 className="text-3xl font-bold mb-6">Balance updated</h3>
-                      <p className="text-xl">Check your wallet for new ckBTC</p>
+                      <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Balance updated</h3>
+                      <p className="text-xl munro-small-text">Check your wallet for new ckBTC</p>
                     </>
                   ) : (
                     <>
-                      <h3 className="text-3xl font-bold mb-6">Sending ckBTC</h3>
-                      <p className="text-xl">Finalizing your transaction</p>
+                      <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Sending ckBTC</h3>
+                      <p className="text-xl munro-small-text">Finalizing your transaction</p>
                     </>
                   )}
                 </div>
@@ -748,12 +769,12 @@ const TokenRow = () => {
       {!isError && apiResponse?.details && (
         <div>
           <div className="mt-6 p-4 bg-jacarta-800 rounded-lg shadow-sm dark:bg-jacarta-700 relative">
-            <h2 className="text-lg font-medium text-jacarta-100 mb-4">
+            <h2 className="text-lg font-medium text-jacarta-100 mb-4 munro-regular-heading">
               Exchange Details
             </h2>
             <button
               onClick={() => setShowModal(true)}
-              className="absolute top-4 right-4 text-red-500 hover:text-red-700"
+              className="pitch-deck-button absolute top-4 right-4 text-white hover:text-red-300 munro-narrow"
             >
               X
             </button>
@@ -763,32 +784,32 @@ const TokenRow = () => {
                   value={apiResponse.details.deposit.address}
                   size={300}
                 />
-                <span className="block text-jacarta-100 break-all">
+                <span className="block text-jacarta-100 break-all munro-small-text">
                   {apiResponse.details.deposit.address}
                 </span>
               </div>
               <div className="flex flex-col items-center">
-                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100">
+                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading">
                   Deposit Amount:
                 </span>
-                <span className="text-jacarta-100">
+                <span className="text-jacarta-100 munro-small-text">
                   {apiResponse.details.deposit.amount}{" "}
                   {apiResponse.details.deposit.symbol?.toUpperCase() || ""}
                 </span>
               </div>
               {apiResponse.details.id && (
                 <div className="flex flex-col items-center">
-                  <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100">
+                  <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading">
                     StealthEX ID:
                   </span>
-                  <span className="text-jacarta-100">{apiResponse.details.id}</span>
+                  <span className="text-jacarta-100 munro-small-text">{apiResponse.details.id}</span>
                 </div>
               )}
               <div className="flex flex-col items-center">
-                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100">
+                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading">
                   Status:
                 </span>
-                <span className="text-jacarta-100">{status}</span>
+                <span className="text-jacarta-100 munro-small-text">{status}</span>
               </div>
             </div>
           </div>
@@ -798,7 +819,7 @@ const TokenRow = () => {
 
       {isError && (
         <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
-          <p className="text-red-100">
+          <p className="text-red-100 munro-small-text">
             <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
           </p>
         </div>
@@ -809,30 +830,30 @@ const TokenRow = () => {
           <div className="spinner-border animate-spin text-accent" role="status">
             <span className="sr-only">Loading...</span>
           </div>
-          <span className="ml-2 text-jacarta-100">{status}</span>
+          <span className="ml-2 text-jacarta-100 munro-small-text">{status}</span>
         </div>
       )}
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">
+            <h3 className="text-lg font-medium text-gray-800 mb-4 munro-regular-heading">
               Are you sure you want to delete this exchange details?
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 mb-4 munro-small-text">
               If you already deposited, wait for the deposit to go through, or you
               will need to manually convert your funds.
             </p>
             <div className="flex justify-end gap-4">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                className="pitch-deck-button px-4 py-2 text-white rounded-lg hover:bg-gray-300 munro-narrow"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteExchange}
-                className="px-4 py-2 bg-red-500 text-gray-800 rounded-lg hover:bg-red-600"
+                className="pitch-deck-button px-4 py-2 text-white rounded-lg hover:bg-red-600 munro-narrow"
               >
                 Delete
               </button>
@@ -862,8 +883,8 @@ function SwapSteps({ tokenName = "ICP" }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="max-w-md mx-auto p-6 bg-jacarta-800 rounded-lg shadow-lg">
-        <h2 className="text-lg font-medium text-white mb-4">Swap Details</h2>
-        <p className="text-sm text-jacarta-300 mb-6">
+        <h2 className="text-lg font-medium text-white mb-4 munro-regular-heading">Swap Details</h2>
+        <p className="text-sm text-jacarta-300 mb-6 munro-small-text">
           If you have sufficient balance in the swap pool, you may be able to swap
           directly without needing to deposit.
         </p>
@@ -874,7 +895,7 @@ function SwapSteps({ tokenName = "ICP" }) {
               className="flex items-center space-x-4 p-3 rounded-lg bg-jacarta-700"
             >
               <div
-                className={`flex items-center justify-center w-8 h-8 rounded-full ${step.id <= swapStep
+                className={`flex items-center justify-center w-8 h-8 rounded-full munro-small ${step.id <= swapStep
                     ? "bg-green-500 text-white"
                     : "bg-gray-500 text-gray-300"
                   }`}
@@ -883,7 +904,7 @@ function SwapSteps({ tokenName = "ICP" }) {
               </div>
               <div className="flex items-center space-x-2">
                 <p
-                  className={`text-sm font-medium ${step.id <= swapStep ? "text-white" : "text-jacarta-400"
+                  className={`text-sm font-medium munro-narrow-text ${step.id <= swapStep ? "text-white" : "text-jacarta-400"
                     }`}
                 >
                   {step.title}
@@ -897,7 +918,7 @@ function SwapSteps({ tokenName = "ICP" }) {
         </div>
         <button
           onClick={() => setSwapStep(0)}
-          className="mt-6 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          className="pitch-deck-button mt-6 px-4 py-2 text-white rounded-lg hover:bg-red-600 munro-narrow"
         >
           Close
         </button>

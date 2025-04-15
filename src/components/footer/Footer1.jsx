@@ -17,7 +17,7 @@ export default function Footer1() {
                 height={28}
                 src="/img/plebes1w.svg"
                 className="max-h-7 dark:hidden"
-                alt="Xhibiter | NFT Marketplace"
+                alt="Plebes DAO"
               />
             </Link>
             <p className="mb-12 dark:text-jacarta-300">

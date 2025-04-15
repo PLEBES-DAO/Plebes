@@ -1,0 +1,64 @@
+@font-face {
+    font-family: 'Munro';
+    src: url('./munro.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Munro Narrow';
+    src: url('./munro-narrow.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Munro Small';
+    src: url('./munro-small.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Regular Munro font classes */
+.munro-regular {
+    font-family: 'Munro', sans-serif !important;
+}
+
+.munro-regular-heading {
+    font-family: 'Munro', sans-serif !important;
+    font-weight: bold;
+}
+
+.munro-regular-text {
+    font-family: 'Munro', sans-serif !important;
+}
+
+/* Narrow Munro font classes */
+.munro-narrow {
+    font-family: 'Munro Narrow', sans-serif !important;
+}
+
+.munro-narrow-heading {
+    font-family: 'Munro Narrow', sans-serif !important;
+    font-weight: bold;
+}
+
+.munro-narrow-text {
+    font-family: 'Munro Narrow', sans-serif !important;
+}
+
+/* Small Munro font classes */
+.munro-small {
+    font-family: 'Munro Small', sans-serif !important;
+}
+
+.munro-small-heading {
+    font-family: 'Munro Small', sans-serif !important;
+    font-weight: bold;
+}
+
+.munro-small-text {
+    font-family: 'Munro Small', sans-serif !important;
+}
+
+

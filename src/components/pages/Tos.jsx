@@ -21,7 +21,7 @@ export default function Tos() {
           <h2 className="text-base">Introduction</h2>
           <p>
             These Terms of Service (“Terms”) govern your access to and use of
-            the Xhibiter website(s), our APIs, mobile app (the “App”), and any
+            the Plebes DAO website(s), our APIs, mobile app (the “App”), and any
             other software, tools, features, or functionalities provided on or
             in connection with our services; including without limitation using
             our services to view, explore, and create NFTs and use our tools, at
@@ -54,8 +54,8 @@ export default function Tos() {
           </p>
 
           <p>
-            Xhibiter is not a wallet provider, exchange, broker, financial
-            institution, or creditor. Xhibiter provides a peer-to-peer web3
+            Plebes DAO is not a wallet provider, exchange, broker, financial
+            institution, or creditor. Plebes DAO provides a peer-to-peer web3
             service that helps users discover and directly interact with each
             other and NFTs available on public blockchains. We do not have
             custody or control over the NFTs or blockchains you are interacting
@@ -83,9 +83,9 @@ export default function Tos() {
             images, logos, page headers, button icons, and scripts), proprietary
             content, information and other materials, and all content and other
             materials contained therein, including, without limitation, the
-            Xhibiter logo and all designs, text, graphics, pictures, data,
+            Plebes DAO logo and all designs, text, graphics, pictures, data,
             software, sound files, other files, and the selection and
-            arrangement thereof are the proprietary property of Xhibiter or our
+            arrangement thereof are the proprietary property of Plebes DAO or our
             affiliates, licensors, or users, as applicable, and you agree not to
             take any action(s) inconsistent with such ownership interests. We
             and our affiliates, licensors, and users, as applicable, reserve all
@@ -140,11 +140,11 @@ export default function Tos() {
           <h2>Miscellaneous</h2>
 
           <p>
-            These Terms constitute the entire agreement between you and Xhibiter
+            These Terms constitute the entire agreement between you and Plebes DAO
             relating to your access to and use of the Service. These Terms, and
             any rights and licenses granted hereunder, may not be transferred or
-            assigned by you without the prior written consent of Xhibiter, and
-            Xhibiter’s failure to assert any right or provision under these
+            assigned by you without the prior written consent of Plebes DAO, and
+            Plebes DAO’s failure to assert any right or provision under these
             Terms shall not constitute a waiver of such right or provision. No
             waiver by either party of any breach or default hereunder shall be
             deemed to be a waiver of any preceding or subsequent breach or
@@ -156,7 +156,7 @@ export default function Tos() {
             The Service is operated by us in the United States. Those who choose
             to access the Service from locations outside the United States do so
             at their own initiative and are responsible for compliance with
-            applicable local laws. You and Xhibiter agree that the United
+            applicable local laws. You and Plebes DAO agree that the United
             Nations Convention on Contracts for the International Sale of Goods
             will not apply to the interpretation or construction of these Terms.
           </p>
