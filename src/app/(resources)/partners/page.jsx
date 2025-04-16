@@ -7,10 +7,6 @@ import Process from "@/components/resources/partners/Process";
 import Testimonials from "@/components/resources/partners/Testimonials";
 import Image from "../../../components/common/Image";
 
-export const metadata = {
-  title: "Partners || Xhibiter | NFT Marketplace Nextjs Template",
-};
-
 export default function PartnersPage() {
   return (
     <>

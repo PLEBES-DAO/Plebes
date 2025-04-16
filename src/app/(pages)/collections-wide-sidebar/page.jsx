@@ -2,10 +2,6 @@ import Footer1 from "@/components/footer/Footer1";
 import Header1 from "@/components/headers/Navbar";
 import Collections from "@/components/pages/collections-wide-sidebar/Collections";
 
-export const metadata = {
-  title:
-    "Collcetions Wide Sidebar || Xhibiter | NFT Marketplace Nextjs Template",
-};
 
 export default function CollectionWideSidebarPage() {
   return (

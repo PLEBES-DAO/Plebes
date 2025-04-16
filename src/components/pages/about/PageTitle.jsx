@@ -15,7 +15,7 @@ export default function PageTitle() {
       <div className="container">
         <div className="mx-auto max-w-2xl py-16 text-center">
           <h1 className="mb-8 font-display text-4xl font-medium text-jacarta-700 dark:text-white">
-            About Xhibiter
+            About Plebes DAO
           </h1>
           <p className="text-lg leading-normal dark:text-jacarta-300">
             Every digital creation available through MakersPlace is an authentic

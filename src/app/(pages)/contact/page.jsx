@@ -3,9 +3,6 @@ import Header1 from "@/components/headers/Navbar";
 import Contact from "@/components/pages/contact/Contact";
 import PageTitle from "@/components/pages/contact/PageTitle";
 
-export const metadata = {
-  title: "Contact || Xhibiter | NFT Marketplace Nextjs Template",
-};
 
 export default function ContactPage() {
   return (

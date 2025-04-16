@@ -4,10 +4,6 @@ import Banner from "@/components/pages/user/Banner";
 import Collcetions from "@/components/pages/user/Collcetions";
 import Profile from "@/components/pages/user/Profile";
 
-export const metadata = {
-  title: "User || Xhibiter | NFT Marketplace Nextjs Template",
-};
-
 export default function UserPage() {
   return (
     <>

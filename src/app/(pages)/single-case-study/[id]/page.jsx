@@ -7,9 +7,6 @@ import Post from "@/components/pages/case-studies/Post";
 import RelatedPost from "@/components/pages/case-studies/RelatedPost";
 import Result from "@/components/pages/case-studies/Result";
 
-export const metadata = {
-  title: "Case Study Details || Xhibiter | NFT Marketplace Nextjs Template",
-};
 
 export default function CaseStudyDetailsPage({ params }) {
   return (

@@ -3,10 +3,6 @@ import Header5 from "@/components/headers/Header5";
 import PageTitle from "@/components/resources/platform-status/PageTitle";
 import Status from "@/components/resources/platform-status/Status";
 
-export const metadata = {
-  title: "Platform Status || Xhibiter | NFT Marketplace Nextjs Template",
-};
-
 export default function PlatformStatusPage() {
   return (
     <>

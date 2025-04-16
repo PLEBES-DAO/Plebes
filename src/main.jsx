@@ -9,7 +9,7 @@ import "swiper/css";
 // import "swiper/css/pagination";
 import "tippy.js/dist/tippy.css";
 import "react-modal-video/css/modal-video.css";
-import { Buffer } from 'buffer/'
+// The Buffer and process imports are now handled by vite-plugin-node-polyfills
 
 if (typeof window !== "undefined") {
   // Import the script only on the client side
@@ -17,15 +17,10 @@ if (typeof window !== "undefined") {
     // Module is imported, you can access any exported functionality if
   });
 }
-globalThis.Buffer = Buffer
 
-import process from 'process/browser';
-
-window.Buffer = Buffer;
-window.process = process;
+// These globals are automatically provided by vite-plugin-node-polyfills
 // init.js
 window.global ||= window;
-
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -6,10 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { useEffect, useState } from "react";
 
-
-export const metadata = {
-    title: "Home 9 || Xhibiter | NFT Marketplace Nextjs Template",
-};
 export default function OwnedPage({ login, inscriptions, loading, setModalOpen }) {
     const navigate = useNavigate();
     useEffect(() => {

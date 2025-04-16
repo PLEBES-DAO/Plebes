@@ -2,10 +2,6 @@ import Footer1 from "@/components/footer/Footer1";
 import Header1 from "@/components/headers/Navbar";
 import SinglePost from "@/components/resources/SinglePost";
 
-export const metadata = {
-  title: "Single Post || Xhibiter | NFT Marketplace Nextjs Template",
-};
-
 export default function SinglePostPage({ params }) {
   return (
     <>
