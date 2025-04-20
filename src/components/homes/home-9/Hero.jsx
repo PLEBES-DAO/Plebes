@@ -100,6 +100,7 @@ export default function Hero() {
         {/* CoverFlow Slider - Full Width with lower z-index */}
         <div className="w-full absolute bottom-0 left-0 right-0 -z-5">
           <div className="relative px-0">
+            {/*
             <Swiper
               breakpoints={{
                 100: {
@@ -214,6 +215,7 @@ export default function Hero() {
                 <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" />
               </svg>
             </div>
+            */}
           </div>
         </div>
         
@@ -221,10 +223,10 @@ export default function Hero() {
           <div className="grid h-full items-center gap-4 md:grid-cols-12">
             {/* Text Content */}
             <div className="col-span-5 flex h-full flex-col items-center justify-center py-10 md:items-start lg:py-20">
-              <div className="mx-5 mb-6">
+              <div className="mx-4 mb-6">
                 <img src={sumLogo} alt="Plebes Logo" className="w-full max-w-md" />
               </div>
-              <p className="mx-5 mb-8 max-w-md text-center text-3xl text-white md:text-left munro-regular-text">
+              <p className="mx-5 mb-8 w-full text-center text-4xl text-white md:text-left munro-regular-text">
  Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
               </p>
               <div className="flex gap-3 mb-8">

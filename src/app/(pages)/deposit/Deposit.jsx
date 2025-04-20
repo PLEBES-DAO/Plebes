@@ -245,7 +245,6 @@ export default function AuctionPage({ login, setModalOpenT }) {
         
         <TokenRow />
       </main>
-      <Footer1 />
     </>
   );
 }
@@ -471,7 +470,7 @@ const TokenRow = () => {
         </div>
       </div>
 
-      <div className="mx-4">
+      <div className="mx-4 text-center md:text-left">
         <span className="text-white munro-regular-heading">Multichain deposit</span>
       </div>
 
@@ -482,8 +481,8 @@ const TokenRow = () => {
         >
           <div className="timeline-container w-full">
             <div className="timeline-item flex">
-            <div className="hidden md:flex flex-col items-center">
-            <div className={`circle munro-small ${rightStep >= 1 ? 'active' : ''}`}>1</div>
+              <div className="flex flex-col items-center">
+                <div className={`circle munro-small ${rightStep >= 1 ? 'active' : ''}`}>1</div>
                 <div className="line" style={{ height: "8rem" }}></div>
                 <div className={`circle munro-small ${rightStep >= 2 ? 'active' : ''}`}>2</div>
                 <div className="line" style={{ height: "5.5rem" }}></div>
@@ -493,7 +492,7 @@ const TokenRow = () => {
               </div>
 
               {/* Form */}
-              <div className="md w-md: ml-8 flex-1">
+              <div className="ml-8 flex-1">
                 {/* Select token+network */}
                 <div className="mb-8">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -501,14 +500,16 @@ const TokenRow = () => {
                       <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
                         Select Token
                       </label>
-                      <div className="flex items-center space-x-2">
+                      {/* Wrap select and image in a relative container */}
+                      <div className="relative flex items-center">
                         <select
                           value={selectedToken}
                           onChange={(e) => {
                             setSelectedToken(e.target.value);
                             setSelectedNetworkIndex(0);
                           }}
-                          className="w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
+                          // Change padding to right padding for the image
+                          className="w-full md:w-48 p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none" // Changed pl-8 to pr-8
                         >
                           {Object.keys(aggregatorTokens).map((tk) => (
                             <option key={tk} value={tk}>
@@ -517,8 +518,14 @@ const TokenRow = () => {
                           ))}
                         </select>
                         {tokenLogo && (
-                          <img src={tokenLogo} alt="Token Logo" className="w-4 h-4" />
+                          <img
+                            src={tokenLogo}
+                            alt="Token Logo"
+                            // Adjusted classes for absolute positioning on the right
+                            className="w-4 h-4 absolute right-8 top-1/2 transform -translate-y-1/2 pointer-events-none" // Changed left-2 to right-8
+                          />
                         )}
+                        
                       </div>
                     </div>
                     <div>
@@ -528,7 +535,7 @@ const TokenRow = () => {
                       <select
                         value={selectedNetworkIndex}
                         onChange={(e) => setSelectedNetworkIndex(Number(e.target.value))}
-                        className="w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
+                        className="w-full md:w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
                       >
                         {tokenObj?.networks.map((opt, idx) => (
                           <option key={idx} value={idx}>
