@@ -1,30 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from 'tailwindcss';
+import tailwindcss from 'tailwindcss'
+import inject from '@rollup/plugin-inject'
+import nodePolyfills from 'rollup-plugin-node-polyfills'
 
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      process: 'process/browser',
-      stream: 'stream-browserify',
-      util: 'util'
-    }
-  },
-  define: {
-    // Define global variables
-    global: 'globalThis',
-    'process.env': {},
-  },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:4943',
-        changeOrigin: true
-      }
-    },
-    host: '127.0.0.1'
-  },
+  plugins: [
+    react(),
+  ],
   css: {
     postcss: {
       plugins: [tailwindcss()],
@@ -32,8 +15,27 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
-    commonjsOptions: {
-      transformMixedEsModules: true
-    }
-  }
+    rollupOptions: {
+      output: {
+        inlineDynamicImports: false,
+      },
+      experimentalTopLevelAwait: true,
+      plugins: [
+        nodePolyfills(),
+        inject({
+          Buffer: ['buffer', 'Buffer'],
+          process: 'process',
+        }),
+      ],
+    },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
+      define: {
+        global: 'globalThis',
+      },
+      plugins: [],
+    },
+  },
 })
