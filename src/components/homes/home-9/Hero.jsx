@@ -9,9 +9,15 @@ import './Munro.css'
 // Import sum.svg logo
 import sumLogo from '../../../assets/img/dao/sum.svg';
 import icpLogo from '../../../assets/img/hero/icp_icon.png';
-// Import Swiper related components
+// Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, EffectCoverflow } from "swiper/modules";
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+// import required modules
+import { Navigation, Pagination, EffectCoverflow, Autoplay } from "swiper/modules";
 import Image from "../../common/Image";
 import { formatNumberWithPattern } from "../../../utils";
 
@@ -22,6 +28,7 @@ export default function Hero() {
   const [isLoading, setIsLoading] = useState(true);
   const [balanceIncreased, setBalanceIncreased] = useState(false);
   const [previousBalance, setPreviousBalance] = useState(null);
+  const [swiperInstance, setSwiperInstance] = useState(null);
 
   useEffect(() => {
     async function fetchIcpBalance() {
@@ -90,6 +97,30 @@ export default function Hero() {
     return () => clearInterval(timer);
   }, [icpBalance]);
 
+  console.log('Historic State:', historicState); // Added log for debugging
+
+  // Function to go to the next slide
+  const goToNextSlide = () => {
+    console.log("Attempting to go to next slide..."); // Log function call
+    if (swiperInstance) {
+      console.log("Swiper instance found, calling slideNext()"); // Log instance found
+      swiperInstance.slideNext();
+    } else {
+      console.log("Swiper instance NOT found."); // Log instance not found
+    }
+  };
+
+  // Function to go to the previous slide
+  const goToPrevSlide = () => {
+    console.log("Attempting to go to previous slide..."); // Log function call
+    if (swiperInstance) {
+      console.log("Swiper instance found, calling slidePrev()"); // Log instance found
+      swiperInstance.slidePrev();
+    } else {
+      console.log("Swiper instance NOT found."); // Log instance not found
+    }
+  };
+
   return (
       <section className="relative h-screen">
         <div
@@ -97,10 +128,10 @@ export default function Hero() {
             style={{ backgroundImage: "url('/img/background.png')" }}
         />
         
-        {/* CoverFlow Slider - Full Width with lower z-index */}
+        {/* CoverFlow Slider - Full Width */}
         <div className="w-full absolute bottom-0 left-0 right-0 -z-5">
           <div className="relative px-0">
-            {/*
+         
             <Swiper
               breakpoints={{
                 100: {
@@ -134,12 +165,15 @@ export default function Hero() {
               pagination={{
                 clickable: true,
               }}
-              modules={[EffectCoverflow, Navigation]}
-              navigation={{
-                nextEl: ".snbn7-hero",
-                prevEl: ".snbp7-hero",
+              modules={[EffectCoverflow, Navigation, Pagination, Autoplay]}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
               }}
               className="swiper coverflow-slider !py-5 w-full"
+              onSwiper={(swiper) => {
+                setSwiperInstance(swiper);
+              }}
             >
               {historicState && historicState.length > 0 ? historicState.map((elm, i) => (
                 <SwiperSlide key={i}>
@@ -191,6 +225,8 @@ export default function Hero() {
               )}
             </Swiper>
 
+            {/* Remove the navigation buttons */}
+            {/*
             <div className="snbp7-hero swiper-button-prev group absolute top-1/2 left-4 z-10 -mt-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-base shadow-white-volume">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
