@@ -626,51 +626,54 @@ const TokenRow = () => {
                   </button>
                 </div>
 
-                {/* Deposit Info */}
-                <div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                      Deposit to this wallet
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={
-                          apiResponse?.details?.deposit?.address || "0x1234567890abcdef"
-                        }
-                        readOnly
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                {/* Deposit Info and QR Code */}
+                <div className="flex gap-8 items-start"> {/* New flex container */}
+                  {/* QR Code (Conditionally Rendered) */}
+                  {apiResponse?.details?.deposit?.address && (
+                    <div className="flex flex-col items-center flex-shrink-0 w-48"> {/* Container for QR */}
+                       <label className="block text-sm font-medium text-jacarta-500 mb-2 dark:text-jacarta-100 munro-small-text text-center">
+                         Scan to Deposit
+                       </label>
+                      <QRCodeSVG
+                        value={apiResponse.details.deposit.address}
+                        size={180} // Adjusted size
+                        className="bg-white p-2 rounded-lg" // Added background for visibility
                       />
-                      <button
-                        onClick={() =>
-                          navigator.clipboard.writeText(
-                            apiResponse?.details?.deposit?.address ||
-                            "0x1234567890abcdef"
-                          )
-                        }
-                        className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
-                      >
-                        Copy
-                      </button>
+                      {/* Status Display */}
+                      {status && (
+                         <div className="mt-2 text-center"> 
+                           <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading text-sm">
+                             Status:
+                           </span>
+                           <span className="text-jacarta-100 munro-small-text text-sm capitalize">
+                             {status}
+                           </span>
+                         </div>
+                       )}
                     </div>
-                  </div>
+                  )}
 
-
-                  {apiResponse?.details?.deposit?.extra_id && (
+                  {/* Input Fields Container */}
+                  <div className="flex-grow"> {/* Takes remaining space */}
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                        Memo
+                        Deposit to this wallet
                       </label>
                       <div className="relative">
                         <input
                           type="text"
-                          value={apiResponse.details.deposit.extra_id}
+                          value={
+                            apiResponse?.details?.deposit?.address || "0x1234567890abcdef"
+                          }
                           readOnly
                           className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
                         />
                         <button
                           onClick={() =>
-                            navigator.clipboard.writeText(apiResponse.details.deposit.extra_id)
+                            navigator.clipboard.writeText(
+                              apiResponse?.details?.deposit?.address ||
+                              "0x1234567890abcdef"
+                            )
                           }
                           className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
                         >
@@ -678,37 +681,86 @@ const TokenRow = () => {
                         </button>
                       </div>
                     </div>
-                  )}
 
-                  <div>
-                    <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                      Deposit this quantity
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={
-                          apiResponse?.details?.deposit?.amount
-                            ? `${apiResponse.details.deposit.amount} on ${aggregatorTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
-                            }`
-                            : "0.00"
-                        }
-                        readOnly
-                        className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
-                      />
-                      <button
-                        onClick={() =>
-                          navigator.clipboard.writeText(
-                            apiResponse?.details?.deposit?.amount || "0.00"
-                          )
-                        }
-                        className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
-                      >
-                        Copy
-                      </button>
+                    {apiResponse?.details?.deposit?.extra_id && (
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                          Memo
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={apiResponse.details.deposit.extra_id}
+                            readOnly
+                            className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                          />
+                          <button
+                            onClick={() =>
+                              navigator.clipboard.writeText(apiResponse.details.deposit.extra_id)
+                            }
+                            className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                        Deposit this quantity
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={
+                            apiResponse?.details?.deposit?.amount
+                              ? `${apiResponse.details.deposit.amount} on ${aggregatorTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
+                              }`
+                              : "0.00"
+                          }
+                          readOnly
+                          className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                        />
+                        <button
+                          onClick={() =>
+                            navigator.clipboard.writeText(
+                              apiResponse?.details?.deposit?.amount || "0.00"
+                            )
+                          }
+                          className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                        >
+                          Copy
+                        </button>
+                      </div>
                     </div>
+
+                    {/* StealthEX ID Input (Conditionally Rendered) */}
+                    {apiResponse?.details?.id && (
+                      <div className="mt-4"> {/* Added margin-top */} 
+                        <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                          StealthEX ID
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={apiResponse.details.id}
+                            readOnly
+                            className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                          />
+                          <button
+                            onClick={() =>
+                              navigator.clipboard.writeText(apiResponse.details.id)
+                            }
+                            className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </div> {/* End of flex container */}
               </div>
             </div>
           </div>
@@ -785,7 +837,7 @@ const TokenRow = () => {
         </div>
       </div>
 
-      {/* Exchange Details / QR */}
+      {/* Exchange Details / QR 
       {!isError && apiResponse?.details && (
         <div>
           <div className="mt-6 p-4 bg-jacarta-800 rounded-lg shadow-sm dark:bg-jacarta-700 relative">
@@ -836,6 +888,7 @@ const TokenRow = () => {
           <SwapSteps />
         </div>
       )}
+        */}
 
       {isError && (
         <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
