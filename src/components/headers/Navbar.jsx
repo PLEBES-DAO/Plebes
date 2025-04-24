@@ -129,8 +129,8 @@ export default function Navbar({ bLogin, setModalOpen }) {
         </svg>
       </div>
       <button
-          onClick={() => navigate("/deposit")}
-          className="pitch-deck-button ml-2 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text"
+        onClick={() => navigate("/deposit")}
+        className="pitch-deck-button ml-2 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text"
       >
       Deposit
       </button>
@@ -167,7 +167,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
         toggleDropdown={toggleDropdown}
       />
       <button
-        onClick={() => console.log("Launch DAO clicked")}
+        onClick={() => navigate("/deposit")}
         className="pitch-deck-button ml-2 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text"
       >
       Deposit
@@ -252,7 +252,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
                   />
                 </div>
                 <button
-                  onClick={() => console.log("Launch DAO clicked")}
+                  onClick={() => navigate("/deposit")}
                   className="pitch-deck-button ml-2 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text"
                 >
                 Deposit
