@@ -509,7 +509,7 @@ const TokenRow = () => {
                             setSelectedNetworkIndex(0);
                           }}
                           // Change padding to right padding for the image
-                          className="w-full md:w-48 p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none" // Changed pl-8 to pr-8
+                          className="w-1/2 md:w-48 p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none" // Changed pl-8 to pr-8
                         >
                           {Object.keys(aggregatorTokens).map((tk) => (
                             <option key={tk} value={tk}>
@@ -535,7 +535,7 @@ const TokenRow = () => {
                       <select
                         value={selectedNetworkIndex}
                         onChange={(e) => setSelectedNetworkIndex(Number(e.target.value))}
-                        className="w-full md:w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
+                        className="w-1/2 md:w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
                       >
                         {tokenObj?.networks.map((opt, idx) => (
                           <option key={idx} value={idx}>

@@ -38,7 +38,6 @@
 /* Estilos de los select e inputs */
 select, input[type="text"], input[type="number"] {
     font-family: 'Munro Small', sans-serif !important;
-    background-image: linear-gradient(45deg, #1f1d3380, #2d2a5a80);
     border: 1px solid #7c3aed !important;
     color: white !important;
 }
