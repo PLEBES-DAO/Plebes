@@ -33,6 +33,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileActionsOpen, setMobileActionsOpen] = useState(false);
 
   // Effect to handle scroll for sticky header
   useEffect(() => {
@@ -138,6 +139,10 @@ export default function Navbar({ bLogin, setModalOpen }) {
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prevState) => !prevState);
+  };
+
+  const toggleMobileActions = () => {
+    setMobileActionsOpen((prev) => !prev);
   };
 
   // Balance Display JSX Fragment
@@ -281,56 +286,71 @@ export default function Navbar({ bLogin, setModalOpen }) {
               {MobileBalance}
             </div>
 
-            {/* Mobile Menu Actions */}
-            <div className="flex space-x-2 rtl:ml-0 rtl:mr-auto z-50">
-              {!isLoggedIn && (
-                <>
-                  {/* Login Button */}
-                  <div onClick={async () => { await login(); }} className="white-translucent-button cursor-pointer rtl:ml-2 js-wallet group flex h-10 w-10 items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-4 w-4 fill-white"><path fill="none" d="M0 0h24v24H0z"/><path d="M22 6h-7a6 6 0 1 0 0 12h7v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2zm-7 2h8v8h-8a4 4 0 1 1 0-8zm0 3v2h3v-2h-3z"/></svg>
+            {/* Mobile Actions Hamburger Button & Dropdown */}
+            <div className="relative">
+              <button
+                onClick={toggleMobileActions}
+                className="flex h-10 w-10 items-center justify-center rounded-full focus:outline-none"
+                aria-label="Toggle mobile actions menu"
+                aria-expanded={isMobileActionsOpen}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-current text-white">
+                  <path fill="none" d="M0 0h24v24H0z"/>
+                  <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/>
+                </svg>
+              </button>
+
+              {isMobileActionsOpen && (
+                <div className="absolute top-full right-0 mt-2 w-48 bg-morado-translucido rounded-md shadow-lg z-50 p-2">
+                  <div className="flex flex-col space-y-2">
+                    {!isLoggedIn && (
+                      <>
+                        <div onClick={async () => { await login(); toggleMobileActions(); }} className="white-translucent-button cursor-pointer flex h-10 items-center justify-center text-sm font-medium text-white transition-colors munro-small-text">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" className="h-4 w-4 fill-white mr-2"><path fill="none" d="M0 0h24v24H0z"/><path d="M22 6h-7a6 6 0 1 0 0 12h7v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2zm-7 2h8v8h-8a4 4 0 1 1 0-8zm0 3v2h3v-2h-3z"/></svg>
+                          Login
+                        </div>
+                        <button onClick={() => { navigate("/deposit"); toggleMobileActions(); }} className="white-translucent-button h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text">Deposit</button>
+                        <div className="flex justify-around pt-2">
+                          <a href="https://x.com/PlebesXYZ" target="_blank" rel="noopener noreferrer" className="white-translucent-button h-8 w-8 flex items-center justify-center text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                          </a>
+                          <a href="https://discord.gg/DPvQ2mgtDNm" target="_blank" rel="noopener noreferrer" className="white-translucent-button h-8 w-8 flex items-center justify-center text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.39-.444.885-.608 1.286a18.73 18.73 0 0 0-5.487 0 12.57 12.57 0 0 0-.617-1.287.077.077 0 0 0-.079-.036c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026c.462-.62.874-1.275 1.226-1.963.021-.04.001-.088-.041-.104a13.206 13.206 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.347-1.22.645-1.873.877-.042.016-.062.065-.041.105.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.964 19.964 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028zM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38zm7.975 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38z"/></svg>
+                          </a>
+                        </div>
+                      </>
+                    )}
+                    {isLoggedIn && (
+                      <>
+                        <Profile
+                          wallets={wallets}
+                          balances={balances}
+                          setModalOpen={setModalOpen}
+                          isOpen={isMobileActionsOpen}
+                          toggleDropdown={toggleMobileActions}
+                          isMobileContext={true}
+                          onActionClick={toggleMobileActions}
+                        />
+                        <button onClick={() => { navigate("/deposit"); toggleMobileActions(); }} className="white-translucent-button h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text mt-2">Deposit</button>
+                        <div className="flex justify-around pt-2">
+                          <a href="https://x.com/PlebesXYZ" target="_blank" rel="noopener noreferrer" className="white-translucent-button h-8 w-8 flex items-center justify-center text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                          </a>
+                          <a href="https://discord.gg/DPvQ2mgtDNm" target="_blank" rel="noopener noreferrer" className="white-translucent-button h-8 w-8 flex items-center justify-center text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.39-.444.885-.608 1.286a18.73 18.73 0 0 0-5.487 0 12.57 12.57 0 0 0-.617-1.287.077.077 0 0 0-.079-.036c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026c.462-.62.874-1.275 1.226-1.963.021-.04.001-.088-.041-.104a13.206 13.206 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.347-1.22.645-1.873.877-.042.016-.062.065-.041.105.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.964 19.964 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028zM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38zm7.975 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38z"/></svg>
+                          </a>
+                        </div>
+                      </>
+                    )}
                   </div>
-                  {/* Deposit Button */}
-                  <button onClick={() => navigate("/deposit")} className="white-translucent-button ml-2 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text">Deposit</button>
-                  {/* Social Icons */}
-                  <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="white-translucent-button ml-2 h-10 w-10 flex items-center justify-center text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                  </a>
-                  <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="white-translucent-button ml-2 h-10 w-10 flex items-center justify-center text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.39-.444.885-.608 1.286a18.73 18.73 0 0 0-5.487 0 12.57 12.57 0 0 0-.617-1.287.077.077 0 0 0-.079-.036c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026c.462-.62.874-1.275 1.226-1.963.021-.04.001-.088-.041-.104a13.206 13.206 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.347-1.22.645-1.873.877-.042.016-.062.065-.041.105.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.964 19.964 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028zM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38zm7.975 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38z"/></svg>
-                  </a>
-                </>
-              )}
-              {isLoggedIn && (
-                <>
-                  {/* Profile Dropdown */}
-                  <div className="relative">
-                    <Profile wallets={wallets} balances={balances} setModalOpen={setModalOpen} isOpen={isDropdownOpen} toggleDropdown={toggleDropdown} />
-                  </div>
-                  {/* Deposit Button */}
-                  <button onClick={() => navigate("/deposit")} className="white-translucent-button ml-2 h-10 px-4 text-sm font-medium text-white transition-colors munro-small-text">Deposit</button>
-                  {/* Social Icons */}
-                  <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="white-translucent-button ml-2 h-10 w-10 flex items-center justify-center text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                  </a>
-                  <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="white-translucent-button ml-2 h-10 w-10 flex items-center justify-center text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M20.317 4.492c-1.53-.69-3.17-1.2-4.885-1.49a.075.075 0 0 0-.079.036c-.21.39-.444.885-.608 1.286a18.73 18.73 0 0 0-5.487 0 12.57 12.57 0 0 0-.617-1.287.077.077 0 0 0-.079-.036c-1.714.29-3.354.8-4.885 1.491a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.08.08 0 0 0 .031.055 20.03 20.03 0 0 0 5.993 2.98.078.078 0 0 0 .084-.026c.462-.62.874-1.275 1.226-1.963.021-.04.001-.088-.041-.104a13.206 13.206 0 0 1-1.872-.878.075.075 0 0 1-.008-.125c.126-.093.252-.19.372-.287a.075.075 0 0 1 .078-.01c3.927 1.764 8.18 1.764 12.061 0a.075.075 0 0 1 .079.009c.12.098.245.195.372.288a.075.075 0 0 1-.006.125c-.598.347-1.22.645-1.873.877-.042.016-.062.065-.041.105.36.687.772 1.341 1.225 1.962a.077.077 0 0 0 .084.028 19.964 19.964 0 0 0 6.002-2.981.076.076 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.06.06 0 0 0-.031-.028zM8.02 15.278c-1.182 0-2.157-1.069-2.157-2.38 0-1.312.956-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.956 2.38-2.157 2.38zm7.975 0c-1.183 0-2.157-1.069-2.157-2.38 0-1.312.955-2.38 2.157-2.38 1.21 0 2.176 1.077 2.157 2.38 0 1.312-.946 2.38-2.157 2.38z"/></svg>
-                  </a>
-                </>
+                </div>
               )}
             </div>
-
-            {/* Mobile Menu Toggle Button */}
-            <button className="p-2 ml-2" onClick={toggleMobileMenu}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="h-6 w-6 fill-current text-gray-700 dark:text-white">
-                <path fill="none" d="M0 0h24v24H0z"/>
-                <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/>
-              </svg>
-            </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay (Keep if used for other navigation) */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-75 z-40 flex flex-col items-center justify-center lg:hidden">
           {/* Add mobile menu content here if needed, e.g., navigation links */}
