@@ -214,24 +214,6 @@ async function fetchMinDepositExample(symbol, network, isUSD) {
   return isUSD ? "10 USD" : "0.01 " + symbol;
 }
 
-// --- SLIDER STYLES ---
-const sliderStyle = {
-  width: '100%',
-  overflow: 'hidden',
-  position: 'relative',
-  minHeight: '350px',
-};
-const sliderInnerStyle = (currentSection) => ({
-  display: 'flex',
-  transition: 'transform 0.5s cubic-bezier(0.77,0,0.175,1)',
-  transform: `translateX(-${(currentSection - 1) * 100}%)`,
-  width: '300%', // 3 steps
-});
-const slideStyle = {
-  width: '100%',
-  flex: '0 0 100%',
-  minWidth: 0,
-};
 
 export const metadata = {
   title: "Deposit Page",
@@ -596,13 +578,13 @@ const TokenRow = () => {
           </div>
         </div>
       </div>
-      <div className="mb-8 flex justify-center">
+      <div className="flex justify-center mb-8">
         <button
           onClick={() => {
             console.log("Next button clicked, moving to section 2");
             setCurrentSection(2);
           }}
-          className="pitch-deck-button px-4 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
+          className="pitch-deck-button px-8 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
           disabled={!wallets?.ckBTC?.walletAddressForDisplay}
         >
           Next
@@ -664,7 +646,7 @@ const TokenRow = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="M4 8l4-4m0 0l4 4m-4-4v12m6 0l4 4m0 0l4-4m-4 4H4"
+                d="M4 8l4-4m0 0l4 4m-4-4v12m6 0l4 4m0 0l4-4m-4 4V4"
               />
             </svg>
           </button>
@@ -673,7 +655,7 @@ const TokenRow = () => {
           Minimum deposit: {minDeposit || "0.00"}
         </p>
       </div>
-      <div className="mb-8 flex space-x-4">
+      <div className="mb-8 flex space-x-4 justify-center">
         <button
           onClick={() => {
             console.log("Back button clicked, moving to section 1");
@@ -831,7 +813,7 @@ const TokenRow = () => {
         </div>
       </div>
       
-      <div className="mt-8">
+      <div className="flex justify-center text-lg mt-8">
         <button
           onClick={handleDeleteExchange}
           className="px-4 py-2 text-white rounded-lg shadow bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 munro-narrow"
@@ -844,70 +826,12 @@ const TokenRow = () => {
 
   return (
     <section className="relative h-screen">
-       <div className="mx-4 pt-24 pb-4 text-center md:text-left">
+      <div className="mx-4 text-center md:text-left pt-24">
         <span className="text-white text-2xl munro-regular-heading">Multichain deposit</span>
-        
-      </div>
-      <div className="flex justify-center mx-4 ">
-        <div 
-          className="px-6 py-3 rounded-lg text-white munro-small-text text-center"
-          style={{
-            backgroundColor: wallets?.ckBTC?.walletAddressForDisplay ? 'rgba(22, 163, 74, 0.2)' : 'rgba(220, 38, 38, 0.2)',
-            border: wallets?.ckBTC?.walletAddressForDisplay ? '2px solid #16a34a' : '2px solid #dc2626',
-            minWidth: '300px'
-          }}
-        >
-          {wallets?.ckBTC?.walletAddressForDisplay
-            ? `Wallet connected: ${wallets.ckBTC.walletAddressForDisplay}`
-            : "Account not detected. Please log in."}
-        </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)]">
-        <div
-          className="w-full lg:w-1/2 flex justify-start items-start mx-4 px-4"
-          style={{ filter: leftBoxBlur }}
-        >
-          <div className="w-full">
-            {/* Step slider with animation */}
-            <div style={sliderStyle}>
-              <div style={sliderInnerStyle(currentSection)}>
-                {/* Step 1: Token selection */}
-                <div style={slideStyle}>
-                  {renderTokenSelection()}
-                </div>
-                {/* Step 2: Amount input */}
-                <div style={slideStyle}>
-                  {renderAmountInput()}
-                </div>
-                {/* Step 3: Deposit info */}
-                <div style={slideStyle}>
-                  {renderDepositInfo()}
-                </div>
-              </div>
-            </div>
-            {/* Error and loading below the slider */}
-            {isError && (
-              <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
-                <p className="text-red-100 munro-small-text">
-                  <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
-                </p>
-              </div>
-            )}
-            {loading && (
-              <div className="flex items-center justify-center mt-4">
-                <div className="spinner-border animate-spin text-accent" role="status">
-                  <span className="sr-only">Loading...</span>
-                </div>
-                <span className="ml-2 text-jacarta-100 munro-small-text">{status}</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-start items-center p-2">
-          <div className="w-full max-w-md  rounded-lg shadow-lg p-4 min-h-[600px]">
+      <div className="w-full lg:w-1/2 flex flex-col justify-start items-center p-4">
+          <div className="w-full max-w-md bg-jacarta-800 rounded-lg shadow-lg p-4 min-h-[600px]">
             <div className="relative w-full ">
               <div className="absolute w-full flex justify-between items-center px-12">
                 {/* Removed step circles and numbers */}
@@ -915,25 +839,28 @@ const TokenRow = () => {
             </div>
 
             <div className="text-center text-white">
-              {(rightStep === 1 || currentSection === 1) && (
+              {rightStep === 1 && (
                 <div>
-                  <h3 className="text-xl md:text-3xl font-bold  munro-small-heading">Connect Wallet</h3>
-                  <div className="flex justify-center">
+                  <h3 className="text-xl md:text-3xl font-bold mb-6 munro-small-heading">Connect Wallet</h3>
+                  <div className="flex justify-center mb-6">
                     <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
                   </div>
                   <p className="text-xl md:text-2xl munro-small-text">Unlock multichain deposits</p>
                 </div>
               )}
-              {(rightStep === 2 || currentSection === 2) && (
+              {rightStep === 2 && (
                 <div>
                   <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Choose amount</h3>
+                  <div className="flex justify-center mb-6">
+                    <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
+                  </div>
                   <p className="text-xl munro-small-text">Specify the amount you want to deposit</p>
                 </div>
               )}
-              {(rightStep === 3 || currentSection === 3) && (
+              {rightStep === 3 && (
                 <div>
-                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Finish your order</h3>
-                  <p className="text-xl munro-small-text">Hope to get your confirmation</p>
+                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Awaiting deposit</h3>
+                  <p className="text-xl munro-small-text">Send the specified amount to continue</p>
                 </div>
               )}
               {rightStep === 4 && (
@@ -961,7 +888,54 @@ const TokenRow = () => {
               )}
             </div>
           </div>
+          <div 
+          className="px-6 mt-4 py-3 rounded-lg text-white munro-small-text text-center"
+          style={{
+            backgroundColor: wallets?.ckBTC?.walletAddressForDisplay ? 'rgba(22, 163, 74, 0.2)' : 'rgba(220, 38, 38, 0.2)',
+            border: wallets?.ckBTC?.walletAddressForDisplay ? '2px solid #16a34a' : '2px solid #dc2626',
+            minWidth: '300px'
+          }}
+        >
+          {wallets?.ckBTC?.walletAddressForDisplay
+            ? `Wallet connected: ${wallets.ckBTC.walletAddressForDisplay}`
+            : "Account not detected. Please log in."}
         </div>
+        </div>
+
+      <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)]">
+        <div
+          className="w-full lg:w-1/2 flex justify-start items-start  px-4"
+          style={{ filter: leftBoxBlur }}
+        >
+          <div className="w-full">
+            {/* Form */}
+            <div className="w-full">
+              {currentSection === 1 && renderTokenSelection()}
+              {currentSection === 2 && renderAmountInput()}
+              {currentSection === 3 && renderDepositInfo()}
+              
+              {isError && (
+                <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
+                  <p className="text-red-100 munro-small-text">
+                    <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
+                  </p>
+                </div>
+              )}
+
+              {loading && (
+                <div className="flex items-center justify-center mt-4">
+                  <div className="spinner-border animate-spin text-accent" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                  <span className="ml-2 text-jacarta-100 munro-small-text">{status}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
+        
       </div>
 
       {showModal && (
