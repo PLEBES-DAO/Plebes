@@ -171,7 +171,7 @@ export default function Hero() {
                 <SwiperSlide key={i}>
                   <article>
                     <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
-                      <figure className="relative">
+                      <figure className="relative card-image-wrapper">
                         <Link to={`/item/${elm.item.id}`}>
                           <Image
                             src={elm.item.content_url}
@@ -180,6 +180,7 @@ export default function Hero() {
                             height="200"
                             width="300"
                           />
+                          <div className="card-image-overlay"></div>
                         </Link>
                       </figure>
                       <div className="p-6">

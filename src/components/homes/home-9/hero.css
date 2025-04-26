@@ -21,7 +21,7 @@
     justify-content: center;
     box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
     border: 2px solid transparent;
-}
+}T
 
 .pitch-deck-button::before {
     content: "";
@@ -250,4 +250,16 @@ body {
 .white-translucent-button:hover, .white-translucent-button:focus {
   background: rgba(255,255,255,0.28);
   box-shadow: 0 4px 16px 0 rgba(0,0,0,0.09);
+}
+
+.card-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.30); /* 20% negro */
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.card-image-wrapper {
+  position: relative;
 }
