@@ -142,8 +142,8 @@ export default function Navbar({ bLogin, setModalOpen }) {
 
   // Balance Display JSX Fragment
   const BalanceDisplayElement = (
-    <div className={`balance-display-mini bg-morado-translucido px-8 py-6 rounded-lg text-white text-center transition-all duration-300 ${balanceIncreased ? 'balance-increase-pulse' : ''}`}>
-      {isLoading && displayBalance === null ? ( // Show loading only initially or on error refresh
+    <div className={`balance-display-mini bg-morado-translucido px-8 py-6 rounded-lg text-white text-center transition-all duration-300 ${balanceIncreased ? 'balance-increase-pulse' : ''} hidden lg:block`}>
+      {isLoading && displayBalance === null ? (
         <div className="loading-animation-mini flex items-center">
           <div className="loading-spinner-mini mr-1"></div>
           <span className="text-xs munro-small-text">Loading...</span>
@@ -161,6 +161,22 @@ export default function Navbar({ bLogin, setModalOpen }) {
           </span>
         </div>
       )}
+    </div>
+  );
+
+  // Mobile Balance + Logo Only
+  const MobileBalance = (
+    <div className="flex flex-col items-center justify-center bg-morado-translucido px-4 py-3 rounded-md text-white text-center lg:hidden">
+      <div className="flex items-center justify-center">
+        <span className="pixel-font text-xs">
+          {isLoading && displayBalance === null ? (
+            <span className="munro-small-text">...</span>
+          ) : (
+            displayBalance !== null ? displayBalance.toFixed(4) : '0.0000'
+          )}
+        </span>
+        <img src="/src/assets/img/icp-pixelated-logo.webp" alt="ICP Logo" className="ml-1 mb-1 inline align-middle" style={{ height: '18px' }} />
+      </div>
     </div>
   );
 
@@ -260,9 +276,9 @@ export default function Navbar({ bLogin, setModalOpen }) {
 
           {/* Mobile Area */}
           <div className="ml-auto flex items-center lg:hidden">
-            {/* Mobile Balance Display */}
+            {/* Mobile Balance Display + Logo */}
             <div className="mr-2">
-              {BalanceDisplayElement}
+              {MobileBalance}
             </div>
 
             {/* Mobile Menu Actions */}
