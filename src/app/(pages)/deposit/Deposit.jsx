@@ -214,6 +214,24 @@ async function fetchMinDepositExample(symbol, network, isUSD) {
   return isUSD ? "10 USD" : "0.01 " + symbol;
 }
 
+// --- SLIDER STYLES ---
+const sliderStyle = {
+  width: '100%',
+  overflow: 'hidden',
+  position: 'relative',
+  minHeight: '350px',
+};
+const sliderInnerStyle = (currentSection) => ({
+  display: 'flex',
+  transition: 'transform 0.5s cubic-bezier(0.77,0,0.175,1)',
+  transform: `translateX(-${(currentSection - 1) * 100}%)`,
+  width: '300%', // 3 steps
+});
+const slideStyle = {
+  width: '100%',
+  flex: '0 0 100%',
+  minWidth: 0,
+};
 
 export const metadata = {
   title: "Deposit Page",
@@ -264,6 +282,8 @@ const TokenRow = () => {
   const [pollInterval, setPollInterval] = useState(null);
   const [useUsd, setUseUsd] = useState(false);
   const [minDeposit, setMinDeposit] = useState("");
+  // Nuevo estado para manejar la sección actual
+  const [currentSection, setCurrentSection] = useState(1);
 
   // Step en la caja derecha (1..5). 1 => "Connect wallet"
   const [rightStep, setRightStep] = useState(1);
@@ -291,6 +311,8 @@ const TokenRow = () => {
           setApiResponse(transaction);
           setPolling(true);
           setStatus(transaction.details.status || "");
+          // Si hay una transacción existente, saltamos a la sección de depósito
+          setCurrentSection(3);
         }
       } catch (error) {
         console.error("Failed to fetch user transactions", error);
@@ -309,7 +331,7 @@ const TokenRow = () => {
             `https://api.plebes.xyz/user-transactions/${wallets.ckBTC.walletAddressForDisplay}`
           );
           const data = await res.json();
-          const transaction = data.transactions[0];
+          const transaction = data?.transactions?.[0];
           if (transaction) {
             if (transaction.details.status === "finished") {
               setPolling(false);
@@ -318,6 +340,8 @@ const TokenRow = () => {
             }
             setApiResponse(transaction);
             setStatus(transaction.details.status);
+          } else {
+            console.log("Polling: No active transaction found or invalid data format.", data);
           }
         } catch (err) {
           console.error("Failed to poll transaction", err);
@@ -328,10 +352,7 @@ const TokenRow = () => {
     } else if (pollInterval) {
       clearInterval(pollInterval);
     }
-    return () => {
-      if (pollInterval) clearInterval(pollInterval);
-    };
-  }, [polling, pollInterval, buy, wallets]);
+  }, [polling, buy, wallets]);
 
   // Actualiza el step de la derecha
   useEffect(() => {
@@ -342,9 +363,15 @@ const TokenRow = () => {
       return;
     }
 
+    // Mostramos el step según la sección actual si no hay status
+    if (!status) {
+      setRightStep(currentSection);
+      return;
+    }
+
     const st = mapStatusToStep(status);
     setRightStep(st);
-  }, [status, wallets]);
+  }, [status, wallets, currentSection]);
 
   // Actualiza minDeposit
   useEffect(() => {
@@ -363,27 +390,43 @@ const TokenRow = () => {
     doFetchMin();
   }, [selectedToken, selectedNetworkIndex, useUsd]);
 
+  // Función para avanzar a la siguiente sección
+  const handleNextSection = () => {
+    setCurrentSection(prev => Math.min(prev + 1, 3));
+  };
+
+  // Función para retroceder a la sección anterior
+  const handlePrevSection = () => {
+    setCurrentSection(prev => Math.max(prev - 1, 1));
+  };
+
   async function handleCreateExchange() {
+    console.log("handleCreateExchange started");
+    console.log(`handleCreateExchange: Using token=${selectedToken}, networkIndex=${selectedNetworkIndex}`);
+
     if (!wallets?.ckBTC?.walletPrincipal) {
       console.error("No ckBTC wallet found");
       return;
     }
     const tokenObj = aggregatorTokens[selectedToken];
     if (!tokenObj) {
-      console.error("Invalid selected token");
+      console.error("Invalid selected token", selectedToken);
       return;
     }
     const netOption = tokenObj.networks[selectedNetworkIndex];
     if (!netOption) {
-      console.error("Invalid network selection");
+      console.error("Invalid network selection", selectedNetworkIndex, tokenObj.networks);
       return;
     }
     const aggregatorSymbol = netOption.displayToken;
     const aggregatorNetwork = netOption.displayNetwork;
+    console.log("Validations passed. Token:", aggregatorSymbol, "Network:", aggregatorNetwork);
 
+    console.log("Calculating depositAddress...");
     const depositAddress = AccountIdentifier.fromPrincipal({
       principal: wallets.ckBTC.walletPrincipal,
     }).toHex();
+    console.log("Calculated depositAddress:", depositAddress);
 
     const payload = {
       route: {
@@ -396,26 +439,63 @@ const TokenRow = () => {
       address: depositAddress,
       user_id: wallets.ckBTC.walletAddressForDisplay,
     };
+    console.log("Payload created:", JSON.stringify(payload, null, 2));
 
     try {
       setLoading(true);
+      console.log("Calling create-exchange API...");
       const response = await fetch("https://api.plebes.xyz/create-exchange", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      if (data?.details?.err) {
-        throw new Error(data.details.err);
+      console.log("API response received:", data);
+
+      if (data?.error) {
+        // Handle specific error: Transaction already in progress
+        if (data.error.includes("already in progress") && data.transaction) {
+          console.warn("API reported existing transaction. Using its details.", data.transaction);
+          // Update state with the existing transaction's details
+          setApiResponse(data.transaction); 
+          setPolling(true); // Start polling for the existing transaction
+          setStatus(data.transaction.details?.status || "waiting"); // Use existing status or default
+          setHasFetched(true);
+          // Avanzar a la sección de depósito
+          setCurrentSection(3);
+        } else {
+          // Handle other API errors
+          console.error("API returned error:", data.error);
+          // Optionally, display this error to the user
+          // You might want to reset parts of the state here or show an error message
+          setApiResponse(null); // Clear response on other errors
+          setPolling(false);
+          setStatus("error"); 
+          setHasFetched(true); // Indicate an attempt was made
+        }
+      } else if (data?.details?.err) {
+        // Keep existing handling for data.details.err format if needed
+        console.error("API returned error in details:", data.details.err);
+        throw new Error(data.details.err); // This will be caught by the outer catch
+      } else {
+        // Original success path: A new transaction was created
+        setApiResponse(data);
+        setPolling(true);
+        setStatus("waiting");
+        setHasFetched(true);
+        // Avanzar a la sección de depósito
+        setCurrentSection(3);
+        console.log("State updated successfully after API call for new transaction");
       }
-      setApiResponse(data);
-      setPolling(true);
-      setStatus("waiting");
-      setHasFetched(true);
     } catch (error) {
-      console.error("Error create-exchange:", error);
+      // This catches errors thrown from the fetch call itself or the explicit throw above
+      console.error("Error in create-exchange process:", error);
+      // Consider setting an error state here to inform the user
+      setStatus("error");
+      setHasFetched(true); // Indicate an attempt was made
     } finally {
       setLoading(false);
+      console.log("handleCreateExchange finished");
     }
   }
 
@@ -431,6 +511,8 @@ const TokenRow = () => {
         setApiResponse(null);
         setPolling(false);
         setStatus("");
+        // Regresar a la primera sección
+        setCurrentSection(1);
       }
     } catch (err) {
       console.error("Error deleting transaction", err);
@@ -445,7 +527,6 @@ const TokenRow = () => {
   // Logo de token actual
   const tokenObj = aggregatorTokens[selectedToken];
   const tokenLogo = tokenObj?.logo || "";
-  console.log("logo now",tokenLogo)
 
   // Blur si no hay wallet conectada
   const leftBoxBlur =
@@ -453,9 +534,321 @@ const TokenRow = () => {
       ? "blur(3px)"
       : "none";
 
+  // Log deposit details only when they change
+  useEffect(() => {
+    if (apiResponse?.details?.deposit) {
+      console.log("Rendering Deposit Details - apiResponse:", apiResponse, "status:", status);
+      console.log("Deposit Address:", apiResponse.details.deposit.address);
+      if (apiResponse.details.deposit.extra_id) {
+        console.log("Deposit Memo (extra_id):", apiResponse.details.deposit.extra_id);
+      }
+    }
+  }, [apiResponse, status]);
+
+  // Renderiza la sección de selección de token y red
+  const renderTokenSelection = () => (
+    <>
+      <div className="mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-lg font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+              Select Token
+            </label>
+            <div className="relative flex items-center">
+              <select
+                value={selectedToken}
+                onChange={(e) => {
+                  setSelectedToken(e.target.value);
+                  setSelectedNetworkIndex(0);
+                }}
+                className="w-full md:w-1/2 md:w-48 p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none"
+              >
+                {Object.keys(aggregatorTokens).map((tk) => (
+                  <option key={tk} value={tk}>
+                    {tk}
+                  </option>
+                ))}
+              </select>
+              {tokenLogo && (
+                <img
+                  src={tokenLogo}
+                  alt="Token Logo"
+                  className="w-4 h-4 absolute right-8 top-1/2 transform -translate-y-1/2 pointer-events-none"
+                />
+              )}
+            </div>
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+              Select Network
+            </label>
+            <select
+              value={selectedNetworkIndex}
+              onChange={(e) => setSelectedNetworkIndex(Number(e.target.value))}
+              className="w-full md:w-1/2 md:w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
+            >
+              {tokenObj?.networks.map((opt, idx) => (
+                <option key={idx} value={idx}>
+                  {opt.displayNetwork}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="mb-8 flex justify-center">
+        <button
+          onClick={() => {
+            console.log("Next button clicked, moving to section 2");
+            setCurrentSection(2);
+          }}
+          className="pitch-deck-button px-4 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
+          disabled={!wallets?.ckBTC?.walletAddressForDisplay}
+        >
+          Next
+        </button>
+      </div>
+    </>
+  );
+
+  // Renderiza la sección de entrada de cantidad
+  const renderAmountInput = () => (
+    <>
+      <div className="mb-8">
+        <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+          {useUsd ? "Amount (USD)" : "Amount (Token)"}
+        </label>
+        <div className="relative inline-block">
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="
+            w-32
+            p-2
+            pr-10
+            border
+            border-jacarta-600
+            rounded-lg
+            bg-jacarta-800
+            focus:ring-accent
+            focus:border-accent
+            text-jacarta-100
+            dark:bg-jacarta-600
+            munro-small
+          "
+            placeholder={useUsd ? "0.00 USD" : "0.00"}
+          />
+          <button
+            onClick={() => setUseUsd(!useUsd)}
+            className="
+            absolute
+            top-1/2
+            -translate-y-1/2
+            right-2
+            p-1
+            bg-accent
+            text-white
+            rounded
+            munro-narrow
+          "
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 8l4-4m0 0l4 4m-4-4v12m6 0l4 4m0 0l4-4m-4 4H4"
+              />
+            </svg>
+          </button>
+        </div>
+        <p className="text-xs text-gray-400 mt-1 munro-small-text">
+          Minimum deposit: {minDeposit || "0.00"}
+        </p>
+      </div>
+      <div className="mb-8 flex space-x-4">
+        <button
+          onClick={() => {
+            console.log("Back button clicked, moving to section 1");
+            setCurrentSection(1);
+          }}
+          className="px-4 py-2 text-white rounded-lg shadow bg-gray-600 hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 munro-narrow"
+        >
+          Back
+        </button>
+        <button
+          onClick={handleCreateExchange}
+          className="pitch-deck-button px-4 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
+          disabled={loading || !amount}
+        >
+          {loading ? "Processing..." : "Start Deposit"}
+        </button>
+      </div>
+    </>
+  );
+
+  // Renderiza la sección de información de depósito
+  const renderDepositInfo = () => (
+    <>
+      <div className="flex gap-8 items-start">
+        {apiResponse?.details?.deposit?.address && (
+          <div className="flex flex-col items-center flex-shrink-0 w-48">
+            <label className="block text-sm font-medium text-jacarta-500 mb-2 dark:text-jacarta-100 munro-small-text text-center">
+              Scan to Deposit
+            </label>
+            <QRCodeSVG
+              value={apiResponse.details.deposit.address}
+              size={180}
+              className="bg-white p-2 rounded-lg"
+            />
+            {status && (
+              <div className="mt-2 text-center">
+                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading text-sm">
+                  Status:
+                </span>
+                <span className="text-jacarta-100 munro-small-text text-sm capitalize">
+                  {status}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex-grow">
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+              Deposit to this wallet
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={
+                  apiResponse?.details?.deposit?.address || "Awaiting address..."
+                }
+                readOnly
+                className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+              />
+              {apiResponse?.details?.deposit?.address && (
+                <button
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      apiResponse?.details?.deposit?.address
+                    )
+                  }
+                  className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                >
+                  Copy
+                </button>
+              )}
+            </div>
+          </div>
+
+          {apiResponse?.details?.deposit?.extra_id && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                Memo
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={apiResponse.details.deposit.extra_id}
+                  readOnly
+                  className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                />
+                <button
+                  onClick={() =>
+                    navigator.clipboard.writeText(apiResponse.details.deposit.extra_id)
+                  }
+                  className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+              Deposit this quantity
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={
+                  apiResponse?.details?.deposit?.amount
+                    ? `${apiResponse.details.deposit.amount} on ${aggregatorTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
+                    }`
+                    : "Awaiting amount..."
+                }
+                readOnly
+                className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+              />
+              {apiResponse?.details?.deposit?.amount && (
+                <button
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      apiResponse?.details?.deposit?.amount || "0.00"
+                    )
+                  }
+                  className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                >
+                  Copy
+                </button>
+              )}
+            </div>
+          </div>
+
+          {apiResponse?.details?.id && (
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                StealthEX ID
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={apiResponse.details.id}
+                  readOnly
+                  className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                />
+                <button
+                  onClick={() =>
+                    navigator.clipboard.writeText(apiResponse.details.id)
+                  }
+                  className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      <div className="mt-8">
+        <button
+          onClick={handleDeleteExchange}
+          className="px-4 py-2 text-white rounded-lg shadow bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 munro-narrow"
+        >
+          Cancel Deposit
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <section className="relative h-screen">
-      <div className="flex justify-center mx-4 pt-32 mb-4">
+       <div className="mx-4 pt-24 pb-4 text-center md:text-left">
+        <span className="text-white text-2xl munro-regular-heading">Multichain deposit</span>
+        
+      </div>
+      <div className="flex justify-center mx-4 ">
         <div 
           className="px-6 py-3 rounded-lg text-white munro-small-text text-center"
           style={{
@@ -470,343 +863,77 @@ const TokenRow = () => {
         </div>
       </div>
 
-      <div className="mx-4 text-center md:text-left">
-        <span className="text-white munro-regular-heading">Multichain deposit</span>
-      </div>
-
       <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)]">
         <div
           className="w-full lg:w-1/2 flex justify-start items-start mx-4 px-4"
           style={{ filter: leftBoxBlur }}
         >
-          <div className="timeline-container w-full">
-            <div className="timeline-item flex">
-              <div className="flex flex-col items-center">
-                <div className={`circle munro-small ${rightStep >= 1 ? 'active' : ''}`}>1</div>
-                <div className="line" style={{ height: "8rem" }}></div>
-                <div className={`circle munro-small ${rightStep >= 2 ? 'active' : ''}`}>2</div>
-                <div className="line" style={{ height: "5.5rem" }}></div>
-                <div className={`circle munro-small ${rightStep >= 3 ? 'active' : ''}`}>3</div>
-                <div className="line" style={{ height: "1.5rem" }}></div>
-                <div className={`circle munro-small ${rightStep >= 4 ? 'active' : ''}`}>4</div>
-              </div>
-
-              {/* Form */}
-              <div className="ml-8 flex-1">
-                {/* Select token+network */}
-                <div className="mb-8">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                        Select Token
-                      </label>
-                      {/* Wrap select and image in a relative container */}
-                      <div className="relative flex items-center">
-                        <select
-                          value={selectedToken}
-                          onChange={(e) => {
-                            setSelectedToken(e.target.value);
-                            setSelectedNetworkIndex(0);
-                          }}
-                          // Change padding to right padding for the image
-                          className="w-1/2 md:w-48 p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none" // Changed pl-8 to pr-8
-                        >
-                          {Object.keys(aggregatorTokens).map((tk) => (
-                            <option key={tk} value={tk}>
-                              {tk}
-                            </option>
-                          ))}
-                        </select>
-                        {tokenLogo && (
-                          <img
-                            src={tokenLogo}
-                            alt="Token Logo"
-                            // Adjusted classes for absolute positioning on the right
-                            className="w-4 h-4 absolute right-8 top-1/2 transform -translate-y-1/2 pointer-events-none" // Changed left-2 to right-8
-                          />
-                        )}
-                        
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                        Select Network
-                      </label>
-                      <select
-                        value={selectedNetworkIndex}
-                        onChange={(e) => setSelectedNetworkIndex(Number(e.target.value))}
-                        className="w-1/2 md:w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
-                      >
-                        {tokenObj?.networks.map((opt, idx) => (
-                          <option key={idx} value={idx}>
-                            {opt.displayNetwork}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
+          <div className="w-full">
+            {/* Step slider with animation */}
+            <div style={sliderStyle}>
+              <div style={sliderInnerStyle(currentSection)}>
+                {/* Step 1: Token selection */}
+                <div style={slideStyle}>
+                  {renderTokenSelection()}
                 </div>
-
-                {/* Amount + toggle USD */}
-                <div className="mb-8">
-                  <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                    {useUsd ? "Amount (USD)" : "Amount (Token)"}
-                  </label>
-
-                  {/* Contenedor relativo para poder posicionar el botón con absolute */}
-                  <div className="relative inline-block">
-                    <input
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className="
-        w-32
-        p-2
-        pr-10
-        border
-        border-jacarta-600
-        rounded-lg
-        bg-jacarta-800
-        focus:ring-accent
-        focus:border-accent
-        text-jacarta-100
-        dark:bg-jacarta-600
-        munro-small
-      "
-                      placeholder={useUsd ? "0.00 USD" : "0.00"}
-                    />
-
-                    {/* Botón con ícono posicionado dentro del input */}
-                    <button
-                      onClick={() => setUseUsd(!useUsd)}
-                      className="
-        absolute
-        top-1/2
-        -translate-y-1/2
-        right-2
-        p-1
-        bg-accent
-        text-white
-        rounded
-        munro-narrow
-      "
-                    >
-                      {/* Ícono de intercambio (Heroicons 'switch-vertical') */}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M4 8l4-4m0 0l4 4m-4-4v12m6 0l4 4m0 0l4-4m-4 4V4"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <p className="text-xs text-gray-400 mt-1 munro-small-text">
-                    Minimum deposit: {minDeposit || "0.00"}
-                  </p>
+                {/* Step 2: Amount input */}
+                <div style={slideStyle}>
+                  {renderAmountInput()}
                 </div>
-
-
-                {/* Start button */}
-                <div className="mb-8">
-                  <button
-                    onClick={handleCreateExchange}
-                    className="pitch-deck-button px-4 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
-                    disabled={loading || !wallets?.ckBTC?.walletAddressForDisplay}
-                  >
-                    {loading ? "Processing..." : "Start"}
-                  </button>
+                {/* Step 3: Deposit info */}
+                <div style={slideStyle}>
+                  {renderDepositInfo()}
                 </div>
-
-                {/* Deposit Info and QR Code */}
-                <div className="flex gap-8 items-start"> {/* New flex container */}
-                  {/* QR Code (Conditionally Rendered) */}
-                  {apiResponse?.details?.deposit?.address && (
-                    <div className="flex flex-col items-center flex-shrink-0 w-48"> {/* Container for QR */}
-                       <label className="block text-sm font-medium text-jacarta-500 mb-2 dark:text-jacarta-100 munro-small-text text-center">
-                         Scan to Deposit
-                       </label>
-                      <QRCodeSVG
-                        value={apiResponse.details.deposit.address}
-                        size={180} // Adjusted size
-                        className="bg-white p-2 rounded-lg" // Added background for visibility
-                      />
-                      {/* Status Display */}
-                      {status && (
-                         <div className="mt-2 text-center"> 
-                           <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading text-sm">
-                             Status:
-                           </span>
-                           <span className="text-jacarta-100 munro-small-text text-sm capitalize">
-                             {status}
-                           </span>
-                         </div>
-                       )}
-                    </div>
-                  )}
-
-                  {/* Input Fields Container */}
-                  <div className="flex-grow"> {/* Takes remaining space */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                        Deposit to this wallet
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={
-                            apiResponse?.details?.deposit?.address || "0x1234567890abcdef"
-                          }
-                          readOnly
-                          className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
-                        />
-                        <button
-                          onClick={() =>
-                            navigator.clipboard.writeText(
-                              apiResponse?.details?.deposit?.address ||
-                              "0x1234567890abcdef"
-                            )
-                          }
-                          className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
-                        >
-                          Copy
-                        </button>
-                      </div>
-                    </div>
-
-                    {apiResponse?.details?.deposit?.extra_id && (
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                          Memo
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={apiResponse.details.deposit.extra_id}
-                            readOnly
-                            className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
-                          />
-                          <button
-                            onClick={() =>
-                              navigator.clipboard.writeText(apiResponse.details.deposit.extra_id)
-                            }
-                            className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
-                          >
-                            Copy
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    <div>
-                      <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                        Deposit this quantity
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={
-                            apiResponse?.details?.deposit?.amount
-                              ? `${apiResponse.details.deposit.amount} on ${aggregatorTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
-                              }`
-                              : "0.00"
-                          }
-                          readOnly
-                          className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
-                        />
-                        <button
-                          onClick={() =>
-                            navigator.clipboard.writeText(
-                              apiResponse?.details?.deposit?.amount || "0.00"
-                            )
-                          }
-                          className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
-                        >
-                          Copy
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* StealthEX ID Input (Conditionally Rendered) */}
-                    {apiResponse?.details?.id && (
-                      <div className="mt-4"> {/* Added margin-top */} 
-                        <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                          StealthEX ID
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={apiResponse.details.id}
-                            readOnly
-                            className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
-                          />
-                          <button
-                            onClick={() =>
-                              navigator.clipboard.writeText(apiResponse.details.id)
-                            }
-                            className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
-                          >
-                            Copy
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div> {/* End of flex container */}
               </div>
             </div>
+            {/* Error and loading below the slider */}
+            {isError && (
+              <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
+                <p className="text-red-100 munro-small-text">
+                  <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
+                </p>
+              </div>
+            )}
+            {loading && (
+              <div className="flex items-center justify-center mt-4">
+                <div className="spinner-border animate-spin text-accent" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>
+                <span className="ml-2 text-jacarta-100 munro-small-text">{status}</span>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-start items-center p-8">
-          <div className="w-full max-w-md bg-jacarta-800 rounded-lg shadow-lg p-8 min-h-[600px]">
-            <div className="relative w-full h-40">
+        <div className="w-full lg:w-1/2 flex flex-col justify-start items-center p-2">
+          <div className="w-full max-w-md  rounded-lg shadow-lg p-4 min-h-[600px]">
+            <div className="relative w-full ">
               <div className="absolute w-full flex justify-between items-center px-12">
-                <div className="h-1 bg-white absolute left-0 right-0 top-1/2 -translate-y-1/2 z-0"></div>
-                {[1, 2, 3, 4, 5].map((num) => {
-                  const isActive = rightStep >= num;
-                  return (
-                    <div
-                      key={num}
-                      className={`w-12 h-12 text-lg font-bold rounded-full flex items-center justify-center z-10 transition-colors duration-300 munro-small ${isActive ? "bg-accent text-white" : "bg-white text-jacarta-800"
-                        }`}
-                    >
-                      {num}
-                    </div>
-                  );
-                })}
+                {/* Removed step circles and numbers */}
               </div>
             </div>
 
-            <div className="mt-24 text-center text-white">
-              {rightStep === 1 && (
+            <div className="text-center text-white">
+              {(rightStep === 1 || currentSection === 1) && (
                 <div>
-                  <h3 className="text-3xl font-bold mb-6 munro-small-heading">Connect Wallet</h3>
-                  <div className="flex justify-center mb-6">
-                    <img src={connectWalletGif} alt="Connect Wallet" className="w-48 h-48 rounded-lg" />
+                  <h3 className="text-xl md:text-3xl font-bold  munro-small-heading">Connect Wallet</h3>
+                  <div className="flex justify-center">
+                    <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
                   </div>
-                  <p className="text-xl munro-small-text">Unlock multichain deposits</p>
+                  <p className="text-xl md:text-2xl munro-small-text">Unlock multichain deposits</p>
                 </div>
               )}
-              {rightStep === 2 && (
+              {(rightStep === 2 || currentSection === 2) && (
                 <div>
-                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Awaiting deposit</h3>
-                  <p className="text-xl munro-small-text">Send the specified amount to continue</p>
+                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Choose amount</h3>
+                  <p className="text-xl munro-small-text">Specify the amount you want to deposit</p>
                 </div>
               )}
-              {rightStep === 3 && (
+              {(rightStep === 3 || currentSection === 3) && (
                 <div>
-                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Receiving tokens</h3>
-                  <p className="text-xl munro-small-text">Your deposit is being processed</p>
+                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Finish your order</h3>
+                  <p className="text-xl munro-small-text">Hope to get your confirmation</p>
                 </div>
               )}
               {rightStep === 4 && (
@@ -836,76 +963,6 @@ const TokenRow = () => {
           </div>
         </div>
       </div>
-
-      {/* Exchange Details / QR 
-      {!isError && apiResponse?.details && (
-        <div>
-          <div className="mt-6 p-4 bg-jacarta-800 rounded-lg shadow-sm dark:bg-jacarta-700 relative">
-            <h2 className="text-lg font-medium text-jacarta-100 mb-4 munro-regular-heading">
-              Exchange Details
-            </h2>
-            <button
-              onClick={() => setShowModal(true)}
-              className="pitch-deck-button absolute top-4 right-4 text-white hover:text-red-300 munro-narrow"
-            >
-              X
-            </button>
-            <div className="grid grid-cols-1 gap-4">
-              <div className="flex flex-col items-center gap-2">
-                <QRCodeSVG
-                  value={apiResponse.details.deposit.address}
-                  size={300}
-                />
-                <span className="block text-jacarta-100 break-all munro-small-text">
-                  {apiResponse.details.deposit.address}
-                </span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading">
-                  Deposit Amount:
-                </span>
-                <span className="text-jacarta-100 munro-small-text">
-                  {apiResponse.details.deposit.amount}{" "}
-                  {apiResponse.details.deposit.symbol?.toUpperCase() || ""}
-                </span>
-              </div>
-              {apiResponse.details.id && (
-                <div className="flex flex-col items-center">
-                  <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading">
-                    StealthEX ID:
-                  </span>
-                  <span className="text-jacarta-100 munro-small-text">{apiResponse.details.id}</span>
-                </div>
-              )}
-              <div className="flex flex-col items-center">
-                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading">
-                  Status:
-                </span>
-                <span className="text-jacarta-100 munro-small-text">{status}</span>
-              </div>
-            </div>
-          </div>
-          <SwapSteps />
-        </div>
-      )}
-        */}
-
-      {isError && (
-        <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
-          <p className="text-red-100 munro-small-text">
-            <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
-          </p>
-        </div>
-      )}
-
-      {loading && (
-        <div className="flex items-center justify-center mt-4">
-          <div className="spinner-border animate-spin text-accent" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-          <span className="ml-2 text-jacarta-100 munro-small-text">{status}</span>
-        </div>
-      )}
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

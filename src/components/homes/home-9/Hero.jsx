@@ -13,11 +13,10 @@ import icpLogo from '../../../assets/img/hero/icp_icon.png';
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
-import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 // import required modules
-import { Navigation, Pagination, EffectCoverflow, Autoplay } from "swiper/modules";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import Image from "../../common/Image";
 import { formatNumberWithPattern } from "../../../utils";
 
@@ -135,7 +134,7 @@ export default function Hero() {
             <Swiper
               breakpoints={{
                 100: {
-                  slidesPerView: 1,
+                  slidesPerView: 2,
                 },
                 575: {
                   slidesPerView: 2,
@@ -151,26 +150,19 @@ export default function Hero() {
                 },
               }}
               slidesPerGroupAuto
-              effect={"coverflow"}
+              spaceBetween={24}
               grabCursor={true}
               centeredSlides={historicState && historicState.length > 0}
-              loop={false}
-              coverflowEffect={{
-                rotate: 30,
-                stretch: 0,
-                depth: 100,
-                modifier: 1,
-                slideShadows: true,
-              }}
-              pagination={{
-                clickable: true,
-              }}
-              modules={[EffectCoverflow, Navigation, Pagination, Autoplay]}
+              loop={true}
+              freeMode={true}
+              speed={4000}
               autoplay={{
-                delay: 3000,
+                delay: 0,
                 disableOnInteraction: false,
+                pauseOnMouseEnter: true
               }}
-              className="swiper coverflow-slider !py-5 w-full"
+              modules={[Navigation, Pagination, Autoplay]}
+              className="swiper !py-5 w-full"
               onSwiper={(swiper) => {
                 setSwiperInstance(swiper);
               }}
@@ -224,34 +216,6 @@ export default function Hero() {
                 </SwiperSlide>
               )}
             </Swiper>
-
-            {/* Remove the navigation buttons */}
-            {/*
-            <div className="snbp7-hero swiper-button-prev group absolute top-1/2 left-4 z-10 -mt-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-base shadow-white-volume">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                className="fill-jacarta-700 group-hover:fill-accent"
-              >
-                <path fill="none" d="M0 0h24v24H0z" />
-                <path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z" />
-              </svg>
-            </div>
-            <div className="snbn7-hero swiper-button-next group absolute top-1/2 right-4 z-10 -mt-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-base shadow-white-volume">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                className="fill-jacarta-700 group-hover:fill-accent"
-              >
-                <path fill="none" d="M0 0h24v24H0z" />
-                <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" />
-              </svg>
-            </div>
-            */}
           </div>
         </div>
         
@@ -262,9 +226,12 @@ export default function Hero() {
               <div className="mx-4 mb-6">
                 <img src={sumLogo} alt="Plebes Logo" className="w-full max-w-md" />
               </div>
-              <p className="mx-5 mb-8 w-full text-center text-4xl text-white md:text-left munro-regular-text">
- Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
-              </p>
+              <p
+  className="mx-5 mb-8 w-full text-center text-4xl text-white md:text-left munro-regular-text"
+  style={{ textShadow: '4px 4px 12px rgba(0, 0, 0, 0.85)' }}
+>
+  Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
+</p>
               <div className="flex gap-3 mb-8">
                 <a
                     href="http://plebes.xyz/auction"
@@ -281,7 +248,8 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Stats Block */}
+            {/* Stats Block - Now replaced by the navbar component */}
+            {/*
             <div className="relative col-span-6 col-start-7 hidden h-full md:flex items-center justify-center">
               <div className={`stats-card bg-morado-translucido p-8 rounded-lg shadow-lg text-white text-center w-full max-w-md transition-all duration-300 ${balanceIncreased ? 'balance-increase-pulse' : ''}`}>
                 <h3 className="text-3xl font-bold mb-4 munro-regular-heading">Treasury Balance</h3>
@@ -306,6 +274,7 @@ export default function Hero() {
                 )}
               </div>
             </div>
+            */}
           </div>
         </div>
       </section>

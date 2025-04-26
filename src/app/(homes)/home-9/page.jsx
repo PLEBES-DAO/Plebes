@@ -9,7 +9,6 @@ export default function HomePage9({ login, setModalOpen }) {
       <Navbar bLogin={login} setModalOpen={setModalOpen} />
       <main>
         <Hero />
-        
       </main>
     </>
   );

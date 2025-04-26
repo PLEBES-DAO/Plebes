@@ -24,7 +24,8 @@ export default defineConfig({
   ],
   define: {
     'process.env': {},
-    'process.nextTick': () => {},
+    'process.nextTick': 'undefined',
+    'process.version': '"0.0.0"',
     'global': 'globalThis',
   },
   css: {
@@ -48,7 +49,9 @@ export default defineConfig({
   optimizeDeps: {
     esbuildOptions: {
       define: {
-        global: 'globalThis'
+        global: 'globalThis',
+        'process.nextTick': 'undefined',
+        'process.version': '"0.0.0"'
       },
     },
     include: [

@@ -56,9 +56,9 @@ function App() {
         <Route path="/" element={<Page login={login} setModalOpen={setWithdralModal} />} />
         <Route path="/auction" element={<AuctionPage liveAuction={liveAuction} login={login} setModalOpenT={setWithdralModal}  />} />
         <Route path="/profile" element={<OwnedPage login={login} inscriptions={inscriptions} loading={loading} setModalOpen={setWithdralModal}  />} />
-        <Route path="/deposit" element={<Deposit login={login} setModalOpenT={setWithdralModal}  />} />
-        <Route path="/launchpad" element={<HomePage login={login} setModalOpenT={setWithdralModal} />} />
-        <Route path="/dao" element={<DAO login={login} setModalOpenT={setWithdralModal} />} />
+        <Route path="/deposit" element={<Deposit login={!!userConnection} setModalOpenT={setWithdralModal}  />} />
+        <Route path="/launchpad" element={<HomePage login={!!userConnection} setModalOpen={setWithdralModal} />} />
+        <Route path="/dao" element={<DAO login={!!userConnection} setModalOpenT={setWithdralModal} />} />
         <Route path="/proposal_page" element={<ProposalPage login={login} setModalOpenT={setWithdralModal} />} />
 
       </Routes>

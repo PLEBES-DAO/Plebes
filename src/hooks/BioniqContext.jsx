@@ -863,6 +863,12 @@ const BioniqContextProvider = ({ children }) => {
 
   async function processBids(auction) {
     try {
+      // Check if auction and auction.bids exist and auction.bids is an array
+      if (!auction || !Array.isArray(auction.bids)) {
+        console.warn("processBids called with invalid auction or bids:", auction);
+        return []; // Return an empty array if bids are missing or not an array
+      }
+
       const newBids = await Promise.all(
         auction.bids.map(async (bid) => {
           const decimal = bigNatToDecimal(bid.amount);
@@ -1015,7 +1021,6 @@ const BioniqContextProvider = ({ children }) => {
       if(history){
         console.log("in history")
         history.results.forEach(async(item)=>{
-          console.log("in history results item",typeof item.metadata)
           let metadata = JSON.parse(item.metadata)
           if(metadata && metadata.seller === "bc1qz6dmmfrh9ejmn7fj2563lav7ze6pxck73a4vgy"){
             historicArray.push({metadata,item});
