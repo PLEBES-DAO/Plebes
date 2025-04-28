@@ -221,14 +221,14 @@ export default function Hero() {
         </div>
         
         <div className="ml-auto mr-auto h-full max-w-[91rem] px-4 relative z-10">
-          <div className="grid h-full items-center gap-4 md:grid-cols-12">
+          <div className="grid h-full items-center gap-4">
             {/* Text Content */}
-            <div className="col-span-5 flex h-full flex-col items-center justify-center py-10 md:items-start lg:py-20">
+            <div className="flex h-full flex-col items-center justify-center py-10 lg:py-20">
               <div className="mx-4 mb-6">
                 <img src={sumLogo} alt="Plebes Logo" className="w-full max-w-md" />
               </div>
               <p
-  className="mx-5 mb-8 w-full text-center text-4xl text-white md:text-left munro-regular-text"
+  className="mx-5 mb-8 w-full text-center text-4xl lg:text-6xl text-white munro-regular-text"
   style={{ textShadow: '4px 4px 12px rgba(0, 0, 0, 0.85)' }}
 >
   Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
