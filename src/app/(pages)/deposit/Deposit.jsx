@@ -8,28 +8,30 @@ import { FaCheck } from "react-icons/fa";
 import { useBioniqContext } from "../../../hooks/BioniqContext";
 import "../../../components/homes/home-9/Munro.css";
 import connectWalletGif from "../../../assets/img/dao/gif.gif";
+import copyIcon from "../../../assets/img/copy_icon.svg";
+import checkMark from "../../../assets/img/check-mark.svg";
 
 const enableBlurIfNoWallet = false; // Poner en true para activar el efecto Blur cuando no hay wallet activada
 
 // Tokens con logos y redes
 const aggregatorTokens = {
   // USDC
-  USDC: {
+  /* USDC: {
     logo: "/img/coins/usdc.svg",
     networks: [
-      { aggregatorSymbol: "USDCARB", displayToken: "USDC", displayNetwork: "ARBITRUM" },
-      { aggregatorSymbol: "USDCBASE", displayToken: "USDC", displayNetwork: "BASE" },
-      { aggregatorSymbol: "USDC", displayToken: "USDC", displayNetwork: "ETHEREUM" },
-      { aggregatorSymbol: "USDCMATIC", displayToken: "USDC", displayNetwork: "MATIC" },
-      { aggregatorSymbol: "USDCNEAR", displayToken: "USDC", displayNetwork: "NEAR" },
-      { aggregatorSymbol: "USDCOP", displayToken: "USDC", displayNetwork: "OPTIMISM" },
-      { aggregatorSymbol: "USDCSOL", displayToken: "USDC", displayNetwork: "SOLANA" },
-      { aggregatorSymbol: "USDCTRC20", displayToken: "USDC", displayNetwork: "TRON" },
+    { aggregatorSymbol: "USDCARB", displayToken: "USDC", displayNetwork: "ARBITRUM" },
+    { aggregatorSymbol: "USDCBASE", displayToken: "USDC", displayNetwork: "BASE" },
+    { aggregatorSymbol: "USDC", displayToken: "USDC", displayNetwork: "ETHEREUM" },
+    { aggregatorSymbol: "USDCMATIC", displayToken: "USDC", displayNetwork: "MATIC" },
+    { aggregatorSymbol: "USDCNEAR", displayToken: "USDC", displayNetwork: "NEAR" },
+    { aggregatorSymbol: "USDCOP", displayToken: "USDC", displayNetwork: "OPTIMISM" },
+    { aggregatorSymbol: "USDCSOL", displayToken: "USDC", displayNetwork: "SOLANA" },
+    { aggregatorSymbol: "USDCTRC20", displayToken: "USDC", displayNetwork: "TRON" },
     ],
-  },
+  }, */
 
   // USDT
-  USDT: {
+ /* USDT: {
     logo: "/img/coins/usdt.svg",
     networks: [
       { aggregatorSymbol: "USDTCARB", displayToken: "USDT", displayNetwork: "ARBITRUM" },
@@ -41,19 +43,19 @@ const aggregatorTokens = {
       { aggregatorSymbol: "USDTCSOL", displayToken: "USDT", displayNetwork: "SOLANA" },
       { aggregatorSymbol: "USDTTRC20", displayToken: "USDT", displayNetwork: "TRON" },
     ],
-  },
+  }, */
 
   // BTC
-  BTC: {
+/* BTC: {
     logo: "/img/coins/btc.svg",
     networks: [
       { aggregatorSymbol: "BTC", displayToken: "BTC", displayNetwork: "BITCOIN" },
       { aggregatorSymbol: "BTC-LIGHTNING", displayToken: "BTC", displayNetwork: "LIGHTNING" },
     ],
-  },
+  }, */
 
   // ETH
-  ETH: {
+  /* ETH: {
     logo: "/img/coins/eth.svg",
     networks: [
       { aggregatorSymbol: "ETHARB", displayToken: "ETH", displayNetwork: "MAINET" },
@@ -61,71 +63,71 @@ const aggregatorTokens = {
       { aggregatorSymbol: "ETH", displayToken: "ETH", displayNetwork: "ETHEREUM" },
       { aggregatorSymbol: "ETHOP", displayToken: "ETH", displayNetwork: "OPTIMISM" },
     ],
-  },
+  }, */
 
   // ADA
-  ADA: {
+  /* ADA: {
     logo: "/img/coins/ada.svg",
     networks: [
       { aggregatorSymbol: "ADA", displayToken: "ADA", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // ALGO
-  ALGO: {
+ /* ALGO: {
     logo: "/img/coins/algo.svg",
     networks: [
       { aggregatorSymbol: "ALGO", displayToken: "ALGO", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // APT
-  APT: {
+  /* APT: {
     logo: "/img/coinplebes/APT.svg",
     networks: [
       { aggregatorSymbol: "APT", displayToken: "APT", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // ARB
-  ARB: {
+  /* ARB: {
     logo: "/img/coinplebes/ARB.svg",
     networks: [
       { aggregatorSymbol: "ARB", displayToken: "ARB", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // AVAX
-  AVAX: {
+  /* AVAX: {
     logo: "/img/coins/avax.svg",
     networks: [
       { aggregatorSymbol: "AVAX-C", displayToken: "AVAX", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // BNB
-  BNB: {
+  /* BNB: {
     logo: "/img/coins/bnb.svg",
     networks: [
       { aggregatorSymbol: "BNB-BSC", displayToken: "BNB", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // BUSD
-  BUSD: {
+  /* BUSD: {
     logo: "/img/coinplebes/BUSD.svg",
     networks: [
       { aggregatorSymbol: "BUSD", displayToken: "BUSD", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // DOGE
-  DOGE: {
+  /*DOGE: {
     logo: "/img/coins/doge.svg",
     networks: [
       { aggregatorSymbol: "DOGE", displayToken: "DOGE", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // DOT
   DOT: {
@@ -136,28 +138,28 @@ const aggregatorTokens = {
   },
 
   // ICP
-  ICP: {
+ /* ICP: {
     logo: "/img/coins/icp.svg",
     networks: [
       { aggregatorSymbol: "ICP", displayToken: "ICP", displayNetwork: "MAINNET" },
     ],
-  },
+  },*/
 
   // NEAR
-  NEAR: {
+ /* NEAR: {
     logo: "/img/coinplebes/NEAR.svg",
     networks: [
       { aggregatorSymbol: "NEAR", displayToken: "NEAR", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // OP
-  OP: {
+ /* OP: {
     logo: "/img/coinplebes/OP.svg",
     networks: [
       { aggregatorSymbol: "OP", displayToken: "OP", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 
   // SOL
   SOL: {
@@ -168,12 +170,12 @@ const aggregatorTokens = {
   },
 
   // SUI
-  SUI: {
+  /** SUI: {
     logo: "/img/coinplebes/sui.svg",
     networks: [
       { aggregatorSymbol: "SUI", displayToken: "SUI", displayNetwork: "MAINNET" },
     ],
-  },
+  }, **/
 
   // TON
   TON: {
@@ -200,20 +202,27 @@ const aggregatorTokens = {
   },
 
   // WLD
-  WLD: {
+  /* WLD: {
     logo: "/img/coinplebes/WLD.svg",
     networks: [
       { aggregatorSymbol: "WLD", displayToken: "WLD", displayNetwork: "MAINNET" },
     ],
-  },
+  }, */
 };
 
-// "minimum deposit"
-async function fetchMinDepositExample(symbol, network, isUSD) {
-  // Placeholder: en producción se conectaría con el backend
-  return isUSD ? "10 USD" : "0.01 " + symbol;
+// "minimum deposit" - hardcoded values for specific tokens
+function getMinimumDeposit(symbol) {
+  // Hardcoded minimum values as specified
+  const minimumValues = {
+    "SOL": "Minimum 0.8 SOL",
+    "TON": "Minimum 32 TON",
+    "DOT": "Minimum 25 DOT",
+    "XLM": "Minimum 370 XLM",
+    "XRP": "Minimum 45.3 XRP"
+  };
+  
+  return minimumValues[symbol] || `Minimum 0.01 ${symbol}`;
 }
-
 
 export const metadata = {
   title: "Deposit Page",
@@ -252,7 +261,7 @@ export default function AuctionPage({ login, setModalOpenT }) {
 const TokenRow = () => {
 
   const { wallets, buy ,swapStep} = useBioniqContext();
-  const [selectedToken, setSelectedToken] = useState("USDC");
+  const [selectedToken, setSelectedToken] = useState("DOT");
   const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -266,9 +275,30 @@ const TokenRow = () => {
   const [minDeposit, setMinDeposit] = useState("");
   // Nuevo estado para manejar la sección actual
   const [currentSection, setCurrentSection] = useState(1);
+  
+  // Track which fields have been copied
+  const [copiedField, setCopiedField] = useState(null);
 
   // Step en la caja derecha (1..5). 1 => "Connect wallet"
   const [rightStep, setRightStep] = useState(1);
+
+  // Function to handle copy to clipboard
+  const handleCopy = (text, fieldName) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldName);
+    
+    // Reset after 2 seconds
+    setTimeout(() => {
+      setCopiedField(null);
+    }, 2000);
+  };
+
+  // For compatibility, ensure useUsd is always false
+  useEffect(() => {
+    if (useUsd) {
+      setUseUsd(false);
+    }
+  }, [useUsd]);
 
   function mapStatusToStep(status) {
     if (!status) return 2; // step 2 => "Awaiting deposit"
@@ -357,20 +387,14 @@ const TokenRow = () => {
 
   // Actualiza minDeposit
   useEffect(() => {
-    const doFetchMin = async () => {
-      const tokenObj = aggregatorTokens[selectedToken];
-      if (!tokenObj) return;
-      const netOption = tokenObj.networks[selectedNetworkIndex];
-      if (!netOption) return;
-      const result = await fetchMinDepositExample(
-        netOption.displayToken,
-        netOption.displayNetwork,
-        useUsd
-      );
-      setMinDeposit(result);
-    };
-    doFetchMin();
-  }, [selectedToken, selectedNetworkIndex, useUsd]);
+    const tokenObj = aggregatorTokens[selectedToken];
+    if (!tokenObj) return;
+    const netOption = tokenObj.networks[selectedNetworkIndex];
+    if (!netOption) return;
+    
+    const minValue = getMinimumDeposit(netOption.displayToken);
+    setMinDeposit(minValue);
+  }, [selectedToken, selectedNetworkIndex]);
 
   // Función para avanzar a la siguiente sección
   const handleNextSection = () => {
@@ -416,7 +440,7 @@ const TokenRow = () => {
         to: { symbol: "icp", network: "mainnet" },
       },
       amount: parseFloat(amount) || 0,
-      estimation: useUsd ? "usd" : "direct",
+      estimation: "direct",
       rate: "floating",
       address: depositAddress,
       user_id: wallets.ckBTC.walletAddressForDisplay,
@@ -531,9 +555,9 @@ const TokenRow = () => {
   const renderTokenSelection = () => (
     <>
       <div className="mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-lg font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-full">
+            <label className="block text-xl font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
               Select Token
             </label>
             <div className="relative flex items-center">
@@ -543,7 +567,7 @@ const TokenRow = () => {
                   setSelectedToken(e.target.value);
                   setSelectedNetworkIndex(0);
                 }}
-                className="w-full md:w-1/2 md:w-48 p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none"
+                className="w-full p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none"
               >
                 {Object.keys(aggregatorTokens).map((tk) => (
                   <option key={tk} value={tk}>
@@ -560,14 +584,14 @@ const TokenRow = () => {
               )}
             </div>
           </div>
-          <div>
-            <label className="block text-lg font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+          <div className="w-full">
+            <label className="block text-xl font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
               Select Network
             </label>
             <select
               value={selectedNetworkIndex}
               onChange={(e) => setSelectedNetworkIndex(Number(e.target.value))}
-              className="w-full md:w-1/2 md:w-48 p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
+              className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
             >
               {tokenObj?.networks.map((opt, idx) => (
                 <option key={idx} value={idx}>
@@ -578,7 +602,7 @@ const TokenRow = () => {
           </div>
         </div>
       </div>
-      <div className="flex justify-center mb-8">
+      <div className="flex justify-center mb-8 text-lg">
         <button
           onClick={() => {
             console.log("Next button clicked, moving to section 2");
@@ -597,63 +621,38 @@ const TokenRow = () => {
   const renderAmountInput = () => (
     <>
       <div className="mb-8">
-        <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-          {useUsd ? "Amount (USD)" : "Amount (Token)"}
-        </label>
-        <div className="relative inline-block">
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="
-            w-32
-            p-2
-            pr-10
-            border
-            border-jacarta-600
-            rounded-lg
-            bg-jacarta-800
-            focus:ring-accent
-            focus:border-accent
-            text-jacarta-100
-            dark:bg-jacarta-600
-            munro-small
-          "
-            placeholder={useUsd ? "0.00 USD" : "0.00"}
-          />
-          <button
-            onClick={() => setUseUsd(!useUsd)}
-            className="
-            absolute
-            top-1/2
-            -translate-y-1/2
-            right-2
-            p-1
-            bg-accent
-            text-white
-            rounded
-            munro-narrow
-          "
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 8l4-4m0 0l4 4m-4-4v12m6 0l4 4m0 0l4-4m-4 4V4"
-              />
-            </svg>
-          </button>
+        <div className="w-full">
+          <label className="block text-lg font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+            Amount (Token)
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="
+              w-full
+              p-2
+              pr-10
+              border
+              border-jacarta-600
+              rounded-lg
+              bg-jacarta-800
+              focus:ring-accent
+              focus:border-accent
+              text-jacarta-100
+              dark:bg-jacarta-600
+              munro-small
+            "
+              placeholder="0.00"
+            />
+          </div>
+          <div>
+            <p className="text-md md:text-base font-medium text-accent mt-2 munro-small-text">
+              {minDeposit}
+            </p>
+          </div>
         </div>
-        <p className="text-xs text-gray-400 mt-1 munro-small-text">
-          Minimum deposit: {minDeposit || "0.00"}
-        </p>
       </div>
       <div className="mb-8 flex space-x-4 justify-center">
         <button
@@ -678,34 +677,39 @@ const TokenRow = () => {
 
   // Renderiza la sección de información de depósito
   const renderDepositInfo = () => (
-    <>
-      <div className="flex gap-8 items-start">
-        {apiResponse?.details?.deposit?.address && (
-          <div className="flex flex-col items-center flex-shrink-0 w-48">
-            <label className="block text-sm font-medium text-jacarta-500 mb-2 dark:text-jacarta-100 munro-small-text text-center">
-              Scan to Deposit
-            </label>
-            <QRCodeSVG
-              value={apiResponse.details.deposit.address}
-              size={180}
-              className="bg-white p-2 rounded-lg"
-            />
-            {status && (
-              <div className="mt-2 text-center">
-                <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading text-sm">
-                  Status:
-                </span>
-                <span className="text-jacarta-100 munro-small-text text-sm capitalize">
-                  {status}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+    <div className="w-full">
+      {/* Two-column grid on large screens */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 w-full">
+        {/* Left column - QR code section */}
+        <div className="flex flex-col items-center justify-start w-full">
+          {apiResponse?.details?.deposit?.address && (
+            <>
+              <label className="block text-xl font-medium text-jacarta-500 mb-2 dark:text-jacarta-100 munro-small-text text-center">
+                Scan to deposit
+              </label>
+              <QRCodeSVG
+                value={apiResponse.details.deposit.address}
+                size={180}
+                className="bg-white p-2 rounded-lg"
+              />
+              {status && (
+                <div className="mt-2 text-center">
+                  <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading text-lg">
+                    Status:
+                  </span>
+                  <span className="text-jacarta-100 munro-small-text text-lg capitalize">
+                    {status}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
 
-        <div className="flex-grow">
+        {/* Right column - Input fields */}
+        <div className="flex flex-col w-full">
           <div className="mb-4">
-            <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+            <label className="block text-lg text-center font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
               Deposit to this wallet
             </label>
             <div className="relative">
@@ -715,18 +719,18 @@ const TokenRow = () => {
                   apiResponse?.details?.deposit?.address || "Awaiting address..."
                 }
                 readOnly
-                className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
               />
               {apiResponse?.details?.deposit?.address && (
                 <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      apiResponse?.details?.deposit?.address
-                    )
-                  }
-                  className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                  onClick={() => handleCopy(apiResponse?.details?.deposit?.address, "address")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
                 >
-                  Copy
+                  {copiedField === "address" ? (
+                    <img src={checkMark} alt="Copied" className="w-5 h-5" />
+                  ) : (
+                    <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                  )}
                 </button>
               )}
             </div>
@@ -742,22 +746,24 @@ const TokenRow = () => {
                   type="text"
                   value={apiResponse.details.deposit.extra_id}
                   readOnly
-                  className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                  className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
                 />
                 <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(apiResponse.details.deposit.extra_id)
-                  }
-                  className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                  onClick={() => handleCopy(apiResponse.details.deposit.extra_id, "memo")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
                 >
-                  Copy
+                  {copiedField === "memo" ? (
+                    <img src={checkMark} alt="Copied" className="w-5 h-5" />
+                  ) : (
+                    <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+            <label className="block text-lg text-center font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
               Deposit this quantity
             </label>
             <div className="relative">
@@ -770,18 +776,18 @@ const TokenRow = () => {
                     : "Awaiting amount..."
                 }
                 readOnly
-                className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
               />
               {apiResponse?.details?.deposit?.amount && (
                 <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      apiResponse?.details?.deposit?.amount || "0.00"
-                    )
-                  }
-                  className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                  onClick={() => handleCopy(apiResponse?.details?.deposit?.amount || "0.00", "amount")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
                 >
-                  Copy
+                  {copiedField === "amount" ? (
+                    <img src={checkMark} alt="Copied" className="w-5 h-5" />
+                  ) : (
+                    <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                  )}
                 </button>
               )}
             </div>
@@ -789,7 +795,7 @@ const TokenRow = () => {
 
           {apiResponse?.details?.id && (
             <div className="mt-4">
-              <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+              <label className="block text-lg text-center font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
                 StealthEX ID
               </label>
               <div className="relative">
@@ -797,15 +803,17 @@ const TokenRow = () => {
                   type="text"
                   value={apiResponse.details.id}
                   readOnly
-                  className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                  className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
                 />
                 <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(apiResponse.details.id)
-                  }
-                  className="pitch-deck-button absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white rounded-md text-sm munro-narrow"
+                  onClick={() => handleCopy(apiResponse.details.id, "id")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
                 >
-                  Copy
+                  {copiedField === "id" ? (
+                    <img src={checkMark} alt="Copied" className="w-5 h-5" />
+                  ) : (
+                    <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -813,24 +821,25 @@ const TokenRow = () => {
         </div>
       </div>
       
-      <div className="flex justify-center text-lg mt-8">
+      {/* Cancel button - centered below the grid */}
+      <div className="flex justify-center text-md mt-8 mb-4">
         <button
           onClick={handleDeleteExchange}
-          className="px-4 py-2 text-white rounded-lg shadow bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 munro-narrow"
+          className="bg-white text-jacarta-700 px-6 py-2 rounded-lg font-medium munro-narrow focus:outline-none"
         >
           Cancel Deposit
         </button>
       </div>
-    </>
+    </div>
   );
 
   return (
     <section className="relative h-screen">
-      <div className="mx-4 text-center md:text-left pt-24">
-        <span className="text-white text-2xl munro-regular-heading">Multichain deposit</span>
+      <div className="mx-4 text-center pt-24 md:pt-32">
+        <span className="text-white text-2xl md:text-5xl munro-regular-heading">Multichain deposit</span>
       </div>
 
-      <div className="w-full lg:w-1/2 flex flex-col justify-start items-center p-4">
+      <div className="w-full flex flex-col justify-start items-center p-4">
           <div className="w-full max-w-md bg-jacarta-800 rounded-lg shadow-lg p-4 min-h-[600px]">
             <div className="relative w-full ">
               <div className="absolute w-full flex justify-between items-center px-12">
@@ -889,25 +898,26 @@ const TokenRow = () => {
             </div>
           </div>
           <div 
-          className="px-6 mt-4 py-3 rounded-lg text-white munro-small-text text-center"
+          className="px-6 mt-4 py-3 rounded-lg text-white munro-small-text text-center lg:w-1/2"
           style={{
             backgroundColor: wallets?.ckBTC?.walletAddressForDisplay ? 'rgba(22, 163, 74, 0.2)' : 'rgba(220, 38, 38, 0.2)',
             border: wallets?.ckBTC?.walletAddressForDisplay ? '2px solid #16a34a' : '2px solid #dc2626',
-            minWidth: '300px'
+            minWidth: '300px',
+            maxWidth: '300px'
           }}
         >
           {wallets?.ckBTC?.walletAddressForDisplay
-            ? `Wallet connected: ${wallets.ckBTC.walletAddressForDisplay}`
+            ? `Wallet connected`
             : "Account not detected. Please log in."}
         </div>
         </div>
 
-      <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)]">
+      <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)] justify-center">
         <div
-          className="w-full lg:w-1/2 flex justify-start items-start  px-4"
+          className="w-full lg:w-1/2 flex justify-center items-center px-4"
           style={{ filter: leftBoxBlur }}
         >
-          <div className="w-full">
+          <div className="w-full max-w-[300px]">
             {/* Form */}
             <div className="w-full">
               {currentSection === 1 && renderTokenSelection()}

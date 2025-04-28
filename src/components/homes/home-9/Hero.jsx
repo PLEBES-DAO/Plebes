@@ -191,13 +191,13 @@ export default function Hero() {
                                 <img
                                   src="/img/ckBTC.svg"
                                   alt="ckBTC Icon"
-                                  className="ml-2 h-5 w-5"
+                                  className="ml-2 h-5 w-5 mr-3"
                                 />
-                                {" "+(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD              
+                                {(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD              
                               </span>
                             </Link>
                             <a href="#" className="text-2xs text-accent munro-narrow-text">
-                              {elm.metadata.buyer.slice(0, 5)}...{elm.metadata.buyer.slice(-5)}
+                              {elm.metadata.buyer}
                             </a>
                           </div>
                         </div>

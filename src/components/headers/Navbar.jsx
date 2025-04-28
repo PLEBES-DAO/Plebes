@@ -225,7 +225,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
 
           {/* Treasury Balance Display - Desktop - Center Section */}
           <div className="flex-1 flex justify-center items-center ">
-            <div className="hidden lg:block">
+            <div className="hidden lg:block ml-12">
               {BalanceDisplayElement}
             </div>
           </div>
@@ -233,7 +233,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
           {/* Menu / Actions - Right Section */}
           <div className="shrink-0 hidden lg:flex items-center">
             {/* Actions */}
-            <div className="ml-8 flex xl:ml-12">
+            <div className=" flex ">
               {!isLoggedIn && (
                 <>
                   {/* Social Icons */}
