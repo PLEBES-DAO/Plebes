@@ -130,7 +130,7 @@
 
 /* Overlay oscuro que desaparece al hacer hover */
 .section .dark-overlay {
-    background-color: rgba(12, 17, 44, 0.9); /* Equivalente a bg-[#0c112c]/90 */
+    background-color: transparent; /* removed dark overlay */
     position: absolute;
     inset: 0;
     transition: opacity 0.3s ease;
@@ -255,7 +255,7 @@ body {
 .card-image-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.30); /* 20% negro */
+  background: transparent; /* removed dark overlay */
   z-index: 2;
   pointer-events: none;
   border-radius: inherit;
