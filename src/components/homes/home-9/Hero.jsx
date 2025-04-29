@@ -136,20 +136,23 @@ export default function Hero() {
                       </Link>
                     </figure>
                     <div className="p-6">
-                      <div className="flex">
+                      <div className="flex flex-col items-start">
                         <div>
-                          <Link to={`/item/${elm.item.id}`} className="block">
-                            <span className="font-display text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white flex items-center munro-small-text">
-                              <img
-                                src="/img/ckBTC.svg"
-                                alt="ckBTC Icon"
-                                className="ml-2 h-5 w-5 mr-3"
-                              />
-                              {(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD              
+                          <Link to={`/item/${elm.item.id}`} className="flex items-center space-x-2">
+                            <img
+                              src="/img/ckBTC.svg"
+                              alt="ckBTC Icon"
+                              className="h-5 w-5"
+                            />
+                            <span className="font-display mb-1 text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white munro-small-text">
+                              {(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD
                             </span>
                           </Link>
-                          <a href="#" className="text-2xs text-accent munro-narrow-text">
-                            {elm.metadata.buyer}
+                          <a href="#" className="text-2xs text-accent munro-narrow-text mt-2">
+                            {elm.metadata.buyer.length > 10 ?
+                              `${elm.metadata.buyer.slice(0,5)}...${elm.metadata.buyer.slice(-5)}` :
+                              elm.metadata.buyer
+                            }
                           </a>
                         </div>
                       </div>
