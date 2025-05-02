@@ -163,8 +163,8 @@ export default function Hero() {
         </div>
         
         {/* Bottom Carousel - Ahora con position: absolute en lugar de fixed */}
-        <div className="w-full absolute bottom-0 left-0 right-0 z-30">
-          <div className="relative px-0">
+        <div className="w-full absolute bottom-0 left-0 right-0 z-[-1]">
+         <div className="relative px-0">
             <Swiper
               breakpoints={{
                 100: { slidesPerView: 2 },
