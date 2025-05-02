@@ -8,7 +8,7 @@
     animation: fadeInDarken 0.5s ease-in-out forwards;
 }
 .bg-morado-translucido {
-    background-color: rgba(90, 24, 154, 0.3); /* más transparente */
+    background-color: rgba(90, 24, 154, 0.8); /* más transparente */
 }
 
 /* Pitch Deck Button Styling - Pixel Art Border */
@@ -145,6 +145,16 @@
     text-align: center;
 }
 
+/* Quita cualquier borde superior o inferior de las cards del Swiper */
+.swiper .block.rounded-2\.5xl {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    border-radius: 1.25rem 1.25rem 0 0 !important; /* Solo arriba */
+}
+
+
 /* Animación inicial de opacidad */
 @keyframes fadeInDarken {
     0% {
@@ -199,7 +209,6 @@ body {
 
 .pixel-font {
   font-family: 'Press Start 2P', cursive;
-  font-size: 10px; /* Adjust size for readability */
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5); /* Optional shadow for depth */
   white-space: nowrap; /* Prevent wrapping */
 }

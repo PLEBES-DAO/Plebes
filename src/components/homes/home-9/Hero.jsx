@@ -93,115 +93,127 @@ export default function Hero() {
       />
       
       {/* Bottom Carousel */}
-      <div className="w-full absolute bottom-0 left-0 right-0 -z-5">
-        <div className="relative px-0">
-          <Swiper
-            breakpoints={{
-              100: { slidesPerView: 2 },
-              575: { slidesPerView: 2 },
-              992: { slidesPerView: 3 },
-              1200: { slidesPerView: 4 },
-              1400: { slidesPerView: 5 },
-            }}
-            slidesPerGroupAuto
-            spaceBetween={24}
-            grabCursor={true}
-            centeredSlides={historicState && historicState.length > 0}
-            loop={true}
-            freeMode={true}
-            speed={4000}
-            autoplay={{
-              delay: 0,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true
-            }}
-            modules={[Navigation, Pagination, Autoplay]}
-            className="swiper !py-5 w-full"
-            onSwiper={setSwiperInstance}
-          >
-            {historicState && historicState.length > 0 ? historicState.map((elm, i) => (
-              <SwiperSlide key={i}>
-                <article>
-                  <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
-                    <figure className="relative card-image-wrapper">
-                      <Link to={`/item/${elm.item.id}`}>
-                        <Image
-                          src={elm.item.content_url}
-                          alt="item"
-                          className="swiper-lazy h-[320px] w-full object-cover"
-                          height="200"
-                          width="300"
-                        />
-                        <div className="card-image-overlay"></div>
-                      </Link>
-                    </figure>
-                    <div className="p-6">
-                      <div className="flex flex-col items-start">
-                        <div>
-                          <Link to={`/item/${elm.item.id}`} className="flex items-center space-x-2">
-                            <img
-                              src="/img/ckBTC.svg"
-                              alt="ckBTC Icon"
-                              className="h-5 w-5"
-                            />
-                            <span className="font-display mb-1 text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white munro-small-text">
-                              {(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD
-                            </span>
-                          </Link>
-                          <a href="#" className="text-2xs text-accent munro-narrow-text mt-2">
-                            {elm.metadata.buyer.length > 10 ?
-                              `${elm.metadata.buyer.slice(0,5)}...${elm.metadata.buyer.slice(-5)}` :
-                              elm.metadata.buyer
-                            }
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </SwiperSlide>
-            )) : (
-              <SwiperSlide>
-                <article>
-                  <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
-                    <div className="p-6 text-center">
-                      <p className="text-lg munro-regular-text">No historical transactions available</p>
-                    </div>
-                  </div>
-                </article>
-              </SwiperSlide>
-            )}
-          </Swiper>
-        </div>
-      </div>
+      <div className="w-full fixed bottom-0 left-0 right-0 z-30">
+  <div className="relative px-0">
+    <Swiper
+      breakpoints={{
+        100: { slidesPerView: 2 },
+        575: { slidesPerView: 2 },
+        992: { slidesPerView: 3 },
+        1200: { slidesPerView: 4 },
+        1400: { slidesPerView: 5 },
+      }}
+      slidesPerGroupAuto
+      spaceBetween={24}
+      grabCursor={true}
+      centeredSlides={historicState && historicState.length > 0}
+      loop={true}
+      freeMode={true}
+      speed={4000}
+      autoplay={{
+        delay: 0,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true
+      }}
+      modules={[Navigation, Pagination, Autoplay]}
+      className="swiper !py-3 w-full"
+      onSwiper={setSwiperInstance}
+    >
+      {historicState && historicState.length > 0 ? historicState.map((elm, i) => (
+        <SwiperSlide key={i}>
+          <article>
+            <div className="block overflow-hidden rounded-2.5xl bg-white shadow-none transition-shadow hover:shadow-none dark:bg-jacarta-700 flex flex-col items-center">
+              <figure className="relative card-image-wrapper w-full flex justify-center">
+                <Link to={`/item/${elm.item.id}`}>  
+                  <Image
+                    src={elm.item.content_url}
+                    alt="item"
+                    className="swiper-lazy h-[220px] w-full object-cover"
+                    height="200"
+                    width="300"
+                  />
+                  <div className="card-image-overlay"></div>
+                </Link>
+              </figure>
+              <div className="py-4 px-2 w-full flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center gap-2">
+                  <span className="flex items-center gap-2 text-lg font-display munro-small-text text-jacarta-700 dark:text-white">
+                    <img src="/img/ckBTC.svg" alt="ckBTC Icon" className="h-5 w-5" />
+                    {(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD
+                  </span>
+                  <span className="text-xs text-accent munro-narrow-text">
+                    {elm.metadata.buyer.length > 10 ?
+                      `${elm.metadata.buyer.slice(0,5)}...${elm.metadata.buyer.slice(-5)}` :
+                      elm.metadata.buyer
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </SwiperSlide>
+      )) : (
+        <SwiperSlide>
+          <article>
+            <div className="block overflow-hidden rounded-2.5xl bg-white shadow-none transition-shadow hover:shadow-none dark:bg-jacarta-700 flex flex-col items-center">
+              <div className="p-6 text-center">
+                <p className="text-lg munro-regular-text">No historical transactions available</p>
+              </div>
+            </div>
+          </article>
+        </SwiperSlide>
+      )}
+    </Swiper>
+  </div>
+</div>
 
       {/* Main Content Grid */}
       <div className="ml-auto mr-auto h-full max-w-[91rem] px-4 relative z-10">
-        <div className="grid h-full grid-rows-2 grid-cols-2 gap-8">
+        <div className="grid h-full grid-cols-1 grid-rows-1 md:grid-cols-2 md:grid-rows-2 gap-8 relative">
           {/* Top Left - Logo Container */}
-          <div className="flex py-32 items-center justify-center col-span-1 row-span-1">
-            <div className="bg-black/30 p-8 rounded-2xl max-w-2xl w-full h-full">
-              <img src={sumLogo} alt="Plebes DAO" className="w-full h-auto" />
+          <div className="flex flex-col h-full col-span-1 row-span-1 items-center justify-center py-10 md:items-start ">
+            <div className="mx-4 mb-6">
+              <img src={sumLogo} alt="Plebes DAO" className="w-full max-w-md mb-24" />
+            </div>
+            <p className="mx-5 mb-8 w-full text-center text-white text-xl md:hidden munro-regular-text mt-24" style={{ textShadow: '4px 4px 12px rgba(0, 0, 0, 0.85)' }}>
+              Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
+            </p>
+            <div className="flex gap-3 mb-8 md:hidden">
+              <a
+                href="http://plebes.xyz/auction"
+                className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
+              >
+                Auction
+              </a>
+              <Link
+                to="https://www.papermark.com/view/cm7npsir50005guzpwy90shui"
+                className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
+              >
+                Pitch Deck
+              </Link>
             </div>
           </div>
 
+          {/* Vertical divider - purple line */}
+          <div className="absolute left-1/2 top-0 h-full w-0.5 bg-black z-20"></div>
+
           {/* Top Right - Text Content */}
-          <div className="py-32 flex items-center justify-center col-span-1 row-span-1">
-            <div className="bg-black/30 p-8 rounded-2xl max-w-2xl w-full h-full">
-              <p className="text-white mt-7 text-xl mb-6 leading-tight font-inter drop-shadow-heavy text-justify" style={{ textAlign: 'justify' }}>
-                Plebes is a multichain DAO refining non-plutocratic governance and funding 
-                open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
+          <div className="hidden md:flex items-center justify-center col-span-1 row-span-1">
+            <div className="bg-black/30 p-8 rounded-2xl max-w-2xl w-full h-full flex-col items-center justify-center">
+              <p className="mt-24 text-white munro-regular-text mb-6 leading-tight text-xl drop-shadow-heavy text-center">
+                Plebes is a multichain DAO  refining non-plutocratic governance and funding 
+                open-source, AI, refining creativity, and public goods through Bitcoin ordinal auctions.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="http://plebes.xyz/auction"
-                  className="bg-morado-translucido pixel-font text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
+                  className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
                 >
                   Auction
                 </a>
                 <Link
                   to="https://www.papermark.com/view/cm7npsir50005guzpwy90shui"
-                  className="bg-morado-translucido pixel-font text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
+                  className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
                 >
                   Pitch Deck
                 </Link>
