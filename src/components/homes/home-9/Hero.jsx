@@ -96,7 +96,8 @@ export default function Hero() {
       <div className="ml-auto mr-auto h-full max-w-[91rem] px-4 relative z-10">
         <div className="grid h-full grid-cols-1 grid-rows-1 md:grid-cols-2 md:grid-rows-2 gap-8 relative">
           {/* Top Left - Logo Container */}
-          <div className="flex flex-col h-full col-span-1 row-span-1 items-center justify-center py-10 mt-12">
+          <div className="flex flex-col h-full col-span-1 row-span-1 items-center justify-center py-10 mt-12
+          relative z-20">
             {/* Imagen solo para mobile, con margen */}
             <div className="mx-4 block md:hidden">
               <img src={sumLogo} alt="Plebes DAO" className="w-full max-w-md" />
@@ -126,11 +127,8 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Vertical divider - purple line */}
-          <div className="absolute left-1/2 top-0 h-full w-0.5 bg-black z-20"></div>
-
           {/* Top Right - Text Content */}
-          <div className="hidden md:flex items-center justify-center col-span-1 row-span-1">
+          <div className="hidden md:flex items-center justify-center col-span-1 row-span-1 relative z-20">
             <div className="bg-black/30 p-8 rounded-2xl max-w-2xl w-full h-full flex-col items-center justify-center">
               {/* Desktop text */}
               <p className="mt-24 text-white munro-regular-text mb-6 leading-tight text-3xl drop-shadow-heavy text-left md:text-right" style={{ textShadow: '4px 4px 12px rgba(0, 0, 0, 0.85)' }}>
@@ -163,14 +161,14 @@ export default function Hero() {
         </div>
         
         {/* Bottom Carousel - Ahora con position: absolute en lugar de fixed */}
-        <div className="w-full absolute bottom-0 left-0 right-0 z-[-1]">
+        <div className="w-full absolute bottom-0 left-0 right-0 z-10">
          <div className="relative px-0">
             <Swiper
               breakpoints={{
                 100: { slidesPerView: 2 },
-                575: { slidesPerView: 2 },
-                992: { slidesPerView: 3 },
-                1200: { slidesPerView: 4 },
+                575: { slidesPerView: 5 },
+                992: { slidesPerView: 5 },
+                1200: { slidesPerView: 5 },
                 1400: { slidesPerView: 5 },
               }}
               slidesPerGroupAuto
