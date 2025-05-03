@@ -166,8 +166,8 @@ export default function Hero() {
             <Swiper
               breakpoints={{
                 100: { slidesPerView: 2 },
-                575: { slidesPerView: 5 },
-                992: { slidesPerView: 5 },
+                575: { slidesPerView: 3 },
+                992: { slidesPerView: 4 },
                 1200: { slidesPerView: 5 },
                 1400: { slidesPerView: 5 },
               }}
