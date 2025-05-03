@@ -31,6 +31,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           </BioniqContextProvider>
         </MetaMaskProvider>
       </BrowserRouter>
-    ,
   </React.StrictMode>
 );

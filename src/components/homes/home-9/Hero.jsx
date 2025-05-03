@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import { HttpAgent, Actor } from '@dfinity/agent';
-import { idlFactory, e8sToDecimal } from './ckBTC_idl.js'; // Asegúrate de tener el IDL del contrato ckBTC
+import { idlFactory, e8sToDecimal } from './ckBTC_idl.js';
 import { useBioniqContext } from '../../../hooks/BioniqContext';
 import { Link } from 'react-router-dom';
 import { Principal } from '@dfinity/principal';
-import './hero.css'
-import './Munro.css'
-// Import sum.svg logo
+import './hero.css';
+import './Munro.css';
 import sumLogo from '../../../assets/img/dao/sum.svg';
-import icpLogo from '../../../assets/img/hero/icp_icon.png';
-// Import Swiper related components
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, EffectCoverflow } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import Image from "../../common/Image";
 import { formatNumberWithPattern } from "../../../utils";
 
@@ -22,12 +22,13 @@ export default function Hero() {
   const [isLoading, setIsLoading] = useState(true);
   const [balanceIncreased, setBalanceIncreased] = useState(false);
   const [previousBalance, setPreviousBalance] = useState(null);
+  const [swiperInstance, setSwiperInstance] = useState(null);
 
   useEffect(() => {
     async function fetchIcpBalance() {
       try {
         const agent = new HttpAgent({ host: 'https://ic0.app' });
-        const canisterId = 'ryjl3-tyaaa-aaaaa-aaaba-cai'; // ICP Ledger canister ID
+        const canisterId = 'ryjl3-tyaaa-aaaaa-aaaba-cai';
         const walletAddress = 'ycv6x-taztk-nu75u-k4xkg-5jthb-x525x-4tfk7-b6ino-avbls-hcbkv-sqe';
 
         const icpActor = Actor.createActor(idlFactory, {
@@ -39,15 +40,14 @@ export default function Hero() {
           owner: Principal.fromText(walletAddress),
           subaccount: []
         });
-        
+
         const balanceNumber = Number(balance);
-        
-        // Check if balance increased
+
         if (previousBalance !== null && balanceNumber > previousBalance) {
           setBalanceIncreased(true);
           setTimeout(() => setBalanceIncreased(false), 3000);
         }
-        
+
         setPreviousBalance(balanceNumber);
         setIcpBalance(e8sToDecimal(balanceNumber));
         setIsLoading(false);
@@ -58,19 +58,15 @@ export default function Hero() {
     }
 
     fetchIcpBalance();
-    
-    // Set up a refresh interval (every 30 seconds)
     const intervalId = setInterval(fetchIcpBalance, 30000);
-    
     return () => clearInterval(intervalId);
   }, [previousBalance]);
 
-  // Efecto para la animación cuando icpBalance cambia
   useEffect(() => {
     if (icpBalance === null) return;
 
-    const duration = 1500; // 1.5 segundos
-    const steps = 30; // Número de actualizaciones por segundo
+    const duration = 1500;
+    const steps = 30;
     const interval = duration / steps;
     let step = 0;
 
@@ -80,7 +76,6 @@ export default function Hero() {
         setDisplayBalance(icpBalance);
         clearInterval(timer);
       } else {
-        // Genera un número aleatorio que se va acercando al valor final
         const randomFactor = 1 - (step / steps);
         const randomValue = icpBalance * (1 + (Math.random() - 0.5) * randomFactor);
         setDisplayBalance(randomValue);
@@ -96,179 +91,146 @@ export default function Hero() {
             className="absolute inset-0 -z-10 h-full w-full bg-cover bg-center"
             style={{ backgroundImage: "url('/img/background.png')" }}
         />
-        
-        {/* CoverFlow Slider - Full Width with lower z-index */}
-        <div className="w-full absolute bottom-0 left-0 right-0 -z-5">
-          <div className="relative px-0">
-            {/*
-            <Swiper
-              breakpoints={{
-                100: {
-                  slidesPerView: 1,
-                },
-                575: {
-                  slidesPerView: 2,
-                },
-                992: {
-                  slidesPerView: 3,
-                },
-                1200: {
-                  slidesPerView: 4,
-                },
-                1400: {
-                  slidesPerView: 5,
-                },
-              }}
-              slidesPerGroupAuto
-              effect={"coverflow"}
-              grabCursor={true}
-              centeredSlides={historicState && historicState.length > 0}
-              loop={false}
-              coverflowEffect={{
-                rotate: 30,
-                stretch: 0,
-                depth: 100,
-                modifier: 1,
-                slideShadows: true,
-              }}
-              pagination={{
-                clickable: true,
-              }}
-              modules={[EffectCoverflow, Navigation]}
-              navigation={{
-                nextEl: ".snbn7-hero",
-                prevEl: ".snbp7-hero",
-              }}
-              className="swiper coverflow-slider !py-5 w-full"
-            >
-              {historicState && historicState.length > 0 ? historicState.map((elm, i) => (
-                <SwiperSlide key={i}>
-                  <article>
-                    <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
-                      <figure className="relative">
-                        <Link to={`/item/${elm.item.id}`}>
-                          <Image
-                            src={elm.item.content_url}
-                            alt="item"
-                            className="swiper-lazy h-[320px] w-full object-cover"
-                            height="200"
-                            width="300"
-                          />
-                        </Link>
-                      </figure>
-                      <div className="p-6">
-                        <div className="flex">
-                          <div>
-                            <Link to={`/item/${elm.item.id}`} className="block">
-                              <span className="font-display text-lg leading-none text-jacarta-700 hover:text-accent dark:text-white flex items-center munro-small-text">
-                                <img
-                                  src="/img/ckBTC.svg"
-                                  alt="ckBTC Icon"
-                                  className="ml-2 h-5 w-5"
-                                />
-                                {" "+(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD              
-                              </span>
-                            </Link>
-                            <a href="#" className="text-2xs text-accent munro-narrow-text">
-                              {elm.metadata.buyer.slice(0, 5)}...{elm.metadata.buyer.slice(-5)}
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                </SwiperSlide>
-              )) : (
-                <SwiperSlide>
-                  <article>
-                    <div className="block overflow-hidden rounded-2.5xl bg-white shadow-md transition-shadow hover:shadow-lg dark:bg-jacarta-700">
-                      <div className="p-6 text-center">
-                        <p className="text-lg munro-regular-text">No historical transactions available</p>
-                      </div>
-                    </div>
-                  </article>
-                </SwiperSlide>
-              )}
-            </Swiper>
 
-            <div className="snbp7-hero swiper-button-prev group absolute top-1/2 left-4 z-10 -mt-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-base shadow-white-volume">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                className="fill-jacarta-700 group-hover:fill-accent"
-              >
-                <path fill="none" d="M0 0h24v24H0z" />
-                <path d="M10.828 12l4.95 4.95-1.414 1.414L8 12l6.364-6.364 1.414 1.414z" />
-              </svg>
-            </div>
-            <div className="snbn7-hero swiper-button-next group absolute top-1/2 right-4 z-10 -mt-6 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-white p-3 text-base shadow-white-volume">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                className="fill-jacarta-700 group-hover:fill-accent"
-              >
-                <path fill="none" d="M0 0h24v24H0z" />
-                <path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z" />
-              </svg>
-            </div>
-            */}
-          </div>
-        </div>
-        
+        {/* Main Content Grid */}
         <div className="ml-auto mr-auto h-full max-w-[91rem] px-4 relative z-10">
-          <div className="grid h-full items-center gap-4 md:grid-cols-12">
-            {/* Text Content */}
-            <div className="col-span-5 flex h-full flex-col items-center justify-center py-10 md:items-start lg:py-20">
-              <div className="mx-4 mb-6">
-                <img src={sumLogo} alt="Plebes Logo" className="w-full max-w-md" />
+          <div className="grid h-full grid-cols-1 grid-rows-1 md:grid-cols-2 md:grid-rows-2 gap-8 relative">
+            {/* Top Left - Logo Container */}
+            <div className="flex flex-col h-full col-span-1 row-span-1 items-center justify-center py-10 mt-12
+          relative z-20">
+              {/* Imagen solo para mobile, con margen */}
+              <div className="mx-4 block md:hidden">
+                <img src={sumLogo} alt="Plebes DAO" className="w-full max-w-md" />
               </div>
-              <p className="mx-5 mb-8 w-full text-center text-4xl text-white md:text-left munro-regular-text">
- Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
+              {/* Imagen solo para md+, sin margen */}
+              <div className="pb-24 mb-24 hidden md:flex md:items-center md:justify-center h-full">
+                <img src={sumLogo} alt="Plebes DAO" className="w-full max-w-lg" />
+              </div>
+              {/* Mobile text */}
+              <p className="mx-5 drop-shadow-heavy mb-8 w-full text-center text-white text-xl md:hidden munro-regular-text mt-24" style={{ textShadow: '4px 4px 12px rgba(0, 0, 0, 0.85)' }}>
+                Plebes is a multichain DAO refining non-plutocratic governance and funding open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
               </p>
-              <div className="flex gap-3 mb-8">
+              {/* Mobile buttons */}
+              <div className="flex gap-3 mb-8 md:hidden">
                 <a
                     href="http://plebes.xyz/auction"
-                    className="pitch-deck-button text-xl mx-5 py-3 px-8 text-center font-semibold text-white transition-all munro-narrow"
+                    className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
                 >
                   Auction
                 </a>
                 <Link
-                    to="/collections"
-                    className="pitch-deck-button text-xl py-3 px-8 text-center font-semibold text-white transition-all munro-narrow"
+                    to="https://www.papermark.com/view/cm7npsir50005guzpwy90shui"
+                    className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
                 >
-                  Whitepaper
+                  Pitch Deck
                 </Link>
               </div>
             </div>
 
-            {/* Stats Block */}
-            <div className="relative col-span-6 col-start-7 hidden h-full md:flex items-center justify-center">
-              <div className={`stats-card bg-morado-translucido p-8 rounded-lg shadow-lg text-white text-center w-full max-w-md transition-all duration-300 ${balanceIncreased ? 'balance-increase-pulse' : ''}`}>
-                <h3 className="text-3xl font-bold mb-4 munro-regular-heading">Treasury Balance</h3>
-                
-                {isLoading ? (
-                  <div className="loading-animation">
-                    <div className="loading-spinner"></div>
-                    <p className="mt-2 munro-small-text">Fetching balance...</p>
-                  </div>
-                ) : (
-                  <div className="balance-display">
-                    <div className="flex justify-center items-center">
-                      <span className="icp-icon">
-                      </span>
-                      <p className="text-3xl font-light tracking-wider munro-regular-text">
-                        {displayBalance !== null 
-                          ? displayBalance.toFixed(8)
-                          : '0.00000000'}
-                      </p>
-                    </div>
-                  </div>
-                )}
+            {/* Top Right - Text Content */}
+            <div className="hidden md:flex items-center justify-center col-span-1 row-span-1 relative z-20">
+              <div className="bg-black/30 p-8 rounded-2xl max-w-2xl w-full h-full flex-col items-center justify-center">
+                {/* Desktop text */}
+                <p className="mt-24 text-white munro-regular-text mb-6 leading-tight text-3xl drop-shadow-heavy text-left md:text-right" style={{ textShadow: '4px 4px 12px rgba(0, 0, 0, 0.85)' }}>
+                  Plebes is a multichain DAO refining non-plutocratic governance and funding
+                  open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
+                </p>
+                {/* Desktop buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-end">
+                  <a
+                      href="http://plebes.xyz/auction"
+                      className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
+                  >
+                    Auction
+                  </a>
+                  <Link
+                      to="https://www.papermark.com/view/cm7npsir50005guzpwy90shui"
+                      className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
+                  >
+                    Pitch Deck
+                  </Link>
+                </div>
               </div>
+            </div>
+
+            {/* Bottom Left - Empty */}
+            <div className="col-span-1 row-span-1"></div>
+
+            {/* Bottom Right - Empty */}
+            <div className="col-span-1 row-span-1"></div>
+          </div>
+
+          {/* Bottom Carousel - Ahora con position: absolute en lugar de fixed */}
+          <div className="w-full absolute bottom-0 left-0 right-0 z-10">
+            <div className="relative px-0">
+              <Swiper
+                  breakpoints={{
+                    100: { slidesPerView: 2 },
+                    575: { slidesPerView: 3 },
+                    992: { slidesPerView: 4 },
+                    1200: { slidesPerView: 5 },
+                    1400: { slidesPerView: 5 },
+                  }}
+                  slidesPerGroupAuto
+                  spaceBetween={24}
+                  grabCursor={true}
+                  centeredSlides={historicState && historicState.length > 0}
+                  loop={true}
+                  freeMode={true}
+                  speed={4000}
+                  autoplay={{
+                    delay: 0,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true
+                  }}
+                  modules={[Navigation, Pagination, Autoplay]}
+                  className="swiper !py-3 w-full"
+                  onSwiper={setSwiperInstance}
+              >
+                {historicState && historicState.length > 0 ? historicState.map((elm, i) => (
+                    <SwiperSlide key={i}>
+                      <article>
+                        <div className="block overflow-hidden rounded-2.5xl bg-white shadow-none transition-shadow hover:shadow-none dark:bg-jacarta-700 flex flex-col items-center">
+                          <figure className="relative card-image-wrapper w-full flex justify-center">
+                            <Link to={`/item/${elm.item.id}`}>
+                              <Image
+                                  src={elm.item.content_url}
+                                  alt="item"
+                                  className="swiper-lazy w-full object-cover"
+                                  width="300"
+                              />
+                              <div className="card-image-overlay"></div>
+                            </Link>
+                          </figure>
+                          <div className="py-4 px-2 w-full flex flex-col items-center justify-center">
+                            <div className="flex flex-col items-center gap-2">
+                          <span className="flex items-center gap-2 text-lg font-display munro-small-text text-jacarta-700 dark:text-white">
+                            <img src="/img/ckBTC.svg" alt="ckBTC Icon" className="h-5 w-5" />
+                            {(formatNumberWithPattern(elm.metadata.amount) * btcPriceState).toFixed(3)} USD
+                          </span>
+                              <span className="text-xs text-accent munro-narrow-text">
+                            {elm.metadata.buyer.length > 10 ?
+                                `${elm.metadata.buyer.slice(0,5)}...${elm.metadata.buyer.slice(-5)}` :
+                                elm.metadata.buyer
+                            }
+                          </span>
+                            </div>
+                          </div>
+                        </div>
+                      </article>
+                    </SwiperSlide>
+                )) : (
+                    <SwiperSlide>
+                      <article>
+                        <div className="block overflow-hidden rounded-2.5xl bg-white shadow-none transition-shadow hover:shadow-none dark:bg-jacarta-700 flex flex-col items-center">
+                          <div className="p-6 text-center">
+                            <p className="text-lg munro-regular-text">No historical transactions available</p>
+                          </div>
+                        </div>
+                      </article>
+                    </SwiperSlide>
+                )}
+              </Swiper>
             </div>
           </div>
         </div>
