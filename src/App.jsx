@@ -4,6 +4,7 @@ import Page from "./app/page";
 import AuctionPage from "./app/(pages)/Auction/AuctionPage";
 import OwnedPage from "./app/(pages)/user/owned.jsx";
 import Deposit from "./app/(pages)/deposit/Deposit.jsx";
+import Withdrawal from "./app/(pages)/withdrawal/Withdrawal.jsx";
 import { useBioniqContext } from "./hooks/BioniqContext";
 import { useEffect } from "react";
 import ErrorModal from "./components/modals/ErrorModal";
@@ -60,7 +61,7 @@ function App() {
         <Route path="/launchpad" element={<HomePage login={!!userConnection} setModalOpen={setWithdralModal} />} />
         <Route path="/dao" element={<DAO login={!!userConnection} setModalOpenT={setWithdralModal} />} />
         <Route path="/proposal_page" element={<ProposalPage login={login} setModalOpenT={setWithdralModal} />} />
-
+        <Route path="/withdrawal" element={<Withdrawal login={login} setModalOpenT={setWithdralModal} />} />
       </Routes>
       <ErrorModal modalOpen={modalOpen} setModalOpen={setModalOpen} error={error} resetError={resetError} />
       <TransferModal isOpen={wihdrawlModal} setModalOpen={setWithdralModal} />
