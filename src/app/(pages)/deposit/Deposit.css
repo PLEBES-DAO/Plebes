@@ -38,7 +38,6 @@
 /* Estilos de los select e inputs */
 select, input[type="text"], input[type="number"] {
     font-family: 'Munro Small', sans-serif !important;
-    background-image: linear-gradient(45deg, #1f1d3380, #2d2a5a80);
     border: 1px solid #7c3aed !important;
     color: white !important;
 }
@@ -94,42 +93,42 @@ option {
 /* Add this to your Deposit.css file */
 @media (max-width: 768px) {
     .timeline-container {
-      padding: 0;
+        padding: 0;
     }
-  
+
     .circle {
-      width: 30px;
-      height: 30px;
-      font-size: 14px;
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
     }
-  
+
     .line {
-      height: 20px !important;
+        height: 20px !important;
     }
-  
+
     .ml-8 {
-      margin-left: 0;
+        margin-left: 0;
     }
-  
+
     .px-12 {
-      padding-left: 1rem;
-      padding-right: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
-  
+
     .w-12 {
-      width: 30px;
-      height: 30px;
+        width: 30px;
+        height: 30px;
     }
-  
+
     .h-40 {
-      height: 100px;
+        height: 100px;
     }
-  
+
     .mt-24 {
-      margin-top: 2rem;
+        margin-top: 2rem;
     }
-  
+
     .min-h-800px {
-      min-height: auto;
+        min-height: auto;
     }
-  }
+}
