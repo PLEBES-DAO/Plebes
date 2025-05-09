@@ -103,8 +103,8 @@ export default function Hero() {
                 <img src={sumLogo} alt="Plebes DAO" className="w-full max-w-md" />
               </div>
               {/* Imagen solo para md+, sin margen */}
-              <div className="pb-24 mb-24 hidden md:flex md:items-center md:justify-center h-full">
-                <img src={sumLogo} alt="Plebes DAO" className="w-full max-w-lg" />
+              <div className="pb-24 pt-12 mb-24 hidden md:flex md:items-center md:justify-center h-full">
+                <img src={sumLogo} alt="Plebes DAO" className="w-full max-w-xl" />
               </div>
               {/* Mobile text */}
               <p className="mx-5 drop-shadow-heavy mb-8 w-full text-center text-white text-xl md:hidden munro-regular-text mt-24" style={{ textShadow: '4px 4px 12px rgba(0, 0, 0, 0.85)' }}>
@@ -129,14 +129,14 @@ export default function Hero() {
 
             {/* Top Right - Text Content */}
             <div className="hidden md:flex items-center justify-center col-span-1 row-span-1 relative z-20">
-              <div className="bg-black/30 p-8 rounded-2xl max-w-2xl w-full h-full flex-col items-center justify-center">
+              <div className="bg-black/30 p-8 rounded-2xl max-w-2xl w-full  flex-col items-center justify-center">
                 {/* Desktop text */}
-                <p className="mt-24 text-white munro-regular-text mb-6 leading-tight text-3xl drop-shadow-heavy text-left md:text-right" style={{ textShadow: '4px 4px 12px rgba(0, 0, 0, 0.85)' }}>
+                <p className="text-white munro-regular-text mb-6 leading-tight text-2xl lg:text-4xl drop-shadow-heavy text-right" style={{ textShadow: '4px 4px 12px rgba(0, 0, 0, 0.85)' }}>
                   Plebes is a multichain DAO refining non-plutocratic governance and funding
                   open-source, AI, creativity, and public goods through Bitcoin ordinal auctions.
                 </p>
                 {/* Desktop buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-end">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                       href="http://plebes.xyz/auction"
                       className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
