@@ -11,12 +11,29 @@ import connectWalletGif from "../../../assets/img/dao/gif.gif";
 import copyIcon from "../../../assets/img/copy_icon.svg";
 import checkMark from "../../../assets/img/check-mark.svg";
 
+// Swapzone API configuration
+const SWAPZONE_API_BASE_URL = "https://api.swapzone.io/v1";
+const SWAPZONE_API_KEY = "J4NlziyLk"; // Will be replaced with actual API key later
+
+// Configure your callback URLs for production
+const CALLBACK_BASE_URL = "https://plebes.xyz/api"; // Replace with your actual domain
+const CALLBACK_URLS = {
+  standard: `${CALLBACK_BASE_URL}/callback`,
+  success: `${CALLBACK_BASE_URL}/callback/success`,
+  failure: `${CALLBACK_BASE_URL}/callback/failure`
+};
+
+// Helper function to generate a unique reference ID for transactions
+const generateUniqueId = () => {
+  return `tx_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+};
+
 const enableBlurIfNoWallet = false; // Poner en true para activar el efecto Blur cuando no hay wallet activada
 
 // Tokens con logos y redes
 const aggregatorTokens = {
   // USDC
-  /* USDC: {
+  USDC: {
     logo: "/img/coins/usdc.svg",
     networks: [
     { aggregatorSymbol: "USDCARB", displayToken: "USDC", displayNetwork: "ARBITRUM" },
@@ -28,34 +45,34 @@ const aggregatorTokens = {
     { aggregatorSymbol: "USDCSOL", displayToken: "USDC", displayNetwork: "SOLANA" },
     { aggregatorSymbol: "USDCTRC20", displayToken: "USDC", displayNetwork: "TRON" },
     ],
-  }, */
+  },
 
   // USDT
- /* USDT: {
-    logo: "/img/coins/usdt.svg",
-    networks: [
-      { aggregatorSymbol: "USDTCARB", displayToken: "USDT", displayNetwork: "ARBITRUM" },
-      { aggregatorSymbol: "USDTBASE", displayToken: "USDT", displayNetwork: "BASE" },
-      { aggregatorSymbol: "USDTERC20", displayToken: "USDT", displayNetwork: "ETHEREUM" },
-      { aggregatorSymbol: "USDTMATIC", displayToken: "USDT", displayNetwork: "MATIC" },
-      { aggregatorSymbol: "USDTNEAR", displayToken: "USDT", displayNetwork: "NEAR" },
-      { aggregatorSymbol: "USDTOP", displayToken: "USDT", displayNetwork: "OPTIMISM" },
-      { aggregatorSymbol: "USDTCSOL", displayToken: "USDT", displayNetwork: "SOLANA" },
-      { aggregatorSymbol: "USDTTRC20", displayToken: "USDT", displayNetwork: "TRON" },
-    ],
-  }, */
+  USDT: {
+     logo: "/img/coins/usdt.svg",
+     networks: [
+       { aggregatorSymbol: "USDTCARB", displayToken: "USDT", displayNetwork: "ARBITRUM" },
+       { aggregatorSymbol: "USDTBASE", displayToken: "USDT", displayNetwork: "BASE" },
+       { aggregatorSymbol: "USDTERC20", displayToken: "USDT", displayNetwork: "ETHEREUM" },
+       { aggregatorSymbol: "USDTMATIC", displayToken: "USDT", displayNetwork: "MATIC" },
+       { aggregatorSymbol: "USDTNEAR", displayToken: "USDT", displayNetwork: "NEAR" },
+       { aggregatorSymbol: "USDTOP", displayToken: "USDT", displayNetwork: "OPTIMISM" },
+       { aggregatorSymbol: "USDTCSOL", displayToken: "USDT", displayNetwork: "SOLANA" },
+       { aggregatorSymbol: "USDTTRC20", displayToken: "USDT", displayNetwork: "TRON" },
+     ],
+   },
 
   // BTC
-/* BTC: {
-    logo: "/img/coins/btc.svg",
-    networks: [
-      { aggregatorSymbol: "BTC", displayToken: "BTC", displayNetwork: "BITCOIN" },
-      { aggregatorSymbol: "BTC-LIGHTNING", displayToken: "BTC", displayNetwork: "LIGHTNING" },
-    ],
-  }, */
+  BTC: {
+      logo: "/img/coins/btc.svg",
+      networks: [
+        { aggregatorSymbol: "BTC", displayToken: "BTC", displayNetwork: "BITCOIN" },
+        { aggregatorSymbol: "BTC-LIGHTNING", displayToken: "BTC", displayNetwork: "LIGHTNING" },
+      ],
+    },
 
   // ETH
-  /* ETH: {
+  ETH: {
     logo: "/img/coins/eth.svg",
     networks: [
       { aggregatorSymbol: "ETHARB", displayToken: "ETH", displayNetwork: "MAINET" },
@@ -63,71 +80,71 @@ const aggregatorTokens = {
       { aggregatorSymbol: "ETH", displayToken: "ETH", displayNetwork: "ETHEREUM" },
       { aggregatorSymbol: "ETHOP", displayToken: "ETH", displayNetwork: "OPTIMISM" },
     ],
-  }, */
+  },
 
   // ADA
-  /* ADA: {
+  ADA: {
     logo: "/img/coins/ada.svg",
     networks: [
       { aggregatorSymbol: "ADA", displayToken: "ADA", displayNetwork: "MAINNET" },
     ],
-  }, */
+  },
 
   // ALGO
- /* ALGO: {
-    logo: "/img/coins/algo.svg",
-    networks: [
-      { aggregatorSymbol: "ALGO", displayToken: "ALGO", displayNetwork: "MAINNET" },
-    ],
-  }, */
+  ALGO: {
+     logo: "/img/coins/algo.svg",
+     networks: [
+       { aggregatorSymbol: "ALGO", displayToken: "ALGO", displayNetwork: "MAINNET" },
+     ],
+   },
 
   // APT
-  /* APT: {
+  APT: {
     logo: "/img/coinplebes/APT.svg",
     networks: [
       { aggregatorSymbol: "APT", displayToken: "APT", displayNetwork: "MAINNET" },
     ],
-  }, */
+  },
 
   // ARB
-  /* ARB: {
+  ARB: {
     logo: "/img/coinplebes/ARB.svg",
     networks: [
       { aggregatorSymbol: "ARB", displayToken: "ARB", displayNetwork: "MAINNET" },
     ],
-  }, */
+  },
 
   // AVAX
-  /* AVAX: {
+  AVAX: {
     logo: "/img/coins/avax.svg",
     networks: [
       { aggregatorSymbol: "AVAX-C", displayToken: "AVAX", displayNetwork: "MAINNET" },
     ],
-  }, */
+  },
 
   // BNB
-  /* BNB: {
+  BNB: {
     logo: "/img/coins/bnb.svg",
     networks: [
       { aggregatorSymbol: "BNB-BSC", displayToken: "BNB", displayNetwork: "MAINNET" },
     ],
-  }, */
+  },
 
   // BUSD
-  /* BUSD: {
+  BUSD: {
     logo: "/img/coinplebes/BUSD.svg",
     networks: [
       { aggregatorSymbol: "BUSD", displayToken: "BUSD", displayNetwork: "MAINNET" },
     ],
-  }, */
+  },
 
   // DOGE
-  /*DOGE: {
+  DOGE: {
     logo: "/img/coins/doge.svg",
     networks: [
       { aggregatorSymbol: "DOGE", displayToken: "DOGE", displayNetwork: "MAINNET" },
     ],
-  }, */
+  },
 
   // DOT
   DOT: {
@@ -138,28 +155,28 @@ const aggregatorTokens = {
   },
 
   // ICP
- /* ICP: {
-    logo: "/img/coins/icp.svg",
-    networks: [
-      { aggregatorSymbol: "ICP", displayToken: "ICP", displayNetwork: "MAINNET" },
-    ],
-  },*/
+  ICP: {
+     logo: "/img/coins/icp.svg",
+     networks: [
+       { aggregatorSymbol: "ICP", displayToken: "ICP", displayNetwork: "MAINNET" },
+     ],
+   },
 
   // NEAR
- /* NEAR: {
-    logo: "/img/coinplebes/NEAR.svg",
-    networks: [
-      { aggregatorSymbol: "NEAR", displayToken: "NEAR", displayNetwork: "MAINNET" },
-    ],
-  }, */
+  NEAR: {
+     logo: "/img/coinplebes/NEAR.svg",
+     networks: [
+       { aggregatorSymbol: "NEAR", displayToken: "NEAR", displayNetwork: "MAINNET" },
+     ],
+   },
 
   // OP
- /* OP: {
-    logo: "/img/coinplebes/OP.svg",
-    networks: [
-      { aggregatorSymbol: "OP", displayToken: "OP", displayNetwork: "MAINNET" },
-    ],
-  }, */
+  OP: {
+     logo: "/img/coinplebes/OP.svg",
+     networks: [
+       { aggregatorSymbol: "OP", displayToken: "OP", displayNetwork: "MAINNET" },
+     ],
+   },
 
   // SOL
   SOL: {
@@ -170,12 +187,12 @@ const aggregatorTokens = {
   },
 
   // SUI
-  /** SUI: {
-    logo: "/img/coinplebes/sui.svg",
-    networks: [
-      { aggregatorSymbol: "SUI", displayToken: "SUI", displayNetwork: "MAINNET" },
-    ],
-  }, **/
+  SUI: {
+   logo: "/img/coinplebes/sui.svg",
+   networks: [
+   { aggregatorSymbol: "SUI", displayToken: "SUI", displayNetwork: "MAINNET" },
+   ],
+   },
 
   // TON
   TON: {
@@ -202,17 +219,22 @@ const aggregatorTokens = {
   },
 
   // WLD
-  /* WLD: {
+  WLD: {
     logo: "/img/coinplebes/WLD.svg",
     networks: [
       { aggregatorSymbol: "WLD", displayToken: "WLD", displayNetwork: "MAINNET" },
     ],
-  }, */
+  },
 };
 
-// "minimum deposit" - hardcoded values for specific tokens
-function getMinimumDeposit(symbol) {
-  // Hardcoded minimum values as specified
+// "minimum deposit" - use dynamic values when available
+function getMinimumDeposit(symbol, minValue) {
+  // If we have a dynamic minValue from the API, use it
+  if (minValue) {
+    return `Minimum ${minValue} ${symbol}`;
+  }
+  
+  // Fallback to hardcoded values
   const minimumValues = {
     "SOL": "Minimum 0.8 SOL",
     "TON": "Minimum 32 TON",
@@ -220,7 +242,7 @@ function getMinimumDeposit(symbol) {
     "XLM": "Minimum 370 XLM",
     "XRP": "Minimum 45.3 XRP"
   };
-  
+
   return minimumValues[symbol] || `Minimum 0.01 ${symbol}`;
 }
 
@@ -230,31 +252,31 @@ export const metadata = {
 
 export default function AuctionPage({ login, setModalOpenT }) {
   return (
-    <>
-      <Navbar bLogin={login} setModalOpen={setModalOpenT} />
-      <main>
-        {/* Background with overlay */}
-        <div 
-          className="fixed inset-0 -z-10" 
-          style={{ 
-            backgroundImage: "url('/img/background.png')", 
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          {/* Semi-transparent overlay with #0d102d base color */}
-          <div 
-            className="absolute inset-0" 
-            style={{ 
-              backgroundColor: "#0d102d", 
-              opacity: 0.90,
-            }}
-          ></div>
-        </div>
-        
-        <TokenRow />
-      </main>
-    </>
+      <>
+        <Navbar bLogin={login} setModalOpen={setModalOpenT} />
+        <main>
+          {/* Background with overlay */}
+          <div
+              className="fixed inset-0 -z-10"
+              style={{
+                backgroundImage: "url('/img/background.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+          >
+            {/* Semi-transparent overlay with #0d102d base color */}
+            <div
+                className="absolute inset-0"
+                style={{
+                  backgroundColor: "#0d102d",
+                  opacity: 0.90,
+                }}
+            ></div>
+          </div>
+
+          <TokenRow />
+        </main>
+      </>
   );
 }
 
@@ -273,20 +295,17 @@ const TokenRow = () => {
   const [pollInterval, setPollInterval] = useState(null);
   const [useUsd, setUseUsd] = useState(false);
   const [minDeposit, setMinDeposit] = useState("");
-  // Nuevo estado para manejar la sección actual
   const [currentSection, setCurrentSection] = useState(1);
-  
-  // Track which fields have been copied
   const [copiedField, setCopiedField] = useState(null);
-
-  // Step en la caja derecha (1..5). 1 => "Connect wallet"
   const [rightStep, setRightStep] = useState(1);
+  const [minAmounts, setMinAmounts] = useState({});
+  const [errorMessage, setErrorMessage] = useState(""); // New state for detailed error messages
 
   // Function to handle copy to clipboard
   const handleCopy = (text, fieldName) => {
     navigator.clipboard.writeText(text);
     setCopiedField(fieldName);
-    
+
     // Reset after 2 seconds
     setTimeout(() => {
       setCopiedField(null);
@@ -302,10 +321,11 @@ const TokenRow = () => {
 
   function mapStatusToStep(status) {
     if (!status) return 2; // step 2 => "Awaiting deposit"
-    if (status === "waiting") return 2;    // awaiting deposit
-    if (status === "confirming" || status === "exchanging" || status === "sending" || status === "verifying" )  return 3;  // receiving tokens
-    if (status === "finished" && swapStep > 0) return 4;   // swapping tokens
+    if (status === "waiting" || status === "overdue") return 2;    // awaiting deposit
+    if (status === "confirming" || status === "exchanging") return 3;  // receiving tokens
+    if (status === "sending" && swapStep > 0) return 4;   // swapping tokens
     if (status === "finished") return 5; // sending / balance updated
+    if (status === "failed" || status === "refunded") return 2; // Error states - go back to deposit
     return 2;
   }
 
@@ -315,7 +335,7 @@ const TokenRow = () => {
       if (!wallets?.ckBTC?.walletAddressForDisplay) return;
       try {
         const response = await fetch(
-          `https://api.plebes.xyz/user-transactions/${wallets.ckBTC.walletAddressForDisplay}`
+            `https://api.plebes.xyz/user-transactions/${wallets.ckBTC.walletAddressForDisplay}`
         );
         const data = await response.json();
         const transaction = data.transactions[0];
@@ -333,38 +353,72 @@ const TokenRow = () => {
     fetchUserTransactions();
   }, [wallets]);
 
-  // Polling
+  // Update the polling useEffect for transaction status
   useEffect(() => {
-    if (polling) {
+    if (polling && apiResponse?.details?.id) {
       const intv = setInterval(async () => {
         try {
-          if (!wallets?.ckBTC?.walletAddressForDisplay) return;
+          const transactionUrl = `${SWAPZONE_API_BASE_URL}/exchange/transaction?id=${apiResponse.details.id}`;
+          console.log("Polling transaction status:", transactionUrl);
+          
           const res = await fetch(
-            `https://api.plebes.xyz/user-transactions/${wallets.ckBTC.walletAddressForDisplay}`
+            transactionUrl,
+            { 
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": SWAPZONE_API_KEY
+              }
+            }
           );
+          
           const data = await res.json();
-          const transaction = data?.transactions?.[0];
-          if (transaction) {
-            if (transaction.details.status === "finished") {
+          console.log("Transaction status response:", data);
+          
+          if (data && !data.error) {
+            // Map Swapzone status to our internal status format
+            let mappedStatus = data.status || "waiting";
+            
+            // Update API response with the latest data
+            setApiResponse({
+              details: {
+                ...apiResponse.details,
+                status: mappedStatus
+              }
+            });
+            
+            setStatus(mappedStatus);
+            
+            // If transaction is finished, stop polling and update balance
+            if (mappedStatus === "finished") {
+              console.log("Transaction completed successfully");
               setPolling(false);
               await buy();
               handleDeleteExchange();
             }
-            setApiResponse(transaction);
-            setStatus(transaction.details.status);
           } else {
-            console.log("Polling: No active transaction found or invalid data format.", data);
+            console.log("Polling error or invalid data format:", data);
+            // Don't immediately stop polling on a single error
+            // Instead, we could implement a counter to stop after multiple consecutive errors
           }
         } catch (err) {
-          console.error("Failed to poll transaction", err);
-          setPolling(false);
+          console.error("Failed to poll transaction:", err);
+          // Same approach - don't immediately stop on network errors
         }
-      }, 1000);
+      }, 5000); // Increase polling interval to avoid rate limits
+      
       setPollInterval(intv);
+      
+      // Cleanup function
+      return () => {
+        if (intv) {
+          clearInterval(intv);
+        }
+      };
     } else if (pollInterval) {
       clearInterval(pollInterval);
     }
-  }, [polling, buy, wallets]);
+  }, [polling, apiResponse, buy, pollInterval]);
 
   // Actualiza el step de la derecha
   useEffect(() => {
@@ -391,8 +445,8 @@ const TokenRow = () => {
     if (!tokenObj) return;
     const netOption = tokenObj.networks[selectedNetworkIndex];
     if (!netOption) return;
-    
-    const minValue = getMinimumDeposit(netOption.displayToken);
+
+    const minValue = getMinimumDeposit(netOption.displayToken, netOption.minAmount);
     setMinDeposit(minValue);
   }, [selectedToken, selectedNetworkIndex]);
 
@@ -406,99 +460,197 @@ const TokenRow = () => {
     setCurrentSection(prev => Math.max(prev - 1, 1));
   };
 
+  // Add this function to fetch minimum amounts for token/network combinations
+  const fetchMinimumAmount = async (token, network) => {
+    try {
+      if (!token || !network) return;
+      
+      const fromCurrency = network.displayToken.toLowerCase();
+      const toCurrency = "icp";
+      
+      const rateUrl = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=1&rateType=floating`;
+      
+      const rateResponse = await fetch(rateUrl, {
+        method: "GET",
+        headers: { 
+          "Content-Type": "application/json",
+          "x-api-key": SWAPZONE_API_KEY
+        }
+      });
+      
+      const rateData = await rateResponse.json();
+      
+      if (!rateData.error && rateData.minAmount) {
+        // Store the minAmount for this token
+        setMinAmounts(prev => ({
+          ...prev,
+          [`${fromCurrency}`]: rateData.minAmount
+        }));
+        
+        // Update the displayed minimum deposit text
+        const updatedMinDeposit = getMinimumDeposit(network.displayToken, rateData.minAmount);
+        setMinDeposit(updatedMinDeposit);
+      }
+    } catch (error) {
+      console.error("Error fetching minimum amount:", error);
+    }
+  };
+
   async function handleCreateExchange() {
     console.log("handleCreateExchange started");
-    console.log(`handleCreateExchange: Using token=${selectedToken}, networkIndex=${selectedNetworkIndex}`);
-
+    
+    // Reset error message
+    setErrorMessage("");
+    
     if (!wallets?.ckBTC?.walletPrincipal) {
       console.error("No ckBTC wallet found");
+      setErrorMessage("No ckBTC wallet found. Please connect your wallet.");
       return;
     }
+    
     const tokenObj = aggregatorTokens[selectedToken];
     if (!tokenObj) {
       console.error("Invalid selected token", selectedToken);
+      setErrorMessage("Invalid token selection. Please try again.");
       return;
     }
+    
     const netOption = tokenObj.networks[selectedNetworkIndex];
     if (!netOption) {
       console.error("Invalid network selection", selectedNetworkIndex, tokenObj.networks);
+      setErrorMessage("Invalid network selection. Please try again.");
       return;
     }
-    const aggregatorSymbol = netOption.displayToken;
-    const aggregatorNetwork = netOption.displayNetwork;
-    console.log("Validations passed. Token:", aggregatorSymbol, "Network:", aggregatorNetwork);
-
-    console.log("Calculating depositAddress...");
-    const depositAddress = AccountIdentifier.fromPrincipal({
-      principal: wallets.ckBTC.walletPrincipal,
-    }).toHex();
-    console.log("Calculated depositAddress:", depositAddress);
-
-    const payload = {
-      route: {
-        from: { symbol: aggregatorSymbol, network: aggregatorNetwork },
-        to: { symbol: "icp", network: "mainnet" },
-      },
-      amount: parseFloat(amount) || 0,
-      estimation: "direct",
-      rate: "floating",
-      address: depositAddress,
-      user_id: wallets.ckBTC.walletAddressForDisplay,
-    };
-    console.log("Payload created:", JSON.stringify(payload, null, 2));
-
+    
+    // Make sure amount is at least the minimum required
+    const minAmount = parseFloat(netOption.minAmount || "1.33");
+    const amountToUse = Math.max(parseFloat(amount) || 0, minAmount);
+    
+    const fromCurrency = netOption.displayToken.toLowerCase();
+    const toCurrency = "icp"; // Destination currency
+    
     try {
       setLoading(true);
-      console.log("Calling create-exchange API...");
-      const response = await fetch("https://api.plebes.xyz/create-exchange", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      console.log("API response received:", data);
-
-      if (data?.error) {
-        // Handle specific error: Transaction already in progress
-        if (data.error.includes("already in progress") && data.transaction) {
-          console.warn("API reported existing transaction. Using its details.", data.transaction);
-          // Update state with the existing transaction's details
-          setApiResponse(data.transaction); 
-          setPolling(true); // Start polling for the existing transaction
-          setStatus(data.transaction.details?.status || "waiting"); // Use existing status or default
-          setHasFetched(true);
-          // Avanzar a la sección de depósito
-          setCurrentSection(3);
-        } else {
-          // Handle other API errors
-          console.error("API returned error:", data.error);
-          // Optionally, display this error to the user
-          // You might want to reset parts of the state here or show an error message
-          setApiResponse(null); // Clear response on other errors
-          setPolling(false);
-          setStatus("error"); 
-          setHasFetched(true); // Indicate an attempt was made
+      
+      // Step 1: Get rate from Swapzone API
+      console.log("Getting rate from Swapzone API...");
+      const rateUrl = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=${amountToUse}&rateType=floating`;
+      console.log("Rate URL:", rateUrl);
+      
+      const rateResponse = await fetch(rateUrl, {
+        method: "GET",
+        headers: { 
+          "Content-Type": "application/json",
+          "x-api-key": SWAPZONE_API_KEY
         }
-      } else if (data?.details?.err) {
-        // Keep existing handling for data.details.err format if needed
-        console.error("API returned error in details:", data.details.err);
-        throw new Error(data.details.err); // This will be caught by the outer catch
-      } else {
-        // Original success path: A new transaction was created
-        setApiResponse(data);
-        setPolling(true);
-        setStatus("waiting");
-        setHasFetched(true);
-        // Avanzar a la sección de depósito
-        setCurrentSection(3);
-        console.log("State updated successfully after API call for new transaction");
+      });
+      
+      // Try to get the raw response first
+      const rateResponseText = await rateResponse.text();
+      let rateData;
+      
+      try {
+        rateData = JSON.parse(rateResponseText);
+        console.log("Rate response received:", rateData);
+      } catch (e) {
+        console.error("Failed to parse rate response:", e);
+        throw new Error(`Invalid rate response format: ${rateResponseText}`);
       }
+      
+      // Check for errors in rate response
+      if (rateData.error) {
+        throw new Error(rateData.message || "Failed to get rate from Swapzone");
+      }
+      
+      // Calculate recipient address from principal
+      const depositAddress = AccountIdentifier.fromPrincipal({
+        principal: wallets.ckBTC.walletPrincipal,
+      }).toHex();
+      
+      // Generate a unique reference ID for this transaction
+      const referenceId = generateUniqueId();
+      
+      // Step 2: Create transaction with Swapzone - with all required parameters
+      console.log("Creating transaction with Swapzone API...");
+      
+      const transactionPayload = {
+        from: fromCurrency,
+        to: toCurrency,
+        addressTo: depositAddress, 
+        refundAddress: depositAddress,
+        amount: amountToUse,
+        rateType: "floating",
+        adapter: rateData.adapter,
+        // Add these required parameters from API docs
+        fromNetwork: rateData.fromNetwork || netOption.displayNetwork,
+        toNetwork: rateData.toNetwork || "ICP",
+        callbackUrl: CALLBACK_URLS.standard,
+        successCallbackUrl: CALLBACK_URLS.success,
+        failureCallbackUrl: CALLBACK_URLS.failure,
+        referenceId: referenceId,
+        // ICP specific fields - may be needed
+        extraIdName: "memo",
+        extraId: "" // Even if empty, include it
+      };
+      
+      console.log("Transaction payload:", transactionPayload);
+      
+      const transactionResponse = await fetch(`${SWAPZONE_API_BASE_URL}/exchange/create-transaction`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": SWAPZONE_API_KEY
+        },
+        body: JSON.stringify(transactionPayload)
+      });
+      
+      // Add these lines to see the full response details
+      const responseStatus = transactionResponse.status;
+      const responseStatusText = transactionResponse.statusText;
+      console.log(`Response status: ${responseStatus} ${responseStatusText}`);
+
+      // Try to get the raw response before parsing
+      const responseText = await transactionResponse.text();
+      console.log("Raw response:", responseText);
+
+      // Then parse if it's valid JSON
+      let transactionData;
+      try {
+        transactionData = responseText ? JSON.parse(responseText) : { error: true, message: "Empty response" };
+      } catch (e) {
+        transactionData = { error: true, message: `Invalid JSON: ${responseText}` };
+      }
+     
+      
+      if (transactionData.error) {
+        throw new Error(transactionData.message || "Failed to create transaction");
+      }
+      
+      // Update state with transaction data based on Swapzone response
+      setApiResponse({
+        details: {
+          id: transactionData.id,
+          deposit: {
+            address: transactionData.addressFrom || transactionData.address,
+            amount: transactionData.amountFrom || amountToUse,
+            extra_id: transactionData.extraId || null
+          },
+          status: "waiting"
+        }
+      });
+      
+      setPolling(true);
+      setStatus("waiting");
+      setHasFetched(true);
+      setCurrentSection(3);
     } catch (error) {
-      // This catches errors thrown from the fetch call itself or the explicit throw above
       console.error("Error in create-exchange process:", error);
-      // Consider setting an error state here to inform the user
       setStatus("error");
-      setHasFetched(true); // Indicate an attempt was made
+      setHasFetched(true);
+      
+      // Show user-friendly error message
+      const errorMsg = error.message || "Failed to create transaction. Please try again later.";
+      setErrorMessage(errorMsg);
     } finally {
       setLoading(false);
       console.log("handleCreateExchange finished");
@@ -506,22 +658,21 @@ const TokenRow = () => {
   }
 
   async function handleDeleteExchange() {
-    if (!wallets?.ckBTC?.walletAddressForDisplay) return;
+    if (!apiResponse?.details?.id) return;
+    
     try {
       setLoading(true);
-      const resp = await fetch(
-        `https://api.plebes.xyz/delete-transaction/${wallets.ckBTC.walletAddressForDisplay}`,
-        { method: "GET" }
-      );
-      if (resp.ok) {
-        setApiResponse(null);
-        setPolling(false);
-        setStatus("");
-        // Regresar a la primera sección
-        setCurrentSection(1);
-      }
+      
+      // If we have a transaction ID and Swapzone supports cancellation, we would call it here
+      // For now, we'll just clear the UI state as Swapzone might not support explicit cancellation
+      
+      console.log("Clearing local transaction state");
+      setApiResponse(null);
+      setPolling(false);
+      setStatus("");
+      setCurrentSection(1);
     } catch (err) {
-      console.error("Error deleting transaction", err);
+      console.error("Error during transaction cleanup:", err);
     } finally {
       setLoading(false);
       setShowModal(false);
@@ -536,9 +687,9 @@ const TokenRow = () => {
 
   // Blur si no hay wallet conectada
   const leftBoxBlur =
-    enableBlurIfNoWallet && !wallets?.ckBTC?.walletAddressForDisplay
-      ? "blur(3px)"
-      : "none";
+      enableBlurIfNoWallet && !wallets?.ckBTC?.walletAddressForDisplay
+          ? "blur(3px)"
+          : "none";
 
   // Log deposit details only when they change
   useEffect(() => {
@@ -553,84 +704,98 @@ const TokenRow = () => {
 
   // Renderiza la sección de selección de token y red
   const renderTokenSelection = () => (
-    <>
-      <div className="mb-8">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-full">
-            <label className="block text-xl font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-              Select Token
-            </label>
-            <div className="relative flex items-center">
+      <>
+        <div className="mb-8">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-full">
+              <label className="block text-xl font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                Select Token
+              </label>
+              <div className="relative flex items-center">
+                <select
+                    value={selectedToken}
+                    onChange={(e) => {
+                      const newToken = e.target.value;
+                      setSelectedToken(newToken);
+                      setSelectedNetworkIndex(0);
+                      // Fetch min amount when token changes
+                      const tokenObj = aggregatorTokens[newToken];
+                      if (tokenObj && tokenObj.networks.length > 0) {
+                        fetchMinimumAmount(newToken, tokenObj.networks[0]);
+                      }
+                    }}
+                    className="w-full p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none"
+                >
+                  {Object.keys(aggregatorTokens).map((tk) => (
+                      <option key={tk} value={tk}>
+                        {tk}
+                      </option>
+                  ))}
+                </select>
+                {tokenLogo && (
+                    <img
+                        src={tokenLogo}
+                        alt="Token Logo"
+                        className="w-4 h-4 absolute right-8 top-1/2 transform -translate-y-1/2 pointer-events-none"
+                    />
+                )}
+              </div>
+            </div>
+            <div className="w-full">
+              <label className="block text-xl font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                Select Network
+              </label>
               <select
-                value={selectedToken}
-                onChange={(e) => {
-                  setSelectedToken(e.target.value);
-                  setSelectedNetworkIndex(0);
-                }}
-                className="w-full p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none"
+                  value={selectedNetworkIndex}
+                  onChange={(e) => {
+                    const newIndex = Number(e.target.value);
+                    setSelectedNetworkIndex(newIndex);
+                    // Fetch min amount when network changes
+                    const tokenObj = aggregatorTokens[selectedToken];
+                    if (tokenObj && tokenObj.networks[newIndex]) {
+                      fetchMinimumAmount(selectedToken, tokenObj.networks[newIndex]);
+                    }
+                  }}
+                  className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
               >
-                {Object.keys(aggregatorTokens).map((tk) => (
-                  <option key={tk} value={tk}>
-                    {tk}
-                  </option>
+                {tokenObj?.networks.map((opt, idx) => (
+                    <option key={idx} value={idx}>
+                      {opt.displayNetwork}
+                    </option>
                 ))}
               </select>
-              {tokenLogo && (
-                <img
-                  src={tokenLogo}
-                  alt="Token Logo"
-                  className="w-4 h-4 absolute right-8 top-1/2 transform -translate-y-1/2 pointer-events-none"
-                />
-              )}
             </div>
           </div>
-          <div className="w-full">
-            <label className="block text-xl font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-              Select Network
-            </label>
-            <select
-              value={selectedNetworkIndex}
-              onChange={(e) => setSelectedNetworkIndex(Number(e.target.value))}
-              className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
-            >
-              {tokenObj?.networks.map((opt, idx) => (
-                <option key={idx} value={idx}>
-                  {opt.displayNetwork}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
-      </div>
-      <div className="flex justify-center mb-8 text-lg">
-        <button
-          onClick={() => {
-            console.log("Next button clicked, moving to section 2");
-            setCurrentSection(2);
-          }}
-          className="pitch-deck-button px-8 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
-          disabled={!wallets?.ckBTC?.walletAddressForDisplay}
-        >
-          Next
-        </button>
-      </div>
-    </>
+        <div className="flex justify-center mb-8 text-lg">
+          <button
+              onClick={() => {
+                console.log("Next button clicked, moving to section 2");
+                setCurrentSection(2);
+              }}
+              className="pitch-deck-button px-8 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
+              disabled={!wallets?.ckBTC?.walletAddressForDisplay}
+          >
+            Next
+          </button>
+        </div>
+      </>
   );
 
   // Renderiza la sección de entrada de cantidad
   const renderAmountInput = () => (
-    <>
-      <div className="mb-8">
-        <div className="w-full">
-          <label className="block text-lg font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-            Amount (Token)
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="
+      <>
+        <div className="mb-8">
+          <div className="w-full">
+            <label className="block text-lg font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+              Amount (Token)
+            </label>
+            <div className="relative">
+              <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="
               w-full
               p-2
               pr-10
@@ -644,202 +809,217 @@ const TokenRow = () => {
               dark:bg-jacarta-600
               munro-small
             "
-              placeholder="0.00"
-            />
-          </div>
-          <div>
-            <p className="text-md md:text-base font-medium text-accent mt-2 munro-small-text">
-              {minDeposit}
-            </p>
+                  placeholder="0.00"
+              />
+            </div>
+            <div>
+              <p className="text-md md:text-base font-medium text-accent mt-2 munro-small-text">
+                {minDeposit}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="mb-8 flex space-x-4 justify-center">
-        <button
-          onClick={() => {
-            console.log("Back button clicked, moving to section 1");
-            setCurrentSection(1);
-          }}
-          className="px-4 py-2 text-white rounded-lg shadow bg-gray-600 hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 munro-narrow"
-        >
-          Back
-        </button>
-        <button
-          onClick={handleCreateExchange}
-          className="pitch-deck-button px-4 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
-          disabled={loading || !amount}
-        >
-          {loading ? "Processing..." : "Start Deposit"}
-        </button>
-      </div>
-    </>
+        <div className="mb-8 flex space-x-4 justify-center">
+          <button
+              onClick={() => {
+                console.log("Back button clicked, moving to section 1");
+                setCurrentSection(1);
+              }}
+              className="px-4 py-2 text-white rounded-lg shadow bg-gray-600 hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 munro-narrow"
+          >
+            Back
+          </button>
+          <button
+              onClick={handleCreateExchange}
+              className="pitch-deck-button px-4 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
+              disabled={loading || !amount}
+          >
+            {loading ? "Processing..." : "Start Deposit"}
+          </button>
+        </div>
+        
+        {/* Display error message if there is one */}
+        {errorMessage && (
+          <div className="mt-4 p-3 rounded-lg bg-red-800 text-white munro-small-text">
+            {errorMessage}
+          </div>
+        )}
+      </>
   );
 
   // Renderiza la sección de información de depósito
   const renderDepositInfo = () => (
-    <div className="w-full">
-      {/* Two-column grid on large screens */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 w-full">
-        {/* Left column - QR code section */}
-        <div className="flex flex-col items-center justify-start w-full">
-          {apiResponse?.details?.deposit?.address && (
-            <>
-              <label className="block text-xl font-medium text-jacarta-500 mb-2 dark:text-jacarta-100 munro-small-text text-center">
-                Scan to deposit
-              </label>
-              <QRCodeSVG
-                value={apiResponse.details.deposit.address}
-                size={180}
-                className="bg-white p-2 rounded-lg"
-              />
-              {status && (
-                <div className="mt-2 text-center">
+      <div className="w-full">
+        {/* Two-column grid on large screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 w-full">
+          {/* Left column - QR code section */}
+          <div className="flex flex-col items-center justify-start w-full">
+            {apiResponse?.details?.deposit?.address && (
+                <>
+                  <label className="block text-xl font-medium text-jacarta-500 mb-2 dark:text-jacarta-100 munro-small-text text-center">
+                    Scan to deposit
+                  </label>
+                  <QRCodeSVG
+                      value={apiResponse.details.deposit.address}
+                      size={180}
+                      className="bg-white p-2 rounded-lg"
+                  />
+                  {status && (
+                      <div className="mt-2 text-center">
                   <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading text-lg">
                     Status:
                   </span>
-                  <span className="text-jacarta-100 munro-small-text text-lg capitalize">
+                        <span className="text-jacarta-100 munro-small-text text-lg capitalize">
                     {status}
                   </span>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* Right column - Input fields */}
-        <div className="flex flex-col w-full">
-          <div className="mb-4">
-            <label className="block text-lg text-center font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-              Deposit to this wallet
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={
-                  apiResponse?.details?.deposit?.address || "Awaiting address..."
-                }
-                readOnly
-                className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
-              />
-              {apiResponse?.details?.deposit?.address && (
-                <button
-                  onClick={() => handleCopy(apiResponse?.details?.deposit?.address, "address")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
-                >
-                  {copiedField === "address" ? (
-                    <img src={checkMark} alt="Copied" className="w-5 h-5" />
-                  ) : (
-                    <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                      </div>
                   )}
-                </button>
-              )}
-            </div>
+                </>
+            )}
           </div>
 
-          {apiResponse?.details?.deposit?.extra_id && (
+          {/* Right column - Input fields */}
+          <div className="flex flex-col w-full">
             <div className="mb-4">
-              <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                Memo
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={apiResponse.details.deposit.extra_id}
-                  readOnly
-                  className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
-                />
-                <button
-                  onClick={() => handleCopy(apiResponse.details.deposit.extra_id, "memo")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
-                >
-                  {copiedField === "memo" ? (
-                    <img src={checkMark} alt="Copied" className="w-5 h-5" />
-                  ) : (
-                    <img src={copyIcon} alt="Copy" className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-lg text-center font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-              Deposit this quantity
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                value={
-                  apiResponse?.details?.deposit?.amount
-                    ? `${apiResponse.details.deposit.amount} on ${aggregatorTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
-                    }`
-                    : "Awaiting amount..."
-                }
-                readOnly
-                className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
-              />
-              {apiResponse?.details?.deposit?.amount && (
-                <button
-                  onClick={() => handleCopy(apiResponse?.details?.deposit?.amount || "0.00", "amount")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
-                >
-                  {copiedField === "amount" ? (
-                    <img src={checkMark} alt="Copied" className="w-5 h-5" />
-                  ) : (
-                    <img src={copyIcon} alt="Copy" className="w-5 h-5" />
-                  )}
-                </button>
-              )}
-            </div>
-          </div>
-
-          {apiResponse?.details?.id && (
-            <div className="mt-4">
               <label className="block text-lg text-center font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                StealthEX ID
+                Deposit to this wallet
               </label>
               <div className="relative">
                 <input
-                  type="text"
-                  value={apiResponse.details.id}
-                  readOnly
-                  className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                    type="text"
+                    value={
+                        apiResponse?.details?.deposit?.address || "Awaiting address..."
+                    }
+                    readOnly
+                    className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
                 />
-                <button
-                  onClick={() => handleCopy(apiResponse.details.id, "id")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
-                >
-                  {copiedField === "id" ? (
-                    <img src={checkMark} alt="Copied" className="w-5 h-5" />
-                  ) : (
-                    <img src={copyIcon} alt="Copy" className="w-5 h-5" />
-                  )}
-                </button>
+                {apiResponse?.details?.deposit?.address && (
+                    <button
+                        onClick={() => handleCopy(apiResponse?.details?.deposit?.address, "address")}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
+                    >
+                      {copiedField === "address" ? (
+                          <img src={checkMark} alt="Copied" className="w-5 h-5" />
+                      ) : (
+                          <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                      )}
+                    </button>
+                )}
               </div>
             </div>
-          )}
+
+            {apiResponse?.details?.deposit?.extra_id && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                    Memo
+                  </label>
+                  <div className="relative">
+                    <input
+                        type="text"
+                        value={apiResponse.details.deposit.extra_id}
+                        readOnly
+                        className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                    />
+                    <button
+                        onClick={() => handleCopy(apiResponse.details.deposit.extra_id, "memo")}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
+                    >
+                      {copiedField === "memo" ? (
+                          <img src={checkMark} alt="Copied" className="w-5 h-5" />
+                      ) : (
+                          <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+            )}
+
+            <div>
+              <label className="block text-lg text-center font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                Deposit this quantity
+              </label>
+              <div className="relative">
+                <input
+                    type="text"
+                    value={
+                      apiResponse?.details?.deposit?.amount
+                          ? `${apiResponse.details.deposit.amount} on ${aggregatorTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
+                          }`
+                          : "Awaiting amount..."
+                    }
+                    readOnly
+                    className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                />
+                {apiResponse?.details?.deposit?.amount && (
+                    <button
+                        onClick={() => handleCopy(apiResponse?.details?.deposit?.amount || "0.00", "amount")}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
+                    >
+                      {copiedField === "amount" ? (
+                          <img src={checkMark} alt="Copied" className="w-5 h-5" />
+                      ) : (
+                          <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                      )}
+                    </button>
+                )}
+              </div>
+            </div>
+
+            {apiResponse?.details?.id && (
+                <div className="mt-4">
+                  <label className="block text-lg text-center font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
+                    StealthEX ID
+                  </label>
+                  <div className="relative">
+                    <input
+                        type="text"
+                        value={apiResponse.details.id}
+                        readOnly
+                        className="text-md w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 pr-12 munro-small"
+                    />
+                    <button
+                        onClick={() => handleCopy(apiResponse.details.id, "id")}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 focus:outline-none flex items-center justify-center w-9 h-9"
+                    >
+                      {copiedField === "id" ? (
+                          <img src={checkMark} alt="Copied" className="w-5 h-5" />
+                      ) : (
+                          <img src={copyIcon} alt="Copy" className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+            )}
+          </div>
+        </div>
+
+        {/* Cancel button - centered below the grid */}
+        <div className="flex justify-center text-md mt-8 mb-4">
+          <button
+              onClick={handleDeleteExchange}
+              className="bg-white text-jacarta-700 px-6 py-2 rounded-lg font-medium munro-narrow focus:outline-none"
+          >
+            Cancel Deposit
+          </button>
         </div>
       </div>
-      
-      {/* Cancel button - centered below the grid */}
-      <div className="flex justify-center text-md mt-8 mb-4">
-        <button
-          onClick={handleDeleteExchange}
-          className="bg-white text-jacarta-700 px-6 py-2 rounded-lg font-medium munro-narrow focus:outline-none"
-        >
-          Cancel Deposit
-        </button>
-      </div>
-    </div>
   );
 
-  return (
-    <section className="relative h-screen">
-      <div className="mx-4 text-center pt-24 md:pt-32">
-        <span className="text-white text-2xl md:text-5xl munro-regular-heading">Multichain deposit</span>
-      </div>
+  // Add this useEffect after the other useEffects
+  useEffect(() => {
+    // Fetch minimum amount when component mounts
+    if (tokenObj && tokenObj.networks[selectedNetworkIndex]) {
+      fetchMinimumAmount(selectedToken, tokenObj.networks[selectedNetworkIndex]);
+    }
+  }, []);  // Empty dependency array so it only runs once
 
-      <div className="w-full flex flex-col justify-start items-center p-4">
+  return (
+      <section className="relative h-screen">
+        <div className="mx-4 text-center pt-24 md:pt-32">
+          <span className="text-white text-2xl md:text-5xl munro-regular-heading">Multichain deposit</span>
+        </div>
+
+        <div className="w-full flex flex-col justify-start items-center p-4">
           <div className="w-full max-w-md bg-jacarta-800 rounded-lg shadow-lg p-4 min-h-[600px]">
             <div className="relative w-full ">
               <div className="absolute w-full flex justify-between items-center px-12">
@@ -849,133 +1029,133 @@ const TokenRow = () => {
 
             <div className="text-center text-white">
               {rightStep === 1 && (
-                <div>
-                  <h3 className="text-xl md:text-3xl font-bold mb-6 munro-small-heading">Connect Wallet</h3>
-                  <div className="flex justify-center mb-6">
-                    <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
+                  <div>
+                    <h3 className="text-xl md:text-3xl font-bold mb-6 munro-small-heading">Connect Wallet</h3>
+                    <div className="flex justify-center mb-6">
+                      <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
+                    </div>
+                    <p className="text-xl md:text-2xl munro-small-text">Unlock multichain deposits</p>
                   </div>
-                  <p className="text-xl md:text-2xl munro-small-text">Unlock multichain deposits</p>
-                </div>
               )}
               {rightStep === 2 && (
-                <div>
-                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Choose amount</h3>
-                  <div className="flex justify-center mb-6">
-                    <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
+                  <div>
+                    <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Choose amount</h3>
+                    <div className="flex justify-center mb-6">
+                      <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
+                    </div>
+                    <p className="text-xl munro-small-text">Specify the amount you want to deposit</p>
                   </div>
-                  <p className="text-xl munro-small-text">Specify the amount you want to deposit</p>
-                </div>
               )}
               {rightStep === 3 && (
-                <div>
-                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Awaiting deposit</h3>
-                  <p className="text-xl munro-small-text">Send the specified amount to continue</p>
-                </div>
+                  <div>
+                    <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Awaiting deposit</h3>
+                    <p className="text-xl munro-small-text">Send the specified amount to continue</p>
+                  </div>
               )}
               {rightStep === 4 && (
-                <div>
-                  <h3 className="text-3xl font-bold mb-6 munro-regular-heading">
-                    Swapping tokens to ckBTC
-                  </h3>
-                  <p className="text-xl munro-small-text">Converting your tokens</p>
-                </div>
+                  <div>
+                    <h3 className="text-3xl font-bold mb-6 munro-regular-heading">
+                      Swapping tokens to ckBTC
+                    </h3>
+                    <p className="text-xl munro-small-text">Converting your tokens</p>
+                  </div>
               )}
               {rightStep === 5 && (
-                <div>
-                  {status === "finished" ? (
-                    <>
-                      <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Balance updated</h3>
-                      <p className="text-xl munro-small-text">Check your wallet for new ckBTC</p>
-                    </>
-                  ) : (
-                    <>
-                      <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Sending ckBTC</h3>
-                      <p className="text-xl munro-small-text">Finalizing your transaction</p>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-          <div 
-          className="px-6 mt-4 py-3 rounded-lg text-white munro-small-text text-center lg:w-1/2"
-          style={{
-            backgroundColor: wallets?.ckBTC?.walletAddressForDisplay ? 'rgba(22, 163, 74, 0.2)' : 'rgba(220, 38, 38, 0.2)',
-            border: wallets?.ckBTC?.walletAddressForDisplay ? '2px solid #16a34a' : '2px solid #dc2626',
-            minWidth: '300px',
-            maxWidth: '300px'
-          }}
-        >
-          {wallets?.ckBTC?.walletAddressForDisplay
-            ? `Wallet connected`
-            : "Account not detected. Please log in."}
-        </div>
-        </div>
-
-      <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)] justify-center">
-        <div
-          className="w-full lg:w-1/2 flex justify-center items-center px-4"
-          style={{ filter: leftBoxBlur }}
-        >
-          <div className="w-full max-w-[300px]">
-            {/* Form */}
-            <div className="w-full">
-              {currentSection === 1 && renderTokenSelection()}
-              {currentSection === 2 && renderAmountInput()}
-              {currentSection === 3 && renderDepositInfo()}
-              
-              {isError && (
-                <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
-                  <p className="text-red-100 munro-small-text">
-                    <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
-                  </p>
-                </div>
-              )}
-
-              {loading && (
-                <div className="flex items-center justify-center mt-4">
-                  <div className="spinner-border animate-spin text-accent" role="status">
-                    <span className="sr-only">Loading...</span>
+                  <div>
+                    {status === "finished" ? (
+                        <>
+                          <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Balance updated</h3>
+                          <p className="text-xl munro-small-text">Check your wallet for new ckBTC</p>
+                        </>
+                    ) : (
+                        <>
+                          <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Sending ckBTC</h3>
+                          <p className="text-xl munro-small-text">Finalizing your transaction</p>
+                        </>
+                    )}
                   </div>
-                  <span className="ml-2 text-jacarta-100 munro-small-text">{status}</span>
-                </div>
               )}
             </div>
           </div>
-        </div>
-
-        {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
-        
-      </div>
-
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-            <h3 className="text-lg font-medium text-gray-800 mb-4 munro-regular-heading">
-              Are you sure you want to delete this exchange details?
-            </h3>
-            <p className="text-gray-600 mb-4 munro-small-text">
-              If you already deposited, wait for the deposit to go through, or you
-              will need to manually convert your funds.
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={() => setShowModal(false)}
-                className="pitch-deck-button px-4 py-2 text-white rounded-lg hover:bg-gray-300 munro-narrow"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteExchange}
-                className="pitch-deck-button px-4 py-2 text-white rounded-lg hover:bg-red-600 munro-narrow"
-              >
-                Delete
-              </button>
-            </div>
+          <div
+              className="px-6 mt-4 py-3 rounded-lg text-white munro-small-text text-center lg:w-1/2"
+              style={{
+                backgroundColor: wallets?.ckBTC?.walletAddressForDisplay ? 'rgba(22, 163, 74, 0.2)' : 'rgba(220, 38, 38, 0.2)',
+                border: wallets?.ckBTC?.walletAddressForDisplay ? '2px solid #16a34a' : '2px solid #dc2626',
+                minWidth: '300px',
+                maxWidth: '300px'
+              }}
+          >
+            {wallets?.ckBTC?.walletAddressForDisplay
+                ? `Wallet connected`
+                : "Account not detected. Please log in."}
           </div>
         </div>
-      )}
-    </section>
+
+        <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)] justify-center">
+          <div
+              className="w-full lg:w-1/2 flex justify-center items-center px-4"
+              style={{ filter: leftBoxBlur }}
+          >
+            <div className="w-full max-w-[300px]">
+              {/* Form */}
+              <div className="w-full">
+                {currentSection === 1 && renderTokenSelection()}
+                {currentSection === 2 && renderAmountInput()}
+                {currentSection === 3 && renderDepositInfo()}
+
+                {isError && (
+                    <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
+                      <p className="text-red-100 munro-small-text">
+                        <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
+                      </p>
+                    </div>
+                )}
+
+                {loading && (
+                    <div className="flex items-center justify-center mt-4">
+                      <div className="spinner-border animate-spin text-accent" role="status">
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                      <span className="ml-2 text-jacarta-100 munro-small-text">{status}</span>
+                    </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
+
+        </div>
+
+        {showModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                <h3 className="text-lg font-medium text-gray-800 mb-4 munro-regular-heading">
+                  Are you sure you want to delete this exchange details?
+                </h3>
+                <p className="text-gray-600 mb-4 munro-small-text">
+                  If you already deposited, wait for the deposit to go through, or you
+                  will need to manually convert your funds.
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                      onClick={() => setShowModal(false)}
+                      className="pitch-deck-button px-4 py-2 text-white rounded-lg hover:bg-gray-300 munro-narrow"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                      onClick={handleDeleteExchange}
+                      className="pitch-deck-button px-4 py-2 text-white rounded-lg hover:bg-red-600 munro-narrow"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+        )}
+      </section>
   );
 };
 
@@ -995,48 +1175,48 @@ function SwapSteps({ tokenName = "ICP" }) {
   if (swapStep === 0) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="max-w-md mx-auto p-6 bg-jacarta-800 rounded-lg shadow-lg">
-        <h2 className="text-lg font-medium text-white mb-4 munro-regular-heading">Swap Details</h2>
-        <p className="text-sm text-jacarta-300 mb-6 munro-small-text">
-          If you have sufficient balance in the swap pool, you may be able to swap
-          directly without needing to deposit.
-        </p>
-        <div className="space-y-4">
-          {steps.map((step) => (
-            <div
-              key={step.id}
-              className="flex items-center space-x-4 p-3 rounded-lg bg-jacarta-700"
-            >
-              <div
-                className={`flex items-center justify-center w-8 h-8 rounded-full munro-small ${step.id <= swapStep
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-500 text-gray-300"
-                  }`}
-              >
-                {step.id < swapStep ? <FaCheck /> : step.id}
-              </div>
-              <div className="flex items-center space-x-2">
-                <p
-                  className={`text-sm font-medium munro-narrow-text ${step.id <= swapStep ? "text-white" : "text-jacarta-400"
-                    }`}
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="max-w-md mx-auto p-6 bg-jacarta-800 rounded-lg shadow-lg">
+          <h2 className="text-lg font-medium text-white mb-4 munro-regular-heading">Swap Details</h2>
+          <p className="text-sm text-jacarta-300 mb-6 munro-small-text">
+            If you have sufficient balance in the swap pool, you may be able to swap
+            directly without needing to deposit.
+          </p>
+          <div className="space-y-4">
+            {steps.map((step) => (
+                <div
+                    key={step.id}
+                    className="flex items-center space-x-4 p-3 rounded-lg bg-jacarta-700"
                 >
-                  {step.title}
-                </p>
-                {step.id === swapStep && (
-                  <div className="swiper-lazy-preloader animate-spin-slow"></div>
-                )}
-              </div>
-            </div>
-          ))}
+                  <div
+                      className={`flex items-center justify-center w-8 h-8 rounded-full munro-small ${step.id <= swapStep
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-500 text-gray-300"
+                      }`}
+                  >
+                    {step.id < swapStep ? <FaCheck /> : step.id}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <p
+                        className={`text-sm font-medium munro-narrow-text ${step.id <= swapStep ? "text-white" : "text-jacarta-400"
+                        }`}
+                    >
+                      {step.title}
+                    </p>
+                    {step.id === swapStep && (
+                        <div className="swiper-lazy-preloader animate-spin-slow"></div>
+                    )}
+                  </div>
+                </div>
+            ))}
+          </div>
+          <button
+              onClick={() => setSwapStep(0)}
+              className="pitch-deck-button mt-6 px-4 py-2 text-white rounded-lg hover:bg-red-600 munro-narrow"
+          >
+            Close
+          </button>
         </div>
-        <button
-          onClick={() => setSwapStep(0)}
-          className="pitch-deck-button mt-6 px-4 py-2 text-white rounded-lg hover:bg-red-600 munro-narrow"
-        >
-          Close
-        </button>
       </div>
-    </div>
   );
 }
