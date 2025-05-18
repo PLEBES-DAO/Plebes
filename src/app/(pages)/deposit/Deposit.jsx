@@ -13,10 +13,10 @@ import checkMark from "../../../assets/img/check-mark.svg";
 
 // Swapzone API configuration
 const SWAPZONE_API_BASE_URL = "https://api.swapzone.io/v1";
-const SWAPZONE_API_KEY = "J4NlziyLk"; // Will be replaced with actual API key later
+const SWAPZONE_API_KEY = "48c2Gt5Iq"; // Will be replaced with actual API key later
 
 // Configure your callback URLs for production
-const CALLBACK_BASE_URL = "https://plebes.xyz/api"; // Replace with your actual domain
+const CALLBACK_BASE_URL = "https://api.plebes.xyz";  
 const CALLBACK_URLS = {
   standard: `${CALLBACK_BASE_URL}/callback`,
   success: `${CALLBACK_BASE_URL}/callback/success`,
@@ -359,7 +359,6 @@ const TokenRow = () => {
       const intv = setInterval(async () => {
         try {
           const transactionUrl = `${SWAPZONE_API_BASE_URL}/exchange/transaction?id=${apiResponse.details.id}`;
-          console.log("Polling transaction status:", transactionUrl);
           
           const res = await fetch(
             transactionUrl,
@@ -373,52 +372,43 @@ const TokenRow = () => {
           );
           
           const data = await res.json();
-          console.log("Transaction status response:", data);
           
           if (data && !data.error) {
-            // Map Swapzone status to our internal status format
-            let mappedStatus = data.status || "waiting";
+            // Actualizar con el status correcto (según documentación)
+            const currentStatus = data.status || "waiting";
             
-            // Update API response with the latest data
-            setApiResponse({
+            setApiResponse(prev => ({
+              ...prev,
               details: {
-                ...apiResponse.details,
-                status: mappedStatus
+                ...prev.details,
+                status: currentStatus
               }
-            });
+            }));
             
-            setStatus(mappedStatus);
+            setStatus(currentStatus);
             
-            // If transaction is finished, stop polling and update balance
-            if (mappedStatus === "finished") {
+            // Si la transacción está finalizada, detener polling
+            if (currentStatus === "finished") {
               console.log("Transaction completed successfully");
               setPolling(false);
               await buy();
               handleDeleteExchange();
             }
-          } else {
-            console.log("Polling error or invalid data format:", data);
-            // Don't immediately stop polling on a single error
-            // Instead, we could implement a counter to stop after multiple consecutive errors
           }
         } catch (err) {
           console.error("Failed to poll transaction:", err);
-          // Same approach - don't immediately stop on network errors
         }
-      }, 5000); // Increase polling interval to avoid rate limits
+      }, 5000);
       
       setPollInterval(intv);
-      
-      // Cleanup function
-      return () => {
-        if (intv) {
-          clearInterval(intv);
-        }
-      };
-    } else if (pollInterval) {
-      clearInterval(pollInterval);
     }
-  }, [polling, apiResponse, buy, pollInterval]);
+    
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [polling, apiResponse?.details?.id]);
 
   // Actualiza el step de la derecha
   useEffect(() => {
@@ -510,24 +500,19 @@ const TokenRow = () => {
     
     const tokenObj = aggregatorTokens[selectedToken];
     if (!tokenObj) {
-      console.error("Invalid selected token", selectedToken);
       setErrorMessage("Invalid token selection. Please try again.");
       return;
     }
     
     const netOption = tokenObj.networks[selectedNetworkIndex];
     if (!netOption) {
-      console.error("Invalid network selection", selectedNetworkIndex, tokenObj.networks);
       setErrorMessage("Invalid network selection. Please try again.");
       return;
     }
     
-    // Make sure amount is at least the minimum required
-    const minAmount = parseFloat(netOption.minAmount || "1.33");
-    const amountToUse = Math.max(parseFloat(amount) || 0, minAmount);
-    
+    const amountToUse = parseFloat(amount) || 0;
     const fromCurrency = netOption.displayToken.toLowerCase();
-    const toCurrency = "icp"; // Destination currency
+    const toCurrency = "icp";
     
     try {
       setLoading(true);
@@ -537,24 +522,32 @@ const TokenRow = () => {
       const rateUrl = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=${amountToUse}&rateType=floating`;
       console.log("Rate URL:", rateUrl);
       
+      const headers = { 
+        "Content-Type": "application/json",
+        "x-api-key": SWAPZONE_API_KEY
+      };
+      console.log("Rate request headers:", JSON.stringify(headers));
+      
       const rateResponse = await fetch(rateUrl, {
         method: "GET",
-        headers: { 
-          "Content-Type": "application/json",
-          "x-api-key": SWAPZONE_API_KEY
-        }
+        headers: headers
       });
       
-      // Try to get the raw response first
-      const rateResponseText = await rateResponse.text();
-      let rateData;
+      console.log("Rate response status:", rateResponse.status, rateResponse.statusText);
+      const rateResponseHeaders = {};
+      rateResponse.headers.forEach((value, name) => {
+        rateResponseHeaders[name] = value;
+      });
+      console.log("Rate response headers:", rateResponseHeaders);
       
+      // Parse rate response as JSON directly
+      let rateData;
       try {
-        rateData = JSON.parse(rateResponseText);
+        rateData = await rateResponse.json();
         console.log("Rate response received:", rateData);
-      } catch (e) {
-        console.error("Failed to parse rate response:", e);
-        throw new Error(`Invalid rate response format: ${rateResponseText}`);
+      } catch (parseError) {
+        console.error("Error parsing rate response:", parseError);
+        throw new Error(`Failed to parse rate response: ${parseError.message}`);
       }
       
       // Check for errors in rate response
@@ -562,38 +555,31 @@ const TokenRow = () => {
         throw new Error(rateData.message || "Failed to get rate from Swapzone");
       }
       
-      // Calculate recipient address from principal
+      // Add a small delay between rate and transaction creation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Get deposit address from wallet
       const depositAddress = AccountIdentifier.fromPrincipal({
         principal: wallets.ckBTC.walletPrincipal,
       }).toHex();
+      console.log("Deposit address from wallet:", depositAddress);
       
-      // Generate a unique reference ID for this transaction
-      const referenceId = generateUniqueId();
-      
-      // Step 2: Create transaction with Swapzone - with all required parameters
+      // Step 2: Create transaction with Swapzone
       console.log("Creating transaction with Swapzone API...");
       
       const transactionPayload = {
         from: fromCurrency,
         to: toCurrency,
-        addressTo: depositAddress, 
+        amount: rateData.amountFrom, // Use exactly the amount from rate response
+        addressTo: depositAddress,
         refundAddress: depositAddress,
-        amount: amountToUse,
         rateType: "floating",
         adapter: rateData.adapter,
-        // Add these required parameters from API docs
-        fromNetwork: rateData.fromNetwork || netOption.displayNetwork,
-        toNetwork: rateData.toNetwork || "ICP",
-        callbackUrl: CALLBACK_URLS.standard,
-        successCallbackUrl: CALLBACK_URLS.success,
-        failureCallbackUrl: CALLBACK_URLS.failure,
-        referenceId: referenceId,
-        // ICP specific fields - may be needed
-        extraIdName: "memo",
-        extraId: "" // Even if empty, include it
+        fromNetwork: rateData.fromNetwork,
+        toNetwork: rateData.toNetwork,
+        quotaId: rateData.quotaId
       };
-      
-      console.log("Transaction payload:", transactionPayload);
+      console.log("Transaction payload:", JSON.stringify(transactionPayload));
       
       const transactionResponse = await fetch(`${SWAPZONE_API_BASE_URL}/exchange/create-transaction`, {
         method: "POST",
@@ -604,36 +590,32 @@ const TokenRow = () => {
         body: JSON.stringify(transactionPayload)
       });
       
-      // Add these lines to see the full response details
-      const responseStatus = transactionResponse.status;
-      const responseStatusText = transactionResponse.statusText;
-      console.log(`Response status: ${responseStatus} ${responseStatusText}`);
-
-      // Try to get the raw response before parsing
-      const responseText = await transactionResponse.text();
-      console.log("Raw response:", responseText);
-
-      // Then parse if it's valid JSON
+      console.log("Transaction response status:", transactionResponse.status, transactionResponse.statusText);
+      
+      // IMPORTANT: Only parse the response body ONCE
       let transactionData;
       try {
-        transactionData = responseText ? JSON.parse(responseText) : { error: true, message: "Empty response" };
-      } catch (e) {
-        transactionData = { error: true, message: `Invalid JSON: ${responseText}` };
+        // Use json() directly - don't call text() first
+        transactionData = await transactionResponse.json();
+        console.log("Transaction response data:", transactionData);
+      } catch (parseError) {
+        console.error("Error parsing transaction response:", parseError);
+        throw new Error(`Failed to parse transaction response: ${parseError.message}`);
       }
-     
       
+      // Handle API error
       if (transactionData.error) {
         throw new Error(transactionData.message || "Failed to create transaction");
       }
       
-      // Update state with transaction data based on Swapzone response
+      // Update state with transaction data
       setApiResponse({
         details: {
           id: transactionData.id,
           deposit: {
-            address: transactionData.addressFrom || transactionData.address,
-            amount: transactionData.amountFrom || amountToUse,
-            extra_id: transactionData.extraId || null
+            address: transactionData.depositAddress || transactionData.address,
+            amount: transactionData.amount || amountToUse,
+            extra_id: transactionData.memo || null
           },
           status: "waiting"
         }
@@ -645,12 +627,21 @@ const TokenRow = () => {
       setCurrentSection(3);
     } catch (error) {
       console.error("Error in create-exchange process:", error);
+      
+      let userErrorMsg = "Failed to create transaction.";
+      
+      if (error.message) {
+        // Check for specific error patterns
+        if (error.message.includes("Empty response")) {
+          userErrorMsg = "The exchange service returned an empty response. This could be a temporary issue. Please try again with a different amount or token.";
+        } else {
+          userErrorMsg += ` Error: ${error.message}`;
+        }
+      }
+      
       setStatus("error");
       setHasFetched(true);
-      
-      // Show user-friendly error message
-      const errorMsg = error.message || "Failed to create transaction. Please try again later.";
-      setErrorMessage(errorMsg);
+      setErrorMessage(userErrorMsg);
     } finally {
       setLoading(false);
       console.log("handleCreateExchange finished");
@@ -1158,6 +1149,7 @@ const TokenRow = () => {
       </section>
   );
 };
+
 
 function SwapSteps({ tokenName = "ICP" }) {
   const { swapStep, setSwapStep } = useBioniqContext();
