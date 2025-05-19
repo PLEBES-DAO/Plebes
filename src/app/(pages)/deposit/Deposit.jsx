@@ -13,7 +13,7 @@ import checkMark from "../../../assets/img/check-mark.svg";
 
 // Swapzone API configuration
 const SWAPZONE_API_BASE_URL = "https://api.swapzone.io/v1";
-const SWAPZONE_API_KEY = "48c2Gt5Iq"; // Will be replaced with actual API key later
+const SWAPZONE_API_KEY = "J4NlziyLk"; // Will be replaced with actual API key later
 
 // Configure your callback URLs for production
 const CALLBACK_BASE_URL = "https://api.plebes.xyz";  
@@ -354,61 +354,62 @@ const TokenRow = () => {
   }, [wallets]);
 
   // Update the polling useEffect for transaction status
-  useEffect(() => {
-    if (polling && apiResponse?.details?.id) {
-      const intv = setInterval(async () => {
-        try {
-          const transactionUrl = `${SWAPZONE_API_BASE_URL}/exchange/transaction?id=${apiResponse.details.id}`;
-          
-          const res = await fetch(
-            transactionUrl,
-            { 
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                "x-api-key": SWAPZONE_API_KEY
-              }
-            }
-          );
-          
-          const data = await res.json();
-          
-          if (data && !data.error) {
-            // Actualizar con el status correcto (según documentación)
-            const currentStatus = data.status || "waiting";
-            
-            setApiResponse(prev => ({
-              ...prev,
-              details: {
-                ...prev.details,
-                status: currentStatus
-              }
-            }));
-            
-            setStatus(currentStatus);
-            
-            // Si la transacción está finalizada, detener polling
-            if (currentStatus === "finished") {
-              console.log("Transaction completed successfully");
-              setPolling(false);
-              await buy();
-              handleDeleteExchange();
+  // Update the polling useEffect for transaction status
+useEffect(() => {
+  if (polling && apiResponse?.details?.id) {
+    const intv = setInterval(async () => {
+      try {
+        const transactionUrl = `${SWAPZONE_API_BASE_URL}/exchange/transaction?id=${apiResponse.details.id}`;
+        
+        const res = await fetch(
+          transactionUrl,
+          { 
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": SWAPZONE_API_KEY
             }
           }
-        } catch (err) {
-          console.error("Failed to poll transaction:", err);
+        );
+        
+        const data = await res.json();
+        
+        if (data && !data.error) {
+          // Actualizar con el status correcto (según documentación)
+          const currentStatus = data.status || "waiting";
+          
+          setApiResponse(prev => ({
+            ...prev,
+            details: {
+              ...prev.details,
+              status: currentStatus
+            }
+          }));
+          
+          setStatus(currentStatus);
+          
+          // Si la transacción está finalizada, detener polling
+          if (currentStatus === "finished") {
+            console.log("Transaction completed successfully");
+            setPolling(false);
+            await buy();
+            handleDeleteExchange();
+          }
         }
-      }, 5000);
-      
-      setPollInterval(intv);
-    }
-    
-    return () => {
-      if (pollInterval) {
-        clearInterval(pollInterval);
+      } catch (err) {
+        console.error("Failed to poll transaction:", err);
       }
-    };
-  }, [polling, apiResponse?.details?.id]);
+    }, 5000);
+    
+    setPollInterval(intv);
+  }
+  
+  return () => {
+    if (pollInterval) {
+      clearInterval(pollInterval);
+    }
+  };
+}, [polling, apiResponse?.details?.id]);
 
   // Actualiza el step de la derecha
   useEffect(() => {
@@ -511,8 +512,8 @@ const TokenRow = () => {
     }
     
     const amountToUse = parseFloat(amount) || 0;
-    const fromCurrency = netOption.displayToken.toLowerCase();
-    const toCurrency = "icp";
+    const fromCurrency = netOption.aggregatorSymbol;
+    const toCurrency = "ICP";
     
     try {
       setLoading(true);
@@ -570,8 +571,8 @@ const TokenRow = () => {
       const transactionPayload = {
         from: fromCurrency,
         to: toCurrency,
-        amount: rateData.amountFrom, // Use exactly the amount from rate response
-        addressTo: depositAddress,
+        amountDeposit: rateData.amountFrom.toString(), // Use exactly the amount from rate response
+        addressReceive: depositAddress,
         refundAddress: depositAddress,
         rateType: "floating",
         adapter: rateData.adapter,
@@ -581,7 +582,7 @@ const TokenRow = () => {
       };
       console.log("Transaction payload:", JSON.stringify(transactionPayload));
       
-      const transactionResponse = await fetch(`${SWAPZONE_API_BASE_URL}/exchange/create-transaction`, {
+      const transactionResponse = await fetch(`${SWAPZONE_API_BASE_URL}/exchange/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
