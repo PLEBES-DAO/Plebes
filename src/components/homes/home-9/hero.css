@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 /* Estilo general para las tarjetas */
 .section {
     position: relative;
@@ -6,7 +8,7 @@
     animation: fadeInDarken 0.5s ease-in-out forwards;
 }
 .bg-morado-translucido {
-    background-color: rgba(65, 11, 11, 0.697); /* Morado más intenso con 50% de opacidad */
+    background-color: rgba(90, 24, 154, 0.8); /* más transparente */
 }
 
 /* Pitch Deck Button Styling - Pixel Art Border */
@@ -17,23 +19,22 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
     border: 2px solid transparent;
-}
+}T
 
-.pitch-deck-button::before {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(90deg, #5b21b6, #9333ea, #8b5cf6, #c026d3);
-    border-radius: 9999px;
-    z-index: -1;
-    background-size: 400% 400%;
-    animation: borderAnimation 3s ease infinite;
-}
+ .pitch-deck-button::before {
+     content: "";
+     position: absolute;
+     top: -2px;
+     left: -2px;
+     right: -2px;
+     bottom: -2px;
+     background: linear-gradient(90deg, #5b21b6, #9333ea, #8b5cf6, #c026d3);
+     border-radius: 9999px;
+     z-index: -1;
+     background-size: 400% 400%;
+     animation: borderAnimation 3s ease infinite;
+ }
 
 .pitch-deck-button::after {
     content: "";
@@ -89,9 +90,9 @@
     border-radius: 9999px;
     padding: 2px;
     background: linear-gradient(45deg, #6037a9, #ff5158);
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
+    -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     z-index: -1;
@@ -128,7 +129,7 @@
 
 /* Overlay oscuro que desaparece al hacer hover */
 .section .dark-overlay {
-    background-color: rgba(12, 17, 44, 0.9); /* Equivalente a bg-[#0c112c]/90 */
+    background-color: transparent; /* removed dark overlay */
     position: absolute;
     inset: 0;
     transition: opacity 0.3s ease;
@@ -142,6 +143,16 @@
     font-weight: bold;
     text-align: center;
 }
+
+/* Quita cualquier borde superior o inferior de las cards del Swiper */
+.swiper .block.rounded-2\.5xl {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    border-radius: 1.25rem 1.25rem 0 0 !important; /* Solo arriba */
+}
+
 
 /* Animación inicial de opacidad */
 @keyframes fadeInDarken {
@@ -178,4 +189,85 @@ body {
     .section {
         border-radius: 0.5rem;
     }
+}
+
+/* Mini Balance Display for Navbar */
+.balance-display-mini {
+    display: inline-flex; /* Use inline-flex to allow centering */
+    align-items: center;
+    justify-content: center;
+    min-width: 100px; /* Ensure a minimum width */
+    height: 28px; /* Match button height */
+    line-height: 1; /* Adjust line height for pixel font */
+}
+
+.balance-value-mini {
+    display: flex;
+    align-items: center;
+}
+
+.pixel-font {
+    font-family: 'Press Start 2P', cursive;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5); /* Optional shadow for depth */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.loading-spinner-mini {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.balance-increase-pulse {
+    animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(147, 51, 234, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(147, 51, 234, 0);
+    }
+}
+
+.white-translucent-button {
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15); /* White with opacity */
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.05);
+    backdrop-filter: blur(2px);
+}
+.white-translucent-button.rounded {
+    border-radius: 50%; /* Make it round */
+    padding: 0;
+    aspect-ratio: 1/1;
+}
+.white-translucent-button:hover, .white-translucent-button:focus {
+    background: rgba(255,255,255,0.28);
+    box-shadow: 0 4px 16px 0 rgba(0,0,0,0.09);
+}
+
+.card-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: transparent; /* removed dark overlay */
+    z-index: 2;
+    pointer-events: none;
+    border-radius: inherit;
+}
+.card-image-wrapper {
+    position: relative;
 }
