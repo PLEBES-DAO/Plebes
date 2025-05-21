@@ -1,4 +1,4 @@
-# Welcome to PLEBES DAO!
+# Welcome to PLEBES DAO! 
 
 This is the official repository for **PLEBES DAO**. We are a decentralized autonomous organization (DAO) focused on empowering the community and driving innovation in the blockchain space.
 
