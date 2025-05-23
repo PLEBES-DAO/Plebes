@@ -23,6 +23,57 @@ const CALLBACK_URLS = {
   failure: `${CALLBACK_BASE_URL}/callback/failure`
 };
 
+// Helper function to fetch supported currencies from Swapzone API
+const fetchSupportedCurrencies = async () => {
+  try {
+    const response = await fetch(`${SWAPZONE_API_BASE_URL}/exchange/currencies`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": SWAPZONE_API_KEY
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch supported currencies:", error);
+    return [];
+  }
+};
+
+// Helper function to map API currencies to aggregatorTokens format
+const mapApiCurrenciesToTokens = (currencies) => {
+  // Group currencies by their base token (without network specifics)
+  const groupedCurrencies = {};
+  
+  currencies.forEach(currency => {
+    // Convert ticker to uppercase for consistency with existing code
+    const baseTicker = currency.ticker.toUpperCase().split(/[^A-Z0-9]/, 1)[0];
+    
+    if (!groupedCurrencies[baseTicker]) {
+      groupedCurrencies[baseTicker] = {
+        logo: `/img/coinplebes/${baseTicker}.svg`, // Default path - may need fallback handling
+        networks: []
+      };
+    }
+    
+    // Add network to the token
+    groupedCurrencies[baseTicker].networks.push({
+      aggregatorSymbol: currency.ticker.toUpperCase(),
+      displayToken: baseTicker,
+      displayNetwork: currency.network || 'MAINNET',
+      minAmount: null // This will be populated later with API data
+    });
+  });
+  
+  return groupedCurrencies;
+};
+
 // Helper function to generate a unique reference ID for transactions
 const generateUniqueId = () => {
   return `tx_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
@@ -66,8 +117,8 @@ const aggregatorTokens = {
   BTC: {
       logo: "/img/coins/btc.svg",
       networks: [
-        { aggregatorSymbol: "BTC", displayToken: "BTC", displayNetwork: "BITCOIN" },
-        { aggregatorSymbol: "BTC-LIGHTNING", displayToken: "BTC", displayNetwork: "LIGHTNING" },
+        { aggregatorSymbol: "btc", displayToken: "BTC", displayNetwork: "BTC" },
+        { aggregatorSymbol: "btc-lightning", displayToken: "BTC", displayNetwork: "LIGHTNING" },
       ],
     },
 
@@ -86,7 +137,7 @@ const aggregatorTokens = {
   ADA: {
     logo: "/img/coins/ada.svg",
     networks: [
-      { aggregatorSymbol: "ADA", displayToken: "ADA", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "ADA", displayToken: "ADA", displayNetwork: "ADA", defaultAmount: 2000 },
     ],
   },
 
@@ -135,6 +186,7 @@ const aggregatorTokens = {
     logo: "/img/coinplebes/BUSD.svg",
     networks: [
       { aggregatorSymbol: "BUSD", displayToken: "BUSD", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "BUSDBEP20", displayToken: "BUSD", displayNetwork: "BSC", defaultAmount: 300, smartContract: "0xe9e7cea3dedca5984780bafc599bd69add087d56" },
     ],
   },
 
@@ -142,7 +194,15 @@ const aggregatorTokens = {
   DOGE: {
     logo: "/img/coins/doge.svg",
     networks: [
-      { aggregatorSymbol: "DOGE", displayToken: "DOGE", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "doge", displayToken: "DOGE", displayNetwork: "DOGE" },
+    ],
+  },
+
+  // LTC
+  LTC: {
+    logo: "/img/coinplebes/LTC.svg", 
+    networks: [
+      { aggregatorSymbol: "ltc", displayToken: "LTC", displayNetwork: "LTC" },
     ],
   },
 
@@ -223,6 +283,7 @@ const aggregatorTokens = {
     logo: "/img/coinplebes/WLD.svg",
     networks: [
       { aggregatorSymbol: "WLD", displayToken: "WLD", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "WLDOP", displayToken: "WLD", displayNetwork: "OPTIMISM", defaultAmount: 95, smartContract: "0xdc6ff44d5d932cbd77b52e5612ba0529dc6226f1" },
     ],
   },
 };
@@ -282,8 +343,8 @@ export default function AuctionPage({ login, setModalOpenT }) {
 
 const TokenRow = () => {
 
-  const { wallets, buy ,swapStep} = useBioniqContext();
-  const [selectedToken, setSelectedToken] = useState("DOT");
+  const { wallets, buy, swapStep, icpBalance } = useBioniqContext();
+  const [selectedToken, setSelectedToken] = useState("BTC");
   const [selectedNetworkIndex, setSelectedNetworkIndex] = useState(0);
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -300,6 +361,47 @@ const TokenRow = () => {
   const [rightStep, setRightStep] = useState(1);
   const [minAmounts, setMinAmounts] = useState({});
   const [errorMessage, setErrorMessage] = useState(""); // New state for detailed error messages
+  const [supportedCurrencies, setSupportedCurrencies] = useState([]); // State for supported currencies from API
+  const [showCurrenciesModal, setShowCurrenciesModal] = useState(false); // State for showing currencies modal
+  const [adapterTryCount, setAdapterTryCount] = useState(0); // Counter for adapter retry attempts
+  const [transactionProgress, setTransactionProgress] = useState(0); // Progress indicator (0-100)
+  const [icpBalanceValue, setIcpBalanceValue] = useState(null); // Estado para el balance de ICP
+  const [loadingIcpBalance, setLoadingIcpBalance] = useState(false); // Estado para mostrar loading del balance
+
+  // State for dynamic tokens mapped from API data
+  const [dynamicTokens, setDynamicTokens] = useState({});
+  
+  // Use dynamic tokens if available, fallback to static tokens
+  const availableTokens = Object.keys(dynamicTokens).length > 0 ? dynamicTokens : aggregatorTokens;
+  
+  // Only show these tokens in the dropdown
+  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA"];
+
+  // Status display labels for better UX
+  const statusLabels = {
+    "waiting": "Awaiting deposit",
+    "overdue": "Deposit overdue - please deposit soon",
+    "confirming": "Deposit received, confirming on blockchain",
+    "exchanging": "Converting your tokens",
+    "sending": "Sending ICP to your wallet",
+    "finished": "Transaction complete!",
+    "failed": "Transaction failed",
+    "refunded": "Deposit refunded"
+  };
+
+  // Convert status to progress percentage
+  const getProgressFromStatus = (status) => {
+    switch(status) {
+      case "waiting": return 20;
+      case "overdue": return 20;
+      case "confirming": return 40;
+      case "exchanging": return 60;
+      case "sending": return 80;
+      case "finished": return 100;
+      case "failed": case "refunded": return 0;
+      default: return 0;
+    }
+  };
 
   // Function to handle copy to clipboard
   const handleCopy = (text, fieldName) => {
@@ -311,6 +413,33 @@ const TokenRow = () => {
       setCopiedField(null);
     }, 2000);
   };
+
+  // Fetch supported currencies from API on component mount
+  useEffect(() => {
+    const getCurrencies = async () => {
+      try {
+        const currencies = await fetchSupportedCurrencies();
+        if (currencies && currencies.length > 0) {
+          console.log("Fetched supported currencies:", currencies.length);
+          console.log("Full list of supported currencies:", currencies);
+          setSupportedCurrencies(currencies);
+          
+          // Map currencies to the format needed for UI
+          const mappedTokens = mapApiCurrenciesToTokens(currencies);
+          
+          // Merge with existing static tokens, preferring API data but keeping static data as fallback
+          // This ensures we maintain compatibility with existing code
+          setDynamicTokens({
+            ...mappedTokens
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching supported currencies:", error);
+      }
+    };
+    
+    getCurrencies();
+  }, []);
 
   // For compatibility, ensure useUsd is always false
   useEffect(() => {
@@ -353,63 +482,70 @@ const TokenRow = () => {
     fetchUserTransactions();
   }, [wallets]);
 
+  // Update transaction progress when status changes
+  useEffect(() => {
+    setTransactionProgress(getProgressFromStatus(status));
+  }, [status]);
+
   // Update the polling useEffect for transaction status
-  // Update the polling useEffect for transaction status
-useEffect(() => {
-  if (polling && apiResponse?.details?.id) {
-    const intv = setInterval(async () => {
-      try {
-        const transactionUrl = `${SWAPZONE_API_BASE_URL}/exchange/transaction?id=${apiResponse.details.id}`;
-        
-        const res = await fetch(
-          transactionUrl,
-          { 
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "x-api-key": SWAPZONE_API_KEY
+  useEffect(() => {
+    if (polling && apiResponse?.details?.id) {
+      const intv = setInterval(async () => {
+        try {
+          const transactionUrl = `${SWAPZONE_API_BASE_URL}/exchange/transaction?id=${apiResponse.details.id}`;
+          
+          const res = await fetch(
+            transactionUrl,
+            { 
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": SWAPZONE_API_KEY
+              }
+            }
+          );
+          
+          const data = await res.json();
+          
+          if (data && !data.error) {
+            // Actualizar con el status correcto (según documentación)
+            const currentStatus = data.status || "waiting";
+            
+            // Log transaction updates
+            console.log(`Transaction status update: ${status} → ${currentStatus}`);
+            
+            setApiResponse(prev => ({
+              ...prev,
+              details: {
+                ...prev.details,
+                status: currentStatus
+              }
+            }));
+            
+            setStatus(currentStatus);
+            
+            // Si la transacción está finalizada, detener polling
+            if (currentStatus === "finished") {
+              console.log("Transaction completed successfully");
+              setPolling(false);
+              await buy();
+              handleDeleteExchange();
             }
           }
-        );
-        
-        const data = await res.json();
-        
-        if (data && !data.error) {
-          // Actualizar con el status correcto (según documentación)
-          const currentStatus = data.status || "waiting";
-          
-          setApiResponse(prev => ({
-            ...prev,
-            details: {
-              ...prev.details,
-              status: currentStatus
-            }
-          }));
-          
-          setStatus(currentStatus);
-          
-          // Si la transacción está finalizada, detener polling
-          if (currentStatus === "finished") {
-            console.log("Transaction completed successfully");
-            setPolling(false);
-            await buy();
-            handleDeleteExchange();
-          }
+        } catch (err) {
+          console.error("Failed to poll transaction:", err);
         }
-      } catch (err) {
-        console.error("Failed to poll transaction:", err);
-      }
-    }, 5000);
-    
-    setPollInterval(intv);
-  }
-  
-  return () => {
-    if (pollInterval) {
-      clearInterval(pollInterval);
+      }, 5000);
+      
+      setPollInterval(intv);
     }
-  };
-}, [polling, apiResponse?.details?.id]);
+    
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [polling, apiResponse?.details?.id]);
 
   // Actualiza el step de la derecha
   useEffect(() => {
@@ -430,9 +566,30 @@ useEffect(() => {
     setRightStep(st);
   }, [status, wallets, currentSection]);
 
+  // useEffect para cargar el balance de ICP
+  useEffect(() => {
+    const loadIcpBalance = async () => {
+      if (!wallets?.ckBTC?.credentials?.identity || !icpBalance) return;
+      
+      setLoadingIcpBalance(true);
+      try {
+        const balance = await icpBalance();
+        setIcpBalanceValue(balance);
+        console.log('ICP Balance loaded:', balance);
+      } catch (error) {
+        console.error('Error loading ICP balance:', error);
+        setIcpBalanceValue(null);
+      } finally {
+        setLoadingIcpBalance(false);
+      }
+    };
+
+    loadIcpBalance();
+  }, [wallets, icpBalance]);
+
   // Actualiza minDeposit
   useEffect(() => {
-    const tokenObj = aggregatorTokens[selectedToken];
+    const tokenObj = availableTokens[selectedToken];
     if (!tokenObj) return;
     const netOption = tokenObj.networks[selectedNetworkIndex];
     if (!netOption) return;
@@ -456,31 +613,71 @@ useEffect(() => {
     try {
       if (!token || !network) return;
       
-      const fromCurrency = network.displayToken.toLowerCase();
+      const fromCurrency = network.aggregatorSymbol || network.displayToken.toLowerCase();
       const toCurrency = "icp";
       
-      const rateUrl = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=1&rateType=floating`;
+      // For Bitcoin, try with the preferred adapters
+      let adapterParam = '';
+      if (fromCurrency.toLowerCase() === 'btc') {
+        // Use the first adapter for minimum checks - changehero generally works well
+        adapterParam = '&adapter=changehero';
+      }
       
-      const rateResponse = await fetch(rateUrl, {
+      const url = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=1&rateType=floating${adapterParam}`;
+      
+      console.log(`Fetching minimum amount for ${token}/${network.displayNetwork}...`);
+      
+      const response = await fetch(url, {
         method: "GET",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "x-api-key": SWAPZONE_API_KEY
         }
       });
       
-      const rateData = await rateResponse.json();
+      if (!response.ok) {
+        console.error(`Failed to fetch minimum amount: ${response.status} ${response.statusText}`);
+        return;
+      }
       
-      if (!rateData.error && rateData.minAmount) {
-        // Store the minAmount for this token
+      const data = await response.json();
+      
+      if (data.error) {
+        console.error(`Error fetching minimum amount: ${data.message}`);
+        return;
+      }
+      
+      // Get the minimum amount from the response
+      const minAmount = data.minAmount || 0;
+      
+      if (minAmount > 0) {
+        console.log(`Minimum amount for ${token}/${network.displayNetwork}: ${minAmount}`);
+        
+        // Format the minimum amount to a reasonable precision based on the token
+        let formattedMinAmount;
+        if (fromCurrency.toLowerCase() === 'btc') {
+          // BTC needs more decimal places
+          formattedMinAmount = parseFloat(minAmount).toFixed(8);
+        } else {
+          formattedMinAmount = Math.ceil(minAmount * 100) / 100; // Round up to 2 decimal places
+        }
+        
+        // Add enhanced console logging
+        console.log(`==== MINIMUM DEPOSIT REQUIREMENTS ====`);
+        console.log(`Token: ${token} (${network.displayNetwork})`);
+        console.log(`Minimum required amount: ${formattedMinAmount} ${token}`);
+        console.log(`========================================`);
+        
+        // Update state with the minimum amount
         setMinAmounts(prev => ({
           ...prev,
-          [`${fromCurrency}`]: rateData.minAmount
+          [token]: formattedMinAmount
         }));
         
-        // Update the displayed minimum deposit text
-        const updatedMinDeposit = getMinimumDeposit(network.displayToken, rateData.minAmount);
-        setMinDeposit(updatedMinDeposit);
+        // Auto-fill the minimum amount if the input is empty or less than minimum
+        if (!amount || parseFloat(amount) < minAmount) {
+          setAmount(formattedMinAmount.toString());
+        }
       }
     } catch (error) {
       console.error("Error fetching minimum amount:", error);
@@ -490,8 +687,9 @@ useEffect(() => {
   async function handleCreateExchange() {
     console.log("handleCreateExchange started");
     
-    // Reset error message
+    // Reset error message and adapter try count
     setErrorMessage("");
+    setAdapterTryCount(0);
     
     if (!wallets?.ckBTC?.walletPrincipal) {
       console.error("No ckBTC wallet found");
@@ -499,7 +697,7 @@ useEffect(() => {
       return;
     }
     
-    const tokenObj = aggregatorTokens[selectedToken];
+    const tokenObj = availableTokens[selectedToken];
     if (!tokenObj) {
       setErrorMessage("Invalid token selection. Please try again.");
       return;
@@ -512,15 +710,33 @@ useEffect(() => {
     }
     
     const amountToUse = parseFloat(amount) || 0;
-    const fromCurrency = netOption.aggregatorSymbol;
-    const toCurrency = "ICP";
+    
+    // Use API data if available for more accurate currency names
+    const fromCurrency = netOption.aggregatorSymbol || netOption.displayToken;
+    const toCurrency = "icp";
+    
+    // Check for valid amount
+    if (!amountToUse || amountToUse <= 0) {
+      setErrorMessage("Please enter a valid amount.");
+      return;
+    }
     
     try {
       setLoading(true);
       
       // Step 1: Get rate from Swapzone API
       console.log("Getting rate from Swapzone API...");
-      const rateUrl = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=${amountToUse}&rateType=floating`;
+      
+      // For Bitcoin, use a specific adapter based on tryCount
+      let adapterParam = '';
+      if (fromCurrency.toLowerCase() === 'btc') {
+        const btcAdapters = ['changehero', 'changeangel', 'changenow'];
+        const currentIndex = adapterTryCount % btcAdapters.length;
+        adapterParam = `&adapter=${btcAdapters[currentIndex]}`;
+        console.log(`Getting rate with BTC adapter attempt #${adapterTryCount+1}: ${btcAdapters[currentIndex]}`);
+      }
+      
+      const rateUrl = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=${amountToUse}&rateType=floating${adapterParam}`;
       console.log("Rate URL:", rateUrl);
       
       const headers = { 
@@ -541,11 +757,22 @@ useEffect(() => {
       });
       console.log("Rate response headers:", rateResponseHeaders);
       
-      // Parse rate response as JSON directly
+      // Parse rate response as JSON
       let rateData;
       try {
         rateData = await rateResponse.json();
         console.log("Rate response received:", rateData);
+        
+        // Add enhanced logging for exchange rate details
+        console.log("==== EXCHANGE RATE DETAILS ====");
+        console.log(`From: ${fromCurrency} (${amountToUse})`);
+        console.log(`To: ${toCurrency}`);
+        console.log(`Exchange Rate: 1 ${fromCurrency} = ${rateData.amountTo/rateData.amountFrom} ${toCurrency}`);
+        console.log(`You will deposit: ${rateData.amountFrom} ${fromCurrency}`);
+        console.log(`You will receive approximately: ${rateData.amountTo} ${toCurrency}`);
+        console.log(`Minimum allowed: ${rateData.minAmount || 'Not specified'} ${fromCurrency}`);
+        console.log(`Maximum allowed: ${rateData.maxAmount || 'Not specified'} ${fromCurrency}`);
+        console.log("==============================");
       } catch (parseError) {
         console.error("Error parsing rate response:", parseError);
         throw new Error(`Failed to parse rate response: ${parseError.message}`);
@@ -553,33 +780,72 @@ useEffect(() => {
       
       // Check for errors in rate response
       if (rateData.error) {
+        // If using Bitcoin and we have multiple adapters to try
+        if (fromCurrency.toLowerCase() === 'btc' && adapterTryCount < 2) {
+          setAdapterTryCount(adapterTryCount + 1);
+          console.log(`Retrying with next BTC adapter (attempt ${adapterTryCount + 2})`);
+          handleCreateExchange(); // Recursive call with incremented adapterTryCount
+          return;
+        }
         throw new Error(rateData.message || "Failed to get rate from Swapzone");
       }
       
-      // Add a small delay between rate and transaction creation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
       // Get deposit address from wallet
-      const depositAddress = AccountIdentifier.fromPrincipal({
-        principal: wallets.ckBTC.walletPrincipal,
-      }).toHex();
+      let depositAddress;
+      
+      // For Bitcoin, we need to use the BTC wallet address, not the ckBTC hex address
+      if (fromCurrency.toLowerCase() === 'btc') {
+        if (wallets.BTC?.walletAddressForDisplay) {
+          depositAddress = wallets.BTC.walletAddressForDisplay;
+          console.log("Using BTC wallet address:", depositAddress);
+        } else {
+          console.error("No BTC wallet address found");
+          throw new Error("No BTC wallet address found. Please make sure your Bitcoin wallet is connected.");
+        }
+      } else {
+        // For other tokens, use the ckBTC hex address
+        depositAddress = AccountIdentifier.fromPrincipal({
+          principal: wallets.ckBTC.walletPrincipal,
+        }).toHex();
+        console.log("Using ckBTC hex address:", depositAddress);
+      }
+      
       console.log("Deposit address from wallet:", depositAddress);
       
-      // Step 2: Create transaction with Swapzone
+      // Step 2: Create transaction with Swapzone API
       console.log("Creating transaction with Swapzone API...");
       
+      // Build the transaction payload
       const transactionPayload = {
-        from: fromCurrency,
-        to: toCurrency,
+        from: fromCurrency.toLowerCase(), // Ensure lowercase for API compatibility
+        to: toCurrency.toLowerCase(), // Ensure lowercase for API compatibility
         amountDeposit: rateData.amountFrom.toString(), // Use exactly the amount from rate response
         addressReceive: depositAddress,
-        refundAddress: depositAddress,
         rateType: "floating",
-        adapter: rateData.adapter,
         fromNetwork: rateData.fromNetwork,
         toNetwork: rateData.toNetwork,
         quotaId: rateData.quotaId
       };
+      
+      // Add adapter if we have one
+      if (adapterParam) {
+        transactionPayload.adapter = adapterParam.replace(/&adapter=/, '');
+        console.log(`Using adapter: ${transactionPayload.adapter}`);
+      }
+      
+      // Check if we're using SideShift adapter (either from explicit adapter param or from rate data)
+      const isSideShiftAdapter = 
+        (transactionPayload.adapter && transactionPayload.adapter.toLowerCase().includes('sideshift')) ||
+        (rateData.adapter && rateData.adapter.toLowerCase().includes('sideshift'));
+        
+      console.log(`Adapter check: ${rateData.adapter}, isSideShift: ${isSideShiftAdapter}`);
+      
+      // Add refund address except for SideShift which has issues with it
+      // Also exclude refund address for ADA currency which has specific address format requirements
+      if (!isSideShiftAdapter && fromCurrency.toLowerCase() !== 'ada') {
+        transactionPayload.refundAddress = depositAddress;
+      }
+      
       console.log("Transaction payload:", JSON.stringify(transactionPayload));
       
       const transactionResponse = await fetch(`${SWAPZONE_API_BASE_URL}/exchange/create`, {
@@ -593,12 +859,15 @@ useEffect(() => {
       
       console.log("Transaction response status:", transactionResponse.status, transactionResponse.statusText);
       
-      // IMPORTANT: Only parse the response body ONCE
+      // Get response text for debugging in case of error
+      const responseText = await transactionResponse.text();
+      console.log("Raw transaction response:", responseText);
+      
+      // Parse the response as JSON (if possible)
       let transactionData;
       try {
-        // Use json() directly - don't call text() first
-        transactionData = await transactionResponse.json();
-        console.log("Transaction response data:", transactionData);
+        transactionData = JSON.parse(responseText);
+        console.log("Transaction data parsed:", JSON.stringify(transactionData));
       } catch (parseError) {
         console.error("Error parsing transaction response:", parseError);
         throw new Error(`Failed to parse transaction response: ${parseError.message}`);
@@ -606,17 +875,61 @@ useEffect(() => {
       
       // Handle API error
       if (transactionData.error) {
-        throw new Error(transactionData.message || "Failed to create transaction");
+        let errorMessage = transactionData.message || "Failed to create transaction";
+        
+        // Format error message to be more user-friendly for BTC
+        if (fromCurrency.toLowerCase() === 'btc') {
+          if (errorMessage.includes('minimum') || errorMessage.includes('min amount')) {
+            // Get the minimum amount from the error message if possible
+            const minAmountMatch = errorMessage.match(/([0-9.]+)\s*BTC/i);
+            const minAmount = minAmountMatch ? minAmountMatch[1] : minAmounts[selectedToken] || '?';
+            errorMessage = `The amount ${amountToUse} BTC is below the minimum required (${minAmount} BTC). Please increase your amount.`;
+          } else if (errorMessage.includes('maximum')) {
+            errorMessage = `The amount ${amountToUse} BTC is above the maximum allowed. Please decrease your amount.`;
+          } else if (errorMessage.includes('Invalid address')) {
+            errorMessage = `Your Bitcoin address appears to be invalid or incompatible with this provider. Please ensure your wallet is connected properly.`;
+          } else if (errorMessage.includes('400') && errorMessage.includes('simpleswap')) {
+            errorMessage = `SimpleSwap error: Please try again with a slightly higher amount or a different provider.`;
+          } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
+            errorMessage = `The exchange service is temporarily unavailable. Please try again in a few minutes.`;
+          }
+        } else {
+          // Generic error formatting for other coins
+          if (errorMessage.includes('Invalid address for specified network')) {
+            errorMessage = `The address format is not compatible with ${fromCurrency.toUpperCase()} network. Please try again or contact support.`;
+          } else if (errorMessage.includes('minimum') || errorMessage.includes('maximum')) {
+            // Already formatted nicely
+          }
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      // Extract transaction data from nested structure if needed
+      const txData = transactionData.transaction || transactionData;
+      
+      console.log("Transaction data structure:", {
+        rawId: transactionData.id,
+        txId: txData?.id,
+        rawAddress: transactionData.depositAddress || transactionData.address,
+        txAddress: txData?.depositAddress || txData?.address,
+        fullTxData: txData
+      });
+      
+      // Defensive check for required fields
+      if (!txData || !txData.id) {
+        console.error("Missing required transaction ID in response:", JSON.stringify(transactionData));
+        throw new Error("The exchange service returned an incomplete response. Transaction ID is missing.");
       }
       
       // Update state with transaction data
       setApiResponse({
         details: {
-          id: transactionData.id,
+          id: txData.id,
           deposit: {
-            address: transactionData.depositAddress || transactionData.address,
-            amount: transactionData.amount || amountToUse,
-            extra_id: transactionData.memo || null
+            address: txData.addressDeposit || txData.address || "",
+            amount: txData.amountDeposit || amountToUse,
+            extra_id: txData.memo || null
           },
           status: "waiting"
         }
@@ -633,10 +946,18 @@ useEffect(() => {
       
       if (error.message) {
         // Check for specific error patterns
-        if (error.message.includes("Empty response")) {
+        if (error.message.includes('Invalid address for specified network')) {
+          userErrorMsg = `The address format is not compatible with ${fromCurrency.toUpperCase()} network. Please try again or contact support.`;
+        } else if (error.message.includes('minimum') || error.message.includes('maximum')) {
+          userErrorMsg = error.message; // Already formatted nicely
+        } else if (error.message.includes('simpleswap') && error.message.includes('400')) {
+          userErrorMsg = `SimpleSwap error: The amount may be below the minimum (${rateData?.minAmount || '?'} ${fromCurrency.toUpperCase()}) or above the maximum allowed. Try with a different amount.`;
+        } else if (error.message.includes('changelly')) {
+          userErrorMsg = `The exchange provider (Changelly) is having issues processing this transaction. Please try again with a different amount or try the easybit adapter.`;
+        } else if (error.message.includes("failed to get exchange rate")) {
+          userErrorMsg = `Failed to get exchange rates for ${fromCurrency.toUpperCase()} to ICP. Please try again with a different amount or token.`;
+        } else if (error.message.includes("Empty response")) {
           userErrorMsg = "The exchange service returned an empty response. This could be a temporary issue. Please try again with a different amount or token.";
-        } else {
-          userErrorMsg += ` Error: ${error.message}`;
         }
       }
       
@@ -674,7 +995,7 @@ useEffect(() => {
   const isError = hasFetched ? !apiResponse?.details?.deposit?.address : false;
 
   // Logo de token actual
-  const tokenObj = aggregatorTokens[selectedToken];
+  const tokenObj = availableTokens[selectedToken];
   const tokenLogo = tokenObj?.logo || "";
 
   // Blur si no hay wallet conectada
@@ -686,11 +1007,17 @@ useEffect(() => {
   // Log deposit details only when they change
   useEffect(() => {
     if (apiResponse?.details?.deposit) {
-      console.log("Rendering Deposit Details - apiResponse:", apiResponse, "status:", status);
+      console.log("==== DEPOSIT DETAILS ====");
+      console.log("Transaction ID:", apiResponse.details.id);
+      console.log("Current Status:", status);
+      console.log("REQUIRED DEPOSIT AMOUNT:", apiResponse.details.deposit.amount, availableTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayToken);
       console.log("Deposit Address:", apiResponse.details.deposit.address);
+      console.log("Network:", availableTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork);
       if (apiResponse.details.deposit.extra_id) {
-        console.log("Deposit Memo (extra_id):", apiResponse.details.deposit.extra_id);
+        console.log("Memo (IMPORTANT):", apiResponse.details.deposit.extra_id);
       }
+      console.log("Full deposit object:", apiResponse.details.deposit);
+      console.log("=======================");
     }
   }, [apiResponse, status]);
 
@@ -711,14 +1038,14 @@ useEffect(() => {
                       setSelectedToken(newToken);
                       setSelectedNetworkIndex(0);
                       // Fetch min amount when token changes
-                      const tokenObj = aggregatorTokens[newToken];
+                      const tokenObj = availableTokens[newToken];
                       if (tokenObj && tokenObj.networks.length > 0) {
                         fetchMinimumAmount(newToken, tokenObj.networks[0]);
                       }
                     }}
                     className="w-full p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none"
                 >
-                  {Object.keys(aggregatorTokens).map((tk) => (
+                  {allowedTokens.map((tk) => (
                       <option key={tk} value={tk}>
                         {tk}
                       </option>
@@ -743,7 +1070,7 @@ useEffect(() => {
                     const newIndex = Number(e.target.value);
                     setSelectedNetworkIndex(newIndex);
                     // Fetch min amount when network changes
-                    const tokenObj = aggregatorTokens[selectedToken];
+                    const tokenObj = availableTokens[selectedToken];
                     if (tokenObj && tokenObj.networks[newIndex]) {
                       fetchMinimumAmount(selectedToken, tokenObj.networks[newIndex]);
                     }
@@ -842,6 +1169,48 @@ useEffect(() => {
   // Renderiza la sección de información de depósito
   const renderDepositInfo = () => (
       <div className="w-full">
+        {/* Transaction progress bar */}
+        <div className="mb-6">
+          <div className="w-full bg-gray-700 rounded-full h-4 mb-2">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-500 ease-in-out" 
+              style={{ width: `${transactionProgress}%` }}
+            ></div>
+          </div>
+          <div className="flex justify-between text-xs text-jacarta-300 munro-small-text">
+            <span>Awaiting deposit</span>
+            <span>Confirming</span>
+            <span>Converting</span>
+            <span>Sending</span>
+            <span>Complete</span>
+          </div>
+        </div>
+
+        {/* Transaction status */}
+        {status && (
+          <div className="mb-4 p-3 bg-jacarta-700 rounded-lg border border-jacarta-600">
+            <h4 className="text-center font-medium text-white munro-small-heading">Transaction Status</h4>
+            <div className="flex items-center justify-center space-x-2 mt-2">
+              <div className={`w-3 h-3 rounded-full ${
+                status === "finished" ? "bg-green-500" : 
+                status === "failed" || status === "refunded" ? "bg-red-500" : 
+                "bg-yellow-500 animate-pulse"
+              }`}></div>
+              <span className="text-jacarta-100 munro-small-text text-lg capitalize">
+                {statusLabels[status] || status}
+              </span>
+            </div>
+            <p className="text-center text-jacarta-300 text-sm mt-1 munro-small-text">
+              {status === "waiting" && "Please send the exact amount specified below"}
+              {status === "confirming" && "Your deposit has been detected and is being confirmed"}
+              {status === "exchanging" && "Your tokens are being converted to ICP"}
+              {status === "sending" && "ICP tokens are being sent to your wallet"}
+              {status === "finished" && "Transaction complete! Check your wallet for ICP tokens"}
+              {(status === "failed" || status === "refunded") && "Please try again or contact support"}
+            </p>
+          </div>
+        )}
+
         {/* Two-column grid on large screens */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 w-full">
           {/* Left column - QR code section */}
@@ -851,20 +1220,16 @@ useEffect(() => {
                   <label className="block text-xl font-medium text-jacarta-500 mb-2 dark:text-jacarta-100 munro-small-text text-center">
                     Scan to deposit
                   </label>
-                  <QRCodeSVG
-                      value={apiResponse.details.deposit.address}
-                      size={180}
-                      className="bg-white p-2 rounded-lg"
-                  />
-                  {status && (
-                      <div className="mt-2 text-center">
-                  <span className="block font-semibold text-jacarta-500 dark:text-jacarta-100 munro-small-heading text-lg">
-                    Status:
-                  </span>
-                        <span className="text-jacarta-100 munro-small-text text-lg capitalize">
-                    {status}
-                  </span>
-                      </div>
+                  <div className={`p-2 bg-white rounded-lg ${status === "finished" ? "opacity-50" : ""}`}>
+                    <QRCodeSVG
+                        value={apiResponse.details.deposit.address}
+                        size={180}
+                    />
+                  </div>
+                  {status === "waiting" && (
+                    <div className="mt-2 text-sm text-center text-yellow-400 munro-small-text">
+                      Waiting for your deposit...
+                    </div>
                   )}
                 </>
             )}
@@ -935,7 +1300,7 @@ useEffect(() => {
                     type="text"
                     value={
                       apiResponse?.details?.deposit?.amount
-                          ? `${apiResponse.details.deposit.amount} on ${aggregatorTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
+                          ? `${apiResponse.details.deposit.amount} on ${availableTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork
                           }`
                           : "Awaiting amount..."
                     }
@@ -960,7 +1325,7 @@ useEffect(() => {
             {apiResponse?.details?.id && (
                 <div className="mt-4">
                   <label className="block text-lg text-center font-medium text-jacarta-500 mb-1 dark:text-jacarta-100 munro-small-text">
-                    StealthEX ID
+                    Transaction ID
                   </label>
                   <div className="relative">
                     <input
@@ -982,6 +1347,20 @@ useEffect(() => {
                   </div>
                 </div>
             )}
+            
+            {/* Estimated completion time */}
+            {status && status !== "finished" && status !== "failed" && status !== "refunded" && (
+              <div className="mt-4 p-2 border border-jacarta-600 rounded-lg bg-jacarta-700">
+                <p className="text-center text-jacarta-300 text-sm munro-small-text">
+                  {status === "waiting" ? 
+                    "Waiting for your deposit to be detected..." :
+                    `Estimated completion: ${status === "confirming" ? "5-15" : 
+                      status === "exchanging" ? "3-10" : 
+                      status === "sending" ? "1-5" : "15-30"} minutes`
+                  }
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -991,7 +1370,7 @@ useEffect(() => {
               onClick={handleDeleteExchange}
               className="bg-white text-jacarta-700 px-6 py-2 rounded-lg font-medium munro-narrow focus:outline-none"
           >
-            Cancel Deposit
+            {status === "finished" ? "Start New Deposit" : "Cancel Deposit"}
           </button>
         </div>
       </div>
@@ -1000,15 +1379,139 @@ useEffect(() => {
   // Add this useEffect after the other useEffects
   useEffect(() => {
     // Fetch minimum amount when component mounts
-    if (tokenObj && tokenObj.networks[selectedNetworkIndex]) {
-      fetchMinimumAmount(selectedToken, tokenObj.networks[selectedNetworkIndex]);
+    if (availableTokens[selectedToken] && availableTokens[selectedToken].networks[selectedNetworkIndex]) {
+      fetchMinimumAmount(selectedToken, availableTokens[selectedToken].networks[selectedNetworkIndex]);
     }
   }, []);  // Empty dependency array so it only runs once
+
+  // Function to download supported currencies as a txt file
+  const downloadCurrencies = (format = 'txt') => {
+    if (!supportedCurrencies.length) return;
+    
+    let blob;
+    let filename;
+    
+    if (format === 'json') {
+      // Create JSON format
+      const jsonData = JSON.stringify(supportedCurrencies, null, 2);
+      blob = new Blob([jsonData], { type: "application/json" });
+      filename = "swapzone_currencies.json";
+    } else {
+      // Format the currencies into a readable text
+      const date = new Date().toLocaleString();
+      let textContent = "===================================\n";
+      textContent += "SWAPZONE SUPPORTED CURRENCIES\n";
+      textContent += `Generated: ${date}\n`;
+      textContent += `Total: ${supportedCurrencies.length} currencies\n`;
+      textContent += "===================================\n\n";
+      
+      // Group currencies by network
+      const networkGroups = {};
+      
+      supportedCurrencies.forEach(currency => {
+        const network = currency.network || "Unknown Network";
+        if (!networkGroups[network]) {
+          networkGroups[network] = [];
+        }
+        networkGroups[network].push(currency);
+      });
+      
+      // List currencies alphabetically within each network group
+      Object.keys(networkGroups).sort().forEach(network => {
+        textContent += `## NETWORK: ${network} (${networkGroups[network].length} currencies)\n\n`;
+        
+        // Sort currencies by name within the network
+        const sortedCurrencies = networkGroups[network].sort((a, b) => 
+          a.name.localeCompare(b.name)
+        );
+        
+        sortedCurrencies.forEach((currency, index) => {
+          textContent += `${index + 1}. ${currency.name} (${currency.ticker})\n`;
+          if (currency.smartContract) {
+            textContent += `   Contract: ${currency.smartContract}\n`;
+          }
+          textContent += "\n";
+        });
+        
+        textContent += "-----------------------------------\n\n";
+      });
+      
+      // Add a simple alphabetical list at the end
+      textContent += "ALPHABETICAL LIST OF ALL CURRENCIES\n";
+      textContent += "===================================\n\n";
+      
+      supportedCurrencies
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach((currency, index) => {
+          textContent += `${index + 1}. ${currency.name} (${currency.ticker}) - ${currency.network || "Unknown Network"}\n`;
+        });
+      
+      blob = new Blob([textContent], { type: "text/plain" });
+      filename = "swapzone_currencies.txt";
+    }
+    
+    // Create a download link and trigger the download
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+  };
 
   return (
       <section className="relative h-screen">
         <div className="mx-4 text-center pt-24 md:pt-32">
           <span className="text-white text-2xl md:text-5xl munro-regular-heading">Multichain deposit</span>
+          {supportedCurrencies.length > 0 && (
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={() => setShowCurrenciesModal(true)}
+                className="text-sm text-blue-400 hover:text-blue-300 munro-small-text"
+              >
+                View supported currencies ({supportedCurrencies.length})
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Process steps indicator */}
+        <div className="w-full flex justify-center mt-6 mb-8">
+          <div className="bg-jacarta-800 rounded-lg p-4 max-w-2xl w-full">
+            <div className="flex justify-between items-center relative">
+              {[1, 2, 3, 4, 5].map((step) => (
+                <div key={step} className="flex flex-col items-center z-10">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center 
+                    ${step <= rightStep ? 'bg-accent text-white' : 'bg-gray-700 text-gray-400'} 
+                    ${step === rightStep ? 'ring-2 ring-accent ring-offset-2 ring-offset-jacarta-800' : ''}
+                    munro-small`}>
+                    {step < rightStep ? <FaCheck /> : step}
+                  </div>
+                  <span className={`text-xs mt-2 text-center w-16 
+                    ${step <= rightStep ? 'text-white' : 'text-gray-500'} munro-small-text`}>
+                    {step === 1 ? "Connect" : 
+                     step === 2 ? "Choose" : 
+                     step === 3 ? "Deposit" : 
+                     step === 4 ? "Convert" : "Receive"}
+                  </span>
+                </div>
+              ))}
+              
+              {/* Progress bar connecting steps */}
+              <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-700">
+                <div 
+                  className="h-0.5 bg-accent transition-all duration-500 ease-in-out"
+                  style={{ width: `${(rightStep-1) * 25}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="w-full flex flex-col justify-start items-center p-4">
@@ -1082,6 +1585,52 @@ useEffect(() => {
                 ? `Wallet connected`
                 : "Account not detected. Please log in."}
           </div>
+
+          {/* Balance de ICP */}
+          {wallets?.ckBTC?.walletAddressForDisplay && (
+            <div
+                className="px-6 mt-2 py-3 rounded-lg text-white munro-small-text text-center lg:w-1/2"
+                style={{
+                  backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                  border: '2px solid #3b82f6',
+                  minWidth: '300px',
+                  maxWidth: '300px'
+                }}
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <span>ICP Balance:</span>
+                {loadingIcpBalance ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <span className="font-bold">
+                    {icpBalanceValue !== null ? `${icpBalanceValue.toFixed(6)} ICP` : 'Unable to load'}
+                  </span>
+                )}
+                <button
+                  onClick={async () => {
+                    if (!loadingIcpBalance && icpBalance) {
+                      setLoadingIcpBalance(true);
+                      try {
+                        const balance = await icpBalance();
+                        setIcpBalanceValue(balance);
+                      } catch (error) {
+                        console.error('Error refreshing ICP balance:', error);
+                      } finally {
+                        setLoadingIcpBalance(false);
+                      }
+                    }
+                  }}
+                  className="ml-2 text-blue-300 hover:text-white transition-colors disabled:opacity-50"
+                  disabled={loadingIcpBalance}
+                  title="Refresh balance"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)] justify-center">
@@ -1119,6 +1668,64 @@ useEffect(() => {
           {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
 
         </div>
+
+        {/* Currencies Modal */}
+        {showCurrenciesModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
+            <div className="bg-jacarta-800 rounded-lg p-6 max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+              <div className="flex justify-between items-center mb-4 sticky top-0">
+                <h3 className="text-xl text-white munro-small-heading">Supported Currencies ({supportedCurrencies.length})</h3>
+                <button 
+                  onClick={() => setShowCurrenciesModal(false)}
+                  className="text-white hover:text-gray-300 text-2xl font-bold"
+                >
+                  &times;
+                </button>
+              </div>
+              
+              <div className="overflow-y-auto flex-grow pr-2" style={{ maxHeight: "calc(80vh - 140px)" }}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {supportedCurrencies.map((currency, index) => (
+                    <div key={index} className="border border-jacarta-600 rounded-lg p-3 bg-jacarta-700">
+                      <div className="flex items-center mb-2">
+                        <span className="text-white font-bold munro-small-text">{currency.name}</span>
+                      </div>
+                      <div className="text-jacarta-300 munro-small-text">
+                        <div><strong>Ticker:</strong> {currency.ticker}</div>
+                        <div><strong>Network:</strong> {currency.network || "Not specified"}</div>
+                        {currency.smartContract && (
+                          <div className="truncate"><strong>Contract:</strong> {currency.smartContract}</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="mt-4 flex justify-center gap-4 pt-2 border-t border-jacarta-600 sticky bottom-0">
+                <button
+                    onClick={() => downloadCurrencies('txt')}
+                    className="px-4 py-2 bg-accent hover:bg-accent-dark text-white rounded-lg munro-small-text flex items-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download as TXT
+                </button>
+                
+                <button
+                    onClick={() => downloadCurrencies('json')}
+                    className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg munro-small-text flex items-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download as JSON
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {showModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

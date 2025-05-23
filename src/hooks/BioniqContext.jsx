@@ -22,6 +22,7 @@ import { AccountIdentifier, SubAccount } from "@dfinity/ledger-icp";
 
 
 const icpCanister = "ryjl3-tyaaa-aaaaa-aaaba-cai";
+export const ICP_CANISTER = "ryjl3-tyaaa-aaaaa-aaaba-cai";
 const ckBTCcanister = "mxzaz-hqaaa-aaaar-qaada-cai";
 
 function toDefaultSub(owner, subaccount = []) {
@@ -74,6 +75,68 @@ function reverseFormatIcrcBalance(scaledBalance, supply) {
   let floatNumber = (Number(scaledBalance) * Number(supply)) / supplyAMillionth;
   let truncatedInt = Math.trunc(floatNumber);
   return truncatedInt;
+}
+
+export async function icpBalance(identityScope) {
+  try {
+    console.log("🔄 icpBalance: Starting function...");
+    console.log("🔄 icpBalance: Creating ICP actor with canister:", ICP_CANISTER);
+    
+    let icpActor = createicrc1Actor(ICP_CANISTER, {
+      agentOptions: { 
+        identity: identityScope,
+        host: "https://ic0.app"
+      },
+    });
+    
+    console.log("✅ icpBalance: Actor created successfully");
+    console.log("🔄 icpBalance: Getting total supply...");
+    
+    let icpSupply = await icpActor.icrc1_total_supply();
+    
+    console.log("✅ icpBalance: Total supply received:", icpSupply);
+    console.log("🔄 icpBalance: Getting principal...");
+    
+    let principal = identityScope.getPrincipal();
+    
+    console.log("✅ icpBalance: Principal obtained:", principal.toText());
+    console.log("🔄 icpBalance: Getting balance for principal...");
+    
+    let balance = await icpActor.icrc1_balance_of(toDefaultSub(principal));
+    
+    console.log("✅ icpBalance: Raw balance received:", balance);
+    console.log("🔄 icpBalance: Formatting balance...");
+    
+    let formattedBalance = formatIcrcBalance(balance, icpSupply);
+    
+    console.log("✅ icpBalance: Formatted balance:", formattedBalance);
+    return formattedBalance;
+  } catch (error) {
+    console.error("❌ icpBalance: Error occurred:", error);
+    console.error("❌ icpBalance: Error message:", error.message);
+    
+    if (error.message && error.message.includes("404")) {
+      console.log("🔄 icpBalance: Retrying with alternative configuration...");
+      try {
+        let icpActor = createicrc1Actor(ICP_CANISTER, {
+          agentOptions: { identity: identityScope },
+        });
+        
+        let icpSupply = await icpActor.icrc1_total_supply();
+        let principal = identityScope.getPrincipal();
+        let balance = await icpActor.icrc1_balance_of(toDefaultSub(principal));
+        let formattedBalance = formatIcrcBalance(balance, icpSupply);
+        
+        console.log("✅ icpBalance: Success with alternative config:", formattedBalance);
+        return formattedBalance;
+      } catch (retryError) {
+        console.error("❌ icpBalance: Retry also failed:", retryError);
+        throw retryError;
+      }
+    }
+    
+    throw error;
+  }
 }
 
 
@@ -1100,6 +1163,30 @@ const BioniqContextProvider = ({ children }) => {
     }
   }, [bioniqAuthClient]);
 
+  const getIcpBalance = useCallback(async () => {
+    if (!wallets || !wallets.ckBTC || !wallets.ckBTC.credentials || !wallets.ckBTC.credentials.identity) {
+      console.error("Wallet identity not available");
+      console.log("Wallets debug:", {
+        wallets: !!wallets,
+        ckBTC: !!wallets?.ckBTC,
+        credentials: !!wallets?.ckBTC?.credentials,
+        identity: !!wallets?.ckBTC?.credentials?.identity
+      });
+      return null;
+    }
+    
+    try {
+      console.log("Calling icpBalance with identity:", wallets.ckBTC.credentials.identity);
+      const balance = await icpBalance(wallets.ckBTC.credentials.identity);
+      console.log("ICP balance result:", balance);
+      return balance;
+    } catch (error) {
+      console.error("Error getting ICP balance:", error);
+      console.error("Error details:", error.message, error.stack);
+      return null;
+    }
+  }, [wallets]);
+
   const contextValue = useMemo(
     () => ({
       isLoading,
@@ -1138,7 +1225,8 @@ const BioniqContextProvider = ({ children }) => {
       setSwapStep,
       convertBtcToUsd,
       convertUsdToBtcOnDemand,
-      auctionExpiry
+      auctionExpiry,
+      icpBalance: getIcpBalance
     }),
     [
       isLoading,
@@ -1176,7 +1264,8 @@ const BioniqContextProvider = ({ children }) => {
       setSwapStep,
       convertBtcToUsd,
       convertUsdToBtcOnDemand,
-      auctionExpiry
+      auctionExpiry,
+      getIcpBalance
     ]
   );
 

@@ -136,14 +136,17 @@ export default function Profile({ wallets, balances, setModalOpen }) {
           <span className="text-sm font-medium tracking-tight dark:text-jacarta-200">
             Balance
           </span>
-          <div className="flex items-center">
+          <div className="flex flex-col">
             <span className="text-lg font-bold text-green">
               <img
                 src="/img/ckBTC.svg"
                 alt="ckBTC"
                 className="inline-block h-4 w-4 mr-2"
               />
-              {ckBTCUSD && ckBTCUSD } USD
+              {balances && balances[1] && formatNumberWithPattern(balances[1].available.fullAmount)} ckBTC
+            </span>
+            <span className="text-md text-jacarta-700 dark:text-jacarta-300">
+              {ckBTCUSD && `≈ ${ckBTCUSD} USD`}
             </span>
           </div>
         </div>
