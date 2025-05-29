@@ -23,6 +23,7 @@ const SwapInterface = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [estimatedOutput, setEstimatedOutput] = useState(null);
   const [completedSteps, setCompletedSteps] = useState(new Set());
+  const [swapAmount, setSwapAmount] = useState("");
 
   // Swap steps configuration
   const swapSteps = [
@@ -92,6 +93,17 @@ const SwapInterface = () => {
     }
   }, [swapStep]);
 
+  // Reset swap amount when swap completes successfully
+  useEffect(() => {
+    if (swapStep === 5) {
+      // Reset swap amount after successful completion
+      setTimeout(() => {
+        setSwapAmount("");
+        setCompletedSteps(new Set());
+      }, 3000); // Wait 3 seconds to show success message
+    }
+  }, [swapStep]);
+
   const loadBalances = async () => {
     if (!wallets?.ckBTC?.credentials?.identity || !icpBalance) return;
     
@@ -123,6 +135,18 @@ const SwapInterface = () => {
 
     if (!icpBalanceValue || icpBalanceValue <= 0) {
       alert("Insufficient ICP balance for swap");
+      return;
+    }
+
+    // Validate swap amount
+    const amount = parseFloat(swapAmount);
+    if (!swapAmount || isNaN(amount) || amount <= 0) {
+      alert("Please enter a valid swap amount");
+      return;
+    }
+
+    if (amount > icpBalanceValue) {
+      alert(`Insufficient balance. You have ${icpBalanceValue.toFixed(6)} ICP available`);
       return;
     }
 
@@ -170,6 +194,16 @@ const SwapInterface = () => {
         <p className="text-jacarta-300 munro-small-text">
           Exchange your ICP tokens for ckBTC using the decentralized swap pool
         </p>
+        
+        {/* Temporary Service Notice */}
+        <div className="mt-4 p-3 bg-yellow-800/20 border-2 border-yellow-500 rounded-lg">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-5 h-5 bg-yellow-500 rounded-full flex-shrink-0"></div>
+            <p className="text-yellow-300 munro-small-text text-sm">
+              ⚠️ Swap feature temporarily unavailable due to ICPSwap canister configuration. Development team is working on a fix.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Wallet Connection Status */}
@@ -215,6 +249,85 @@ const SwapInterface = () => {
           <div className="text-2xl font-bold text-white munro-narrow">
             {ckBTCBalance !== null ? `${ckBTCBalance.toFixed(8)} ckBTC` : 
              loadingBalances ? <div className="skeleton h-8 w-32 rounded"></div> : '--'}
+          </div>
+        </div>
+      </div>
+
+      {/* Swap Amount Input */}
+      <div className="mb-8">
+        <div className="bg-jacarta-700 p-6 rounded-lg border-2 border-jacarta-600">
+          <h3 className="text-lg font-bold text-white mb-4 munro-regular-heading">
+            Swap Amount
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-jacarta-300 mb-2 munro-small-text">
+                Amount of ICP to swap
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={swapAmount}
+                  onChange={(e) => setSwapAmount(e.target.value)}
+                  placeholder="0.000000"
+                  step="0.000001"
+                  min="0"
+                  max={icpBalanceValue || 0}
+                  className="w-full p-3 bg-jacarta-800 border-2 border-jacarta-600 rounded-lg text-white placeholder-jacarta-400 focus:border-blue-500 focus:outline-none munro-narrow text-lg"
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-jacarta-400 munro-small-text">
+                  ICP
+                </div>
+              </div>
+              {icpBalanceValue && (
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-jacarta-400 text-sm munro-small-text">
+                    Available: {icpBalanceValue.toFixed(6)} ICP
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setSwapAmount((icpBalanceValue * 0.25).toFixed(6))}
+                      className="px-2 py-1 text-xs bg-jacarta-600 text-white rounded hover:bg-jacarta-500 munro-small-text"
+                    >
+                      25%
+                    </button>
+                    <button
+                      onClick={() => setSwapAmount((icpBalanceValue * 0.5).toFixed(6))}
+                      className="px-2 py-1 text-xs bg-jacarta-600 text-white rounded hover:bg-jacarta-500 munro-small-text"
+                    >
+                      50%
+                    </button>
+                    <button
+                      onClick={() => setSwapAmount((icpBalanceValue * 0.75).toFixed(6))}
+                      className="px-2 py-1 text-xs bg-jacarta-600 text-white rounded hover:bg-jacarta-500 munro-small-text"
+                    >
+                      75%
+                    </button>
+                    <button
+                      onClick={() => setSwapAmount(icpBalanceValue.toFixed(6))}
+                      className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 munro-small-text"
+                    >
+                      MAX
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Estimated Output */}
+            {swapAmount && parseFloat(swapAmount) > 0 && (
+              <div className="p-3 bg-jacarta-800 rounded-lg border border-jacarta-600">
+                <div className="flex justify-between items-center">
+                  <span className="text-jacarta-300 munro-small-text">Estimated output:</span>
+                  <span className="text-green-400 munro-narrow">
+                    ~{(parseFloat(swapAmount) * 0.0001).toFixed(8)} ckBTC
+                  </span>
+                </div>
+                <div className="text-xs text-jacarta-400 mt-1 munro-small-text">
+                  * Rate is approximate and may vary during execution
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -303,7 +416,7 @@ const SwapInterface = () => {
       <div className="flex flex-col sm:flex-row gap-4 justify-center mobile-stack">
         <button
           onClick={handleSwapInitiate}
-          disabled={loading || !wallets?.ckBTC?.walletAddressForDisplay || swapStep > 0}
+          disabled={loading || !wallets?.ckBTC?.walletAddressForDisplay || swapStep > 0 || !swapAmount || parseFloat(swapAmount) <= 0}
           className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-semibold munro-narrow hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 button-click mobile-full"
         >
           {swapStep > 0 ? "Swap in Progress..." : "Start ICP → ckBTC Swap"}
@@ -361,13 +474,19 @@ const SwapInterface = () => {
               <div className="flex justify-between">
                 <span className="text-jacarta-300 munro-small-text">You will swap:</span>
                 <span className="text-white munro-narrow">
-                  {icpBalanceValue?.toFixed(6)} ICP
+                  {parseFloat(swapAmount).toFixed(6)} ICP
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-jacarta-300 munro-small-text">Estimated output:</span>
                 <span className="text-green-400 munro-narrow">
-                  ~ckBTC (calculated during swap)
+                  ~{(parseFloat(swapAmount) * 0.0001).toFixed(8)} ckBTC
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-jacarta-300 munro-small-text">Remaining balance:</span>
+                <span className="text-jacarta-400 munro-narrow">
+                  {(icpBalanceValue - parseFloat(swapAmount)).toFixed(6)} ICP
                 </span>
               </div>
               <div className="text-sm text-jacarta-400 munro-small-text">

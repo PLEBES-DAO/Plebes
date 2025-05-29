@@ -19,7 +19,16 @@ export const createSwapFactoryActor = (canisterId, options = {}) => {
     );
   }
 
-
+  // TODO: CRITICAL - This canister ID is incorrect and causing 404 errors
+  // The current ID "4mmnk-kiaaa-aaaag-qbllq-cai" does not exist or is not accessible
+  // Need to find the correct ICPSwap V3 factory canister ID for mainnet
+  // Possible alternatives to investigate:
+  // - ggzvv-5qaaa-aaaag-qck7a-cai (common ICPSwap reference)
+  // - Contact ICPSwap team for the correct mainnet factory canister ID
+  // - Check https://icpswap.com or ICPSwap documentation for mainnet addresses
+  
+  // Temporarily throwing an error to prevent 404 failures
+  throw new Error("ICPSwap factory canister ID needs to be updated. Current ID is invalid: 4mmnk-kiaaa-aaaag-qbllq-cai");
 
   // Creates an actor with using the candid interface and the HttpAgent
   return Actor.createActor(idlFactory, {

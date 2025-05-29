@@ -438,79 +438,95 @@ const BioniqContextProvider = ({ children }) => {
 
 
   async function buy() {
-    setSwapStep(1)
-    const {
-      balanceAF,
-      balanceBF,
-      tokenASymbol,
-      tokenBSymbol,
-      priceOfTokenAInB,
-      priceOfTokenBinA,
-      poolCanister,
-      zeroForOne,
-      supplyA,
-      supplyB,
-      pool,
-    } = await getSwapInfo();
-  
-    let poolActor = createPoolActor(poolCanister, {
-      agentOptions: {
-        identity,
-      },
-    });
-    let logedIcpActor = createicrc1Actor(icpCanister, {
-      agentOptions: { identity },
-    });
-  
-    let tokenBsupply = supplyB;
-    let icpSupply = await logedIcpActor.icrc1_total_supply();
-    let fee = await logedIcpActor.icrc1_fee();
-    let balance = await logedIcpActor.icrc1_balance_of(
-      toDefaultSub(identity.getPrincipal())
+    try {
+      setSwapStep(1)
+      const {
+        balanceAF,
+        balanceBF,
+        tokenASymbol,
+        tokenBSymbol,
+        priceOfTokenAInB,
+        priceOfTokenBinA,
+        poolCanister,
+        zeroForOne,
+        supplyA,
+        supplyB,
+        pool,
+      } = await getSwapInfo();
+    
+      let poolActor = createPoolActor(poolCanister, {
+        agentOptions: {
+          identity,
+        },
+      });
+      let logedIcpActor = createicrc1Actor(icpCanister, {
+        agentOptions: { identity },
+      });
+    
+      let tokenBsupply = supplyB;
+      let icpSupply = await logedIcpActor.icrc1_total_supply();
+      let fee = await logedIcpActor.icrc1_fee();
+      let balance = await logedIcpActor.icrc1_balance_of(
+        toDefaultSub(identity.getPrincipal())
+      );
+      console.log("balance",balance)
+      let amount = Number(balance)-Number(fee);
+      let transferSub = await logedIcpActor.icrc1_transfer(defaultIcrcTransferArgs(poolCanister,amount,[Number(fee)],[SubAccount.fromPrincipal(identity.getPrincipal()).toUint8Array()]));
+      console.log("transfer sub",transferSub);
+      console.log("deposit amout", defaultDepositIcpSwap(icpCanister, amount, Number(fee)))
+      setSwapStep(2)
+    let depositResult = await poolActor.deposit(
+      defaultDepositIcpSwap(icpCanister, amount, fee)
     );
-    console.log("balance",balance)
-    let amount = Number(balance)-Number(fee);
-    let transferSub = await logedIcpActor.icrc1_transfer(defaultIcrcTransferArgs(poolCanister,amount,[Number(fee)],[SubAccount.fromPrincipal(identity.getPrincipal()).toUint8Array()]));
-    console.log("transfer sub",transferSub);
-    console.log("deposit amout", defaultDepositIcpSwap(icpCanister, amount, Number(fee)))
-    setSwapStep(2)
-  let depositResult = await poolActor.deposit(
-    defaultDepositIcpSwap(icpCanister, amount, fee)
-  );
-    console.log("deposit Result", depositResult);
-    let amountOutMinimum = priceOfTokenBinA;
-    console.log("price of token", priceOfTokenAInB, "B:  ", priceOfTokenBinA);
-    console.log("ammount minimon before formate", amountOutMinimum);
-    let formatedAmmountOut = reverseFormatIcrcBalance(
-      amountOutMinimum,
-      tokenBsupply
-    );
-    setSwapStep(3)
-    console.log("amountOutMinimum", formatedAmmountOut);
-    console.log();
-    amount = Number(depositResult.ok)
-    let quote = await poolActor.quote({
-      zeroForOne: false,
-      amountIn: amount.toString(),
-      amountOutMinimum: "0",
-    });
-    let minimumQuote = quote.ok;
-    console.log("quote", Number(minimumQuote));
-    let miniumsum = Number(minimumQuote);
-    console.log("miniumsum", miniumsum);
-  
-    let swapResult = await poolActor.swap({
-      zeroForOne: false,
-      amountIn: amount.toString(),
-      amountOutMinimum: miniumsum.toString(),
-    });
-    console.log("looking at swap result", swapResult);
-    setSwapStep(4)
-    let resultWithdrawSwap = await withdrawAll(pool);
-    console.log(" result of withdrawing the swap", resultWithdrawSwap);
-    setSwapStep(5)
-     reloadBalances();
-    //return `we bough some ${tokenInfo.symbol} Chad!`;
+      console.log("deposit Result", depositResult);
+      let amountOutMinimum = priceOfTokenBinA;
+      console.log("price of token", priceOfTokenAInB, "B:  ", priceOfTokenBinA);
+      console.log("ammount minimon before formate", amountOutMinimum);
+      let formatedAmmountOut = reverseFormatIcrcBalance(
+        amountOutMinimum,
+        tokenBsupply
+      );
+      setSwapStep(3)
+      console.log("amountOutMinimum", formatedAmmountOut);
+      console.log();
+      amount = Number(depositResult.ok)
+      let quote = await poolActor.quote({
+        zeroForOne: false,
+        amountIn: amount.toString(),
+        amountOutMinimum: "0",
+      });
+      let minimumQuote = quote.ok;
+      console.log("quote", Number(minimumQuote));
+      let miniumsum = Number(minimumQuote);
+      console.log("miniumsum", miniumsum);
+    
+      let swapResult = await poolActor.swap({
+        zeroForOne: false,
+        amountIn: amount.toString(),
+        amountOutMinimum: miniumsum.toString(),
+      });
+      console.log("looking at swap result", swapResult);
+      setSwapStep(4)
+      let resultWithdrawSwap = await withdrawAll(pool);
+      console.log(" result of withdrawing the swap", resultWithdrawSwap);
+      setSwapStep(5)
+       reloadBalances();
+      //return `we bough some ${tokenInfo.symbol} Chad!`;
+    } catch (error) {
+      console.error("Swap error:", error);
+      setSwapStep(0);
+      
+      // Check if it's the ICPSwap canister configuration error
+      if (error.message && error.message.includes("ICPSwap factory canister ID needs to be updated")) {
+        setError("⚠️ Swap feature temporarily unavailable. The ICPSwap integration needs to be updated with the correct mainnet canister ID. Please contact the development team to resolve this configuration issue.");
+      } else if (error.message && error.message.includes("404")) {
+        setError("🔧 Swap service is currently unavailable due to a configuration issue. We're working to resolve this.");
+      } else {
+        setError(`Swap failed: ${error.message || "Unknown error occurred"}`);
+      }
+      
+      throw error;
+    }
   }
 
   async function withdraw(){
