@@ -24,10 +24,23 @@ export default function ErrorModal({ modalOpen, setModalOpen, error, resetError 
   }, [modalOpen, setModalOpen]);
 
  const errorMsg = () =>{
-    if(error.error === null || error.error === undefined){
+    // Handle null or undefined error objects
+    if (!error) {
+        return "An unknown error occurred";
+    }
+    
+    // If error is a string, return it directly
+    if (typeof error === 'string') {
         return error;
     }
-    return error.error;
+    
+    // If error has an error property, return it, otherwise return the error object as string
+    if (error.error !== null && error.error !== undefined) {
+        return error.error;
+    }
+    
+    // Fallback: convert error to string
+    return error.toString();
  }
 
   return (

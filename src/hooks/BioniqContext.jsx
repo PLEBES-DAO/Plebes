@@ -298,7 +298,12 @@ const BioniqContextProvider = ({ children }) => {
 
 
   async function getSwapInfo() {
-    let pool = await createSwapFactoryActor().getPool({
+    let pool = await createSwapFactoryActor("4mmnk-kiaaa-aaaag-qbllq-cai", {
+      agentOptions: {
+        identity,
+        host: "https://ic0.app"
+      }
+    }).getPool({
       fee: 3000,
       token0: { address: ckBTCcanister, standard: "ICRC2" },
       token1: { address: icpCanister, standard: "ICP" },
@@ -311,11 +316,13 @@ const BioniqContextProvider = ({ children }) => {
       let tokenAactor = createicrc1Actor(pool.ok.token1.address, {
         agentOptions: {
           identity,
+          host: "https://ic0.app"
         },
       });
       let tokenBactor = createicrc1Actor(pool.ok.token0.address, {
         agentOptions: {
           identity,
+          host: "https://ic0.app"
         },
       });
       let balanceA = await tokenAactor.icrc1_balance_of(
@@ -371,50 +378,30 @@ const BioniqContextProvider = ({ children }) => {
   
     console.log("poolCanister before claim All", poolCanister);
     let poolActor = createPoolActor(poolCanister.ok.canisterId, {
-      agentOptions: { identity },
+      agentOptions: { 
+        identity,
+        host: "https://ic0.app"
+      },
     });
     let result = await poolActor.getUserUnusedBalance(identity.getPrincipal());
   
     let token0Fee = await createicrc1Actor(
-      poolCanister.ok.token0.address
+      poolCanister.ok.token0.address,
+      {
+        agentOptions: {
+          identity,
+          host: "https://ic0.app"
+        }
+      }
     ).icrc1_fee();
     let token1Fee = await createicrc1Actor(
-      poolCanister.ok.token1.address
-    ).icrc1_fee();
-  
-    console.log("addresses", address0, address1);
-    console.log("result");
-  
-    let withdrawResultA = await poolActor.withdraw({
-      fee: Number(token1Fee),
-      token: address1,
-      amount: result.ok.balance1,
-    });
-    let withdrawResultB = await poolActor.withdraw({
-      fee: Number(token0Fee),
-      token: address0,
-      amount: result.ok.balance0,
-    });
-  
-    console.log("withdraw results", withdrawResultA, withdrawResultB);
-    console.log("results", result);
-    return "unused tokens have been claimed!!";
-  }
-  async function withdrawAll(poolCanister) {
-    let address1 = poolCanister.ok.token1.address;
-    let address0 = poolCanister.ok.token0.address;
-  
-    console.log("poolCanister before claim All", poolCanister);
-    let poolActor = createPoolActor(poolCanister.ok.canisterId, {
-      agentOptions: { identity },
-    });
-    let result = await poolActor.getUserUnusedBalance(identity.getPrincipal());
-  
-    let token0Fee = await createicrc1Actor(
-      poolCanister.ok.token0.address
-    ).icrc1_fee();
-    let token1Fee = await createicrc1Actor(
-      poolCanister.ok.token1.address
+      poolCanister.ok.token1.address,
+      {
+        agentOptions: {
+          identity,
+          host: "https://ic0.app"
+        }
+      }
     ).icrc1_fee();
   
     console.log("addresses", address0, address1);
@@ -457,10 +444,14 @@ const BioniqContextProvider = ({ children }) => {
       let poolActor = createPoolActor(poolCanister, {
         agentOptions: {
           identity,
+          host: "https://ic0.app"
         },
       });
       let logedIcpActor = createicrc1Actor(icpCanister, {
-        agentOptions: { identity },
+        agentOptions: { 
+          identity,
+          host: "https://ic0.app"
+        },
       });
     
       let tokenBsupply = supplyB;
@@ -564,10 +555,10 @@ const BioniqContextProvider = ({ children }) => {
   const reloadBalances = async () =>{
     let _balances = [];
 
-    for (const walletType in _wallets) {
-      if (Object.hasOwnProperty.call(_wallets, walletType)) {
+    for (const walletType in wallets) {
+      if (Object.hasOwnProperty.call(wallets, walletType)) {
         const balances = await liveBioniqWalletApi.wallet.fetchLatestWalletBalance({
-          wallet: _wallets[walletType],
+          wallet: wallets[walletType],
           tokenMode: walletType,
         });
         _balances = _balances.concat(balances);

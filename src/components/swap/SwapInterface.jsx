@@ -166,7 +166,8 @@ const SwapInterface = () => {
     try {
       await withdraw();
     } catch (error) {
-      console.error("Withdraw failed:", error);
+      // Error is already handled by the context, no need to log it again
+      // The error message will be displayed in the UI via the error state
     }
   };
 
@@ -194,16 +195,6 @@ const SwapInterface = () => {
         <p className="text-jacarta-300 munro-small-text">
           Exchange your ICP tokens for ckBTC using the decentralized swap pool
         </p>
-        
-        {/* Temporary Service Notice */}
-        <div className="mt-4 p-3 bg-yellow-800/20 border-2 border-yellow-500 rounded-lg">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-5 h-5 bg-yellow-500 rounded-full flex-shrink-0"></div>
-            <p className="text-yellow-300 munro-small-text text-sm">
-              ⚠️ Swap feature temporarily unavailable due to ICPSwap canister configuration. Development team is working on a fix.
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Wallet Connection Status */}
@@ -415,8 +406,14 @@ const SwapInterface = () => {
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center mobile-stack">
         <button
-          onClick={handleSwapInitiate}
-          disabled={loading || !wallets?.ckBTC?.walletAddressForDisplay || swapStep > 0 || !swapAmount || parseFloat(swapAmount) <= 0}
+          onClick={async () => {
+            try {
+              await buy();
+            } catch (error) {
+              console.error("Swap failed:", error);
+            }
+          }}
+          disabled={loading || !wallets?.ckBTC?.walletAddressForDisplay || swapStep > 0}
           className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-semibold munro-narrow hover:from-blue-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 button-click mobile-full"
         >
           {swapStep > 0 ? "Swap in Progress..." : "Start ICP → ckBTC Swap"}
@@ -424,8 +421,9 @@ const SwapInterface = () => {
 
         <button
           onClick={handleWithdrawTokens}
-          disabled={loading || !wallets?.ckBTC?.walletAddressForDisplay}
+          disabled={loading || !wallets?.ckBTC?.walletAddressForDisplay || (error && error.includes("ICPSwap"))}
           className="px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold munro-narrow hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 mobile-full"
+          title={error && error.includes("ICPSwap") ? "Temporarily unavailable due to ICPSwap configuration" : "Withdraw any unused tokens from previous swap attempts"}
         >
           Withdraw Unused Tokens
         </button>
