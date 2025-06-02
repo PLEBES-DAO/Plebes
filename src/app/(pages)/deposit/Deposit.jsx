@@ -146,7 +146,7 @@ const aggregatorTokens = {
   ALGO: {
      logo: "/img/coins/algo.svg",
      networks: [
-       { aggregatorSymbol: "ALGO", displayToken: "ALGO", displayNetwork: "MAINNET" },
+       { aggregatorSymbol: "algo", displayToken: "ALGO", displayNetwork: "ALGO", defaultAmount: 500 },
      ],
    },
 
@@ -154,7 +154,7 @@ const aggregatorTokens = {
   APT: {
     logo: "/img/coinplebes/APT.svg",
     networks: [
-      { aggregatorSymbol: "APT", displayToken: "APT", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "apt", displayToken: "APT", displayNetwork: "APT", defaultAmount: 28 },
     ],
   },
 
@@ -162,7 +162,7 @@ const aggregatorTokens = {
   ARB: {
     logo: "/img/coinplebes/ARB.svg",
     networks: [
-      { aggregatorSymbol: "ARB", displayToken: "ARB", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "arb", displayToken: "ARB", displayNetwork: "ARB", defaultAmount: 400, smartContract: "0x912CE59144191C1204E64559FE8253a0e49E6548" },
     ],
   },
 
@@ -383,7 +383,7 @@ const TokenRow = () => {
     aggregatorTokens;
   
   // Only show these tokens in the dropdown
-  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB"];
+  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB"];
 
   // Status display labels for better UX
   const statusLabels = {
