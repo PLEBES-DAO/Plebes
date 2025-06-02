@@ -118,8 +118,8 @@ const aggregatorTokens = {
   BTC: {
       logo: "/img/coins/btc.svg",
       networks: [
-        { aggregatorSymbol: "btc", displayToken: "BTC", displayNetwork: "BTC" },
-        { aggregatorSymbol: "btc-lightning", displayToken: "BTC", displayNetwork: "LIGHTNING" },
+        { aggregatorSymbol: "btc", displayToken: "BTC", displayNetwork: "BTC", defaultAmount: 0.05 },
+        { aggregatorSymbol: "btc-lightning", displayToken: "BTC", displayNetwork: "LIGHTNING", defaultAmount: 0.05 },
       ],
     },
 
@@ -178,7 +178,7 @@ const aggregatorTokens = {
   BNB: {
     logo: "/img/coins/bnb.svg",
     networks: [
-      { aggregatorSymbol: "BNB-BSC", displayToken: "BNB", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "bnbbep20", displayToken: "BNB", displayNetwork: "BSC", defaultAmount: 10 },
     ],
   },
 
@@ -377,11 +377,13 @@ const TokenRow = () => {
   // State for dynamic tokens mapped from API data
   const [dynamicTokens, setDynamicTokens] = useState({});
   
-  // Use dynamic tokens if available, fallback to static tokens
-  const availableTokens = Object.keys(dynamicTokens).length > 0 ? dynamicTokens : aggregatorTokens;
+  // Use dynamic tokens if available, but always include static tokens like BNB
+  const availableTokens = Object.keys(dynamicTokens).length > 0 ? 
+    { ...dynamicTokens, ...aggregatorTokens } : 
+    aggregatorTokens;
   
   // Only show these tokens in the dropdown
-  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT"];
+  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB"];
 
   // Status display labels for better UX
   const statusLabels = {
@@ -600,9 +602,13 @@ const TokenRow = () => {
     const netOption = tokenObj.networks[selectedNetworkIndex];
     if (!netOption) return;
 
-    const minValue = getMinimumDeposit(netOption.displayToken, netOption.minAmount);
+    // Use API-fetched minimum amount if available, otherwise use getMinimumDeposit fallback
+    const apiMinAmount = minAmounts[netOption.displayToken];
+    const minValue = apiMinAmount ? 
+      `Minimum ${apiMinAmount} ${netOption.displayToken}` : 
+      getMinimumDeposit(netOption.displayToken, netOption.minAmount);
     setMinDeposit(minValue);
-  }, [selectedToken, selectedNetworkIndex]);
+  }, [selectedToken, selectedNetworkIndex, minAmounts]);
 
   // Función para avanzar a la siguiente sección
   const handleNextSection = () => {
@@ -659,14 +665,8 @@ const TokenRow = () => {
       if (minAmount > 0) {
         console.log(`Minimum amount for ${token}/${network.displayNetwork}: ${minAmount}`);
         
-        // Format the minimum amount to a reasonable precision based on the token
-        let formattedMinAmount;
-        if (fromCurrency.toLowerCase() === 'btc') {
-          // BTC needs more decimal places
-          formattedMinAmount = parseFloat(minAmount).toFixed(8);
-        } else {
-          formattedMinAmount = Math.ceil(minAmount * 100) / 100; // Round up to 2 decimal places
-        }
+        // Use the exact API value without formatting
+        const formattedMinAmount = minAmount.toString();
         
         // Add enhanced console logging
         console.log(`==== MINIMUM DEPOSIT REQUIREMENTS ====`);
@@ -682,7 +682,7 @@ const TokenRow = () => {
         
         // Auto-fill the minimum amount if the input is empty or less than minimum
         if (!amount || parseFloat(amount) < minAmount) {
-          setAmount(formattedMinAmount.toString());
+          setAmount(formattedMinAmount);
         }
       }
     } catch (error) {
