@@ -195,7 +195,7 @@ const aggregatorTokens = {
   DOGE: {
     logo: "/img/coins/doge.svg",
     networks: [
-      { aggregatorSymbol: "doge", displayToken: "DOGE", displayNetwork: "DOGE" },
+      { aggregatorSymbol: "doge", displayToken: "DOGE", displayNetwork: "DOGE", defaultAmount: 40000 },
     ],
   },
 
@@ -302,7 +302,8 @@ function getMinimumDeposit(symbol, minValue) {
     "TON": "Minimum 32 TON",
     "DOT": "Minimum 25 DOT",
     "XLM": "Minimum 370 XLM",
-    "XRP": "Minimum 45.3 XRP"
+    "XRP": "Minimum 45.3 XRP",
+    "DOGE": "Minimum 50 DOGE"
   };
 
   return minimumValues[symbol] || `Minimum 0.01 ${symbol}`;
