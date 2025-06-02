@@ -211,7 +211,7 @@ const aggregatorTokens = {
   DOT: {
     logo: "/img/coins/dot.svg",
     networks: [
-      { aggregatorSymbol: "DOT", displayToken: "DOT", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "dot", displayToken: "DOT", displayNetwork: "DOT", defaultAmount: 6 },
     ],
   },
 
@@ -381,7 +381,7 @@ const TokenRow = () => {
   const availableTokens = Object.keys(dynamicTokens).length > 0 ? dynamicTokens : aggregatorTokens;
   
   // Only show these tokens in the dropdown
-  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA"];
+  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT"];
 
   // Status display labels for better UX
   const statusLabels = {
