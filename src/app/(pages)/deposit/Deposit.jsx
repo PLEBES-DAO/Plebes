@@ -251,7 +251,7 @@ const aggregatorTokens = {
   SUI: {
    logo: "/img/coinplebes/sui.svg",
    networks: [
-   { aggregatorSymbol: "SUI", displayToken: "SUI", displayNetwork: "MAINNET" },
+   { aggregatorSymbol: "sui", displayToken: "SUI", displayNetwork: "SUI", defaultAmount: 200, smartContract: null },
    ],
    },
 
@@ -288,6 +288,9 @@ const aggregatorTokens = {
     ],
   },
 };
+
+// Only show these tokens in the dropdown
+const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "BUSD", "OP", "SOL", "SUI"];
 
 // "minimum deposit" - use dynamic values when available
 function getMinimumDeposit(symbol, minValue) {
@@ -383,7 +386,7 @@ const TokenRow = () => {
     aggregatorTokens;
   
   // Only show these tokens in the dropdown
-  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB"];
+  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "BUSD", "OP", "SOL", "SUI"];
 
   // Status display labels for better UX
   const statusLabels = {
