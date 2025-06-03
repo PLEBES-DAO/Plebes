@@ -259,7 +259,7 @@ const aggregatorTokens = {
   TON: {
     logo: "/img/coinplebes/TON.svg",
     networks: [
-      { aggregatorSymbol: "TON", displayToken: "TON", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "ton", displayToken: "TON", displayNetwork: "TON", defaultAmount: 2000, smartContract: null },
     ],
   },
 
@@ -290,7 +290,7 @@ const aggregatorTokens = {
 };
 
 // Only show these tokens in the dropdown
-const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "BUSD", "OP", "SOL", "SUI"];
+const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "BUSD", "OP", "SOL", "SUI", "TON"];
 
 // "minimum deposit" - use dynamic values when available
 function getMinimumDeposit(symbol, minValue) {
@@ -386,7 +386,7 @@ const TokenRow = () => {
     aggregatorTokens;
   
   // Only show these tokens in the dropdown
-  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "BUSD", "OP", "SOL", "SUI"];
+  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "BUSD", "OP", "SOL", "SUI", "TON"];
 
   // Status display labels for better UX
   const statusLabels = {
@@ -811,6 +811,21 @@ const TokenRow = () => {
           console.error("No BTC wallet address found");
           throw new Error("No BTC wallet address found. Please make sure your Bitcoin wallet is connected.");
         }
+      } else if (fromCurrency.toLowerCase() === 'ton') {
+        // For TON, we need to use a TON-compatible address format
+        // For now, we'll use the ckBTC address but this might need to be changed
+        // based on the specific wallet integration
+        if (wallets.TON?.walletAddressForDisplay) {
+          depositAddress = wallets.TON.walletAddressForDisplay;
+          console.log("Using TON wallet address:", depositAddress);
+        } else {
+          // If no specific TON wallet, fall back to ckBTC address but warn the user
+          depositAddress = AccountIdentifier.fromPrincipal({
+            principal: wallets.ckBTC.walletPrincipal,
+          }).toHex();
+          console.warn("No TON wallet found, using ckBTC address - this may cause issues");
+          console.log("Using ckBTC hex address for TON:", depositAddress);
+        }
       } else {
         // For other tokens, use the ckBTC hex address
         depositAddress = AccountIdentifier.fromPrincipal({
@@ -850,8 +865,8 @@ const TokenRow = () => {
       console.log(`Adapter check: ${rateData.adapter}, isSideShift: ${isSideShiftAdapter}`);
       
       // Add refund address except for SideShift which has issues with it
-      // Also exclude refund address for ADA currency which has specific address format requirements
-      if (!isSideShiftAdapter && fromCurrency.toLowerCase() !== 'ada') {
+      // Also exclude refund address for ADA and TON currencies which have specific address format requirements
+      if (!isSideShiftAdapter && fromCurrency.toLowerCase() !== 'ada' && fromCurrency.toLowerCase() !== 'ton') {
         transactionPayload.refundAddress = depositAddress;
       }
       
@@ -901,6 +916,21 @@ const TokenRow = () => {
             errorMessage = `SimpleSwap error: Please try again with a slightly higher amount or a different provider.`;
           } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
             errorMessage = `The exchange service is temporarily unavailable. Please try again in a few minutes.`;
+          }
+        } else if (fromCurrency.toLowerCase() === 'ton') {
+          // Format error message to be more user-friendly for TON
+          if (errorMessage.includes('minimum') || errorMessage.includes('min amount')) {
+            const minAmountMatch = errorMessage.match(/([0-9.]+)\s*TON/i);
+            const minAmount = minAmountMatch ? minAmountMatch[1] : minAmounts[selectedToken] || '?';
+            errorMessage = `The amount ${amountToUse} TON is below the minimum required (${minAmount} TON). Please increase your amount.`;
+          } else if (errorMessage.includes('maximum')) {
+            errorMessage = `The amount ${amountToUse} TON is above the maximum allowed. Please decrease your amount.`;
+          } else if (errorMessage.includes('Invalid address') || errorMessage.includes('Cannot read properties of undefined')) {
+            errorMessage = `TON address format error. The current wallet address format may not be compatible with TON transactions. Please ensure you have a TON-compatible wallet connected.`;
+          } else if (errorMessage.includes('changelly') && errorMessage.includes('createOrder')) {
+            errorMessage = `Changelly cannot process this TON transaction, possibly due to address format incompatibility. Please try again or contact support.`;
+          } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
+            errorMessage = `The TON exchange service is temporarily unavailable. Please try again in a few minutes.`;
           }
         } else {
           // Generic error formatting for other coins
