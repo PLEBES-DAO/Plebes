@@ -119,7 +119,6 @@ const aggregatorTokens = {
       logo: "/img/coins/btc.svg",
       networks: [
         { aggregatorSymbol: "btc", displayToken: "BTC", displayNetwork: "BTC", defaultAmount: 0.05 },
-        { aggregatorSymbol: "btc-lightning", displayToken: "BTC", displayNetwork: "LIGHTNING", defaultAmount: 0.05 },
       ],
     },
 
@@ -170,7 +169,7 @@ const aggregatorTokens = {
   AVAX: {
     logo: "/img/coins/avax.svg",
     networks: [
-      { aggregatorSymbol: "AVAX-C", displayToken: "AVAX", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "avaxc", displayToken: "AVAX-C", displayNetwork: "AVAX-C" },
     ],
   },
 
@@ -267,7 +266,7 @@ const aggregatorTokens = {
   XLM: {
     logo: "/img/coinplebes/XLM.svg",
     networks: [
-      { aggregatorSymbol: "XLM", displayToken: "XLM", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "xlm", displayToken: "XLM", displayNetwork: "XLM", defaultAmount: 1500 },
     ],
   },
 
@@ -275,7 +274,7 @@ const aggregatorTokens = {
   XRP: {
     logo: "/img/coinplebes/XRP.svg",
     networks: [
-      { aggregatorSymbol: "XRP", displayToken: "XRP", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "xrp", displayToken: "XRP", displayNetwork: "XRP" },
     ],
   },
 
@@ -290,7 +289,7 @@ const aggregatorTokens = {
 };
 
 // Only show these tokens in the dropdown
-const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "BUSD", "OP", "SOL", "SUI", "TON"];
+const allowedTokens = ["DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "SOL", "SUI", "TON", "XLM", "XRP", "AVAX"];
 
 // "minimum deposit" - use dynamic values when available
 function getMinimumDeposit(symbol, minValue) {
@@ -386,7 +385,7 @@ const TokenRow = () => {
     aggregatorTokens;
   
   // Only show these tokens in the dropdown
-  const allowedTokens = ["BTC", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "BUSD", "OP", "SOL", "SUI", "TON"];
+  const allowedTokens = ["DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "SUI", "TON", "XLM", "XRP", "AVAX"];
 
   // Status display labels for better UX
   const statusLabels = {
@@ -693,12 +692,17 @@ const TokenRow = () => {
     }
   };
 
-  async function handleCreateExchange() {
+  async function handleCreateExchange(retryCount = 0) {
     console.log("handleCreateExchange started");
     
-    // Reset error message and adapter try count
-    setErrorMessage("");
-    setAdapterTryCount(0);
+    // Ensure retryCount is always a number
+    let currentRetryCount = typeof retryCount === 'number' ? retryCount : 0;
+    
+    // Only reset error message and adapter try count on initial call (not retries)
+    if (currentRetryCount === 0) {
+      setErrorMessage("");
+      setAdapterTryCount(0);
+    }
     
     if (!wallets?.ckBTC?.walletPrincipal) {
       console.error("No ckBTC wallet found");
@@ -730,19 +734,23 @@ const TokenRow = () => {
       return;
     }
     
+    // Declare rateData in broader scope to avoid reference errors
+    let rateData = null;
+    
     try {
       setLoading(true);
       
       // Step 1: Get rate from Swapzone API
       console.log("Getting rate from Swapzone API...");
       
-      // For Bitcoin, use a specific adapter based on tryCount
+      // For Bitcoin, use a specific adapter based on currentRetryCount
       let adapterParam = '';
       if (fromCurrency.toLowerCase() === 'btc') {
         const btcAdapters = ['changehero', 'changeangel', 'changenow'];
-        const currentIndex = adapterTryCount % btcAdapters.length;
-        adapterParam = `&adapter=${btcAdapters[currentIndex]}`;
-        console.log(`Getting rate with BTC adapter attempt #${adapterTryCount+1}: ${btcAdapters[currentIndex]}`);
+        const currentIndex = currentRetryCount % btcAdapters.length;
+        const selectedAdapter = btcAdapters[currentIndex];
+        adapterParam = `&adapter=${selectedAdapter}`;
+        console.log(`Getting rate with BTC adapter attempt #${currentRetryCount + 1}: ${selectedAdapter}`);
       }
       
       const rateUrl = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=${amountToUse}&rateType=floating${adapterParam}`;
@@ -767,7 +775,6 @@ const TokenRow = () => {
       console.log("Rate response headers:", rateResponseHeaders);
       
       // Parse rate response as JSON
-      let rateData;
       try {
         rateData = await rateResponse.json();
         console.log("Rate response received:", rateData);
@@ -790,10 +797,11 @@ const TokenRow = () => {
       // Check for errors in rate response
       if (rateData.error) {
         // If using Bitcoin and we have multiple adapters to try
-        if (fromCurrency.toLowerCase() === 'btc' && adapterTryCount < 2) {
-          setAdapterTryCount(adapterTryCount + 1);
-          console.log(`Retrying with next BTC adapter (attempt ${adapterTryCount + 2})`);
-          handleCreateExchange(); // Recursive call with incremented adapterTryCount
+        if (fromCurrency.toLowerCase() === 'btc' && currentRetryCount < 2) {
+          const nextRetryCount = currentRetryCount + 1;
+          setAdapterTryCount(nextRetryCount); // Update state for UI feedback
+          console.log(`Retrying with next BTC adapter (attempt ${nextRetryCount + 1})`);
+          handleCreateExchange(nextRetryCount); // Recursive call with incremented retryCount
           return;
         }
         throw new Error(rateData.message || "Failed to get rate from Swapzone");
@@ -825,6 +833,36 @@ const TokenRow = () => {
           }).toHex();
           console.warn("No TON wallet found, using ckBTC address - this may cause issues");
           console.log("Using ckBTC hex address for TON:", depositAddress);
+        }
+      } else if (fromCurrency.toLowerCase() === 'xlm') {
+        // For XLM, we need to use an XLM-compatible address format
+        // For now, we'll use the ckBTC address but this might need to be changed
+        // based on the specific wallet integration
+        if (wallets.XLM?.walletAddressForDisplay) {
+          depositAddress = wallets.XLM.walletAddressForDisplay;
+          console.log("Using XLM wallet address:", depositAddress);
+        } else {
+          // If no specific XLM wallet, fall back to ckBTC address but warn the user
+          depositAddress = AccountIdentifier.fromPrincipal({
+            principal: wallets.ckBTC.walletPrincipal,
+          }).toHex();
+          console.warn("No XLM wallet found, using ckBTC address - this may cause issues");
+          console.log("Using ckBTC hex address for XLM:", depositAddress);
+        }
+      } else if (fromCurrency.toLowerCase() === 'xrp') {
+        // For XRP, we need to use an XRP-compatible address format
+        // For now, we'll use the ckBTC address but this might need to be changed
+        // based on the specific wallet integration
+        if (wallets.XRP?.walletAddressForDisplay) {
+          depositAddress = wallets.XRP.walletAddressForDisplay;
+          console.log("Using XRP wallet address:", depositAddress);
+        } else {
+          // If no specific XRP wallet, fall back to ckBTC address but warn the user
+          depositAddress = AccountIdentifier.fromPrincipal({
+            principal: wallets.ckBTC.walletPrincipal,
+          }).toHex();
+          console.warn("No XRP wallet found, using ckBTC address - this may cause issues");
+          console.log("Using ckBTC hex address for XRP:", depositAddress);
         }
       } else {
         // For other tokens, use the ckBTC hex address
@@ -865,8 +903,13 @@ const TokenRow = () => {
       console.log(`Adapter check: ${rateData.adapter}, isSideShift: ${isSideShiftAdapter}`);
       
       // Add refund address except for SideShift which has issues with it
-      // Also exclude refund address for ADA and TON currencies which have specific address format requirements
-      if (!isSideShiftAdapter && fromCurrency.toLowerCase() !== 'ada' && fromCurrency.toLowerCase() !== 'ton') {
+      // Also exclude refund address for ADA, TON, XLM, XRP, and AVAX currencies which have specific address format requirements
+      if (!isSideShiftAdapter && 
+          fromCurrency.toLowerCase() !== 'ada' && 
+          fromCurrency.toLowerCase() !== 'ton' && 
+          fromCurrency.toLowerCase() !== 'xlm' && 
+          fromCurrency.toLowerCase() !== 'xrp' &&
+          fromCurrency.toLowerCase() !== 'avaxc') {
         transactionPayload.refundAddress = depositAddress;
       }
       
@@ -901,6 +944,23 @@ const TokenRow = () => {
       if (transactionData.error) {
         let errorMessage = transactionData.message || "Failed to create transaction";
         
+        console.log(`Transaction creation failed: ${errorMessage}`);
+        console.log(`Current adapter try count: ${currentRetryCount}`);
+        console.log(`From currency: ${fromCurrency}`);
+        
+        // Check if this is a StealthEx error and we can retry with a different adapter
+        if (fromCurrency.toLowerCase() === 'btc' && 
+            errorMessage.includes('stealthex') && 
+            (errorMessage.includes('422') || errorMessage.includes('createOrder')) && 
+            currentRetryCount < 2) {
+          const nextRetryCount = currentRetryCount + 1;
+          console.log(`StealthEx failed for BTC, retrying with next adapter (attempt ${nextRetryCount + 1})`);
+          setAdapterTryCount(nextRetryCount); // Update state for UI feedback
+          setLoading(false); // Reset loading state before retry
+          setTimeout(() => handleCreateExchange(nextRetryCount), 1000); // Small delay before retry
+          return;
+        }
+        
         // Format error message to be more user-friendly for BTC
         if (fromCurrency.toLowerCase() === 'btc') {
           if (errorMessage.includes('minimum') || errorMessage.includes('min amount')) {
@@ -914,8 +974,27 @@ const TokenRow = () => {
             errorMessage = `Your Bitcoin address appears to be invalid or incompatible with this provider. Please ensure your wallet is connected properly.`;
           } else if (errorMessage.includes('400') && errorMessage.includes('simpleswap')) {
             errorMessage = `SimpleSwap error: Please try again with a slightly higher amount or a different provider.`;
+          } else if (errorMessage.includes('422') && errorMessage.includes('stealthex')) {
+            errorMessage = `StealthEx cannot process this Bitcoin transaction. This may be due to address format issues or temporary service problems. The amount ${amountToUse} BTC appears valid (minimum: ${rateData?.minAmount || '0.0003'} BTC). Please try again or contact support.`;
+          } else if (errorMessage.includes('stealthex') && errorMessage.includes('createOrder')) {
+            errorMessage = `StealthEx is having issues processing Bitcoin transactions. Please try again in a few minutes, or contact support if the problem persists.`;
           } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
             errorMessage = `The exchange service is temporarily unavailable. Please try again in a few minutes.`;
+          }
+        } else if (fromCurrency.toLowerCase() === 'avaxc') {
+          // Format error message to be more user-friendly for AVAX
+          if (errorMessage.includes('minimum') || errorMessage.includes('min amount')) {
+            const minAmountMatch = errorMessage.match(/([0-9.]+)\s*AVAX/i);
+            const minAmount = minAmountMatch ? minAmountMatch[1] : rateData?.minAmount || '?';
+            errorMessage = `The amount ${amountToUse} AVAX is below the minimum required (${minAmount} AVAX). Please increase your amount.`;
+          } else if (errorMessage.includes('maximum')) {
+            errorMessage = `The amount ${amountToUse} AVAX is above the maximum allowed. Please decrease your amount.`;
+          } else if (errorMessage.includes('Invalid address')) {
+            errorMessage = `AVAX address format error. The current wallet address format may not be compatible with AVAX transactions. Please ensure you have an AVAX-compatible wallet connected.`;
+          } else if (errorMessage.includes('simpleswap') && (errorMessage.includes('400') || errorMessage.includes('createOrder'))) {
+            errorMessage = `SimpleSwap cannot process this AVAX transaction. This may be due to address format incompatibility or amount restrictions. The minimum is usually around ${rateData?.minAmount || '1'} AVAX. Please try a different amount or contact support.`;
+          } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
+            errorMessage = `The AVAX exchange service is temporarily unavailable. Please try again in a few minutes.`;
           }
         } else if (fromCurrency.toLowerCase() === 'ton') {
           // Format error message to be more user-friendly for TON
@@ -932,12 +1011,44 @@ const TokenRow = () => {
           } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
             errorMessage = `The TON exchange service is temporarily unavailable. Please try again in a few minutes.`;
           }
+        } else if (fromCurrency.toLowerCase() === 'xlm') {
+          // Format error message to be more user-friendly for XLM
+          if (errorMessage.includes('minimum') || errorMessage.includes('min amount')) {
+            const minAmountMatch = errorMessage.match(/([0-9.]+)\s*XLM/i);
+            const minAmount = minAmountMatch ? minAmountMatch[1] : minAmounts[selectedToken] || '?';
+            errorMessage = `The amount ${amountToUse} XLM is below the minimum required (${minAmount} XLM). Please increase your amount.`;
+          } else if (errorMessage.includes('maximum')) {
+            errorMessage = `The amount ${amountToUse} XLM is above the maximum allowed. Please decrease your amount.`;
+          } else if (errorMessage.includes('Invalid address') || errorMessage.includes('Cannot read properties of undefined')) {
+            errorMessage = `XLM address format error. The current wallet address format may not be compatible with XLM transactions. Please ensure you have a XLM-compatible wallet connected.`;
+          } else if (errorMessage.includes('changelly') && errorMessage.includes('createOrder')) {
+            errorMessage = `Changelly cannot process this XLM transaction, possibly due to address format incompatibility. Please try again or contact support.`;
+          } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
+            errorMessage = `The XLM exchange service is temporarily unavailable. Please try again in a few minutes.`;
+          }
+        } else if (fromCurrency.toLowerCase() === 'xrp') {
+          // Format error message to be more user-friendly for XRP
+          if (errorMessage.includes('minimum') || errorMessage.includes('min amount')) {
+            const minAmountMatch = errorMessage.match(/([0-9.]+)\s*XRP/i);
+            const minAmount = minAmountMatch ? minAmountMatch[1] : minAmounts[selectedToken] || '?';
+            errorMessage = `The amount ${amountToUse} XRP is below the minimum required (${minAmount} XRP). Please increase your amount.`;
+          } else if (errorMessage.includes('maximum')) {
+            errorMessage = `The amount ${amountToUse} XRP is above the maximum allowed. Please decrease your amount.`;
+          } else if (errorMessage.includes('Invalid address') || errorMessage.includes('Cannot read properties of undefined')) {
+            errorMessage = `XRP address format error. The current wallet address format may not be compatible with XRP transactions. Please ensure you have a XRP-compatible wallet connected.`;
+          } else if (errorMessage.includes('changelly') && errorMessage.includes('createOrder')) {
+            errorMessage = `Changelly cannot process this XRP transaction, possibly due to address format incompatibility. Please try again or contact support.`;
+          } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
+            errorMessage = `The XRP exchange service is temporarily unavailable. Please try again in a few minutes.`;
+          }
         } else {
           // Generic error formatting for other coins
           if (errorMessage.includes('Invalid address for specified network')) {
             errorMessage = `The address format is not compatible with ${fromCurrency.toUpperCase()} network. Please try again or contact support.`;
           } else if (errorMessage.includes('minimum') || errorMessage.includes('maximum')) {
             // Already formatted nicely
+          } else if (errorMessage.includes('422') && errorMessage.includes('stealthex')) {
+            errorMessage = `StealthEx cannot process this ${fromCurrency.toUpperCase()} transaction. This may be due to validation issues or temporary service problems. Please try again or contact support.`;
           }
         }
         
@@ -968,7 +1079,7 @@ const TokenRow = () => {
           deposit: {
             address: txData.addressDeposit || txData.address || "",
             amount: txData.amountDeposit || amountToUse,
-            extra_id: txData.memo || null
+            extra_id: txData.extraIdDeposit || txData.memo || null
           },
           status: "waiting"
         }
@@ -997,6 +1108,9 @@ const TokenRow = () => {
           userErrorMsg = `Failed to get exchange rates for ${fromCurrency.toUpperCase()} to ICP. Please try again with a different amount or token.`;
         } else if (error.message.includes("Empty response")) {
           userErrorMsg = "The exchange service returned an empty response. This could be a temporary issue. Please try again with a different amount or token.";
+        } else {
+          // Use the formatted error message from the inner error handling
+          userErrorMsg = error.message;
         }
       }
       
@@ -1034,8 +1148,8 @@ const TokenRow = () => {
   const isError = hasFetched ? !apiResponse?.details?.deposit?.address : false;
 
   // Logo de token actual
-  const tokenObj = availableTokens[selectedToken];
-  const tokenLogo = tokenObj?.logo || "";
+  const currentTokenObj = availableTokens[selectedToken];
+  const tokenLogo = currentTokenObj?.logo || "";
 
   // Blur si no hay wallet conectada
   const leftBoxBlur =
@@ -1077,9 +1191,9 @@ const TokenRow = () => {
                       setSelectedToken(newToken);
                       setSelectedNetworkIndex(0);
                       // Fetch min amount when token changes
-                      const tokenObj = availableTokens[newToken];
-                      if (tokenObj && tokenObj.networks.length > 0) {
-                        fetchMinimumAmount(newToken, tokenObj.networks[0]);
+                      const selectTokenObj = availableTokens[newToken];
+                      if (selectTokenObj && selectTokenObj.networks.length > 0) {
+                        fetchMinimumAmount(newToken, selectTokenObj.networks[0]);
                       }
                     }}
                     className="w-full p-2 pr-8 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small appearance-none"
@@ -1109,14 +1223,14 @@ const TokenRow = () => {
                     const newIndex = Number(e.target.value);
                     setSelectedNetworkIndex(newIndex);
                     // Fetch min amount when network changes
-                    const tokenObj = availableTokens[selectedToken];
-                    if (tokenObj && tokenObj.networks[newIndex]) {
-                      fetchMinimumAmount(selectedToken, tokenObj.networks[newIndex]);
+                    const networkTokenObj = availableTokens[selectedToken];
+                    if (networkTokenObj && networkTokenObj.networks[newIndex]) {
+                      fetchMinimumAmount(selectedToken, networkTokenObj.networks[newIndex]);
                     }
                   }}
                   className="w-full p-2 border border-jacarta-600 rounded-lg bg-jacarta-800 focus:ring-accent focus:border-accent text-jacarta-100 dark:bg-jacarta-600 munro-small"
               >
-                {tokenObj?.networks.map((opt, idx) => (
+                {currentTokenObj?.networks.map((opt, idx) => (
                     <option key={idx} value={idx}>
                       {opt.displayNetwork}
                     </option>
