@@ -766,10 +766,35 @@ const BioniqContextProvider = ({ children }) => {
 
     try {
       console.log("before livee bionic loadWallets")
+      
+      // Load ckBTC wallet (primary wallet)
       const _wallets = await liveBioniqWalletApi.wallet.loadWallets({
         privateKey: userConnection.privateKey,
         tokenMode: 'ckBTC',
       });
+      
+      // Try to load additional wallet types for multichain support
+      const walletTypes = ['BTC', 'ETH', 'TON', 'XLM', 'XRP'];
+      
+      for (const walletType of walletTypes) {
+        try {
+          console.log(`Attempting to load ${walletType} wallet...`);
+          const additionalWallet = await liveBioniqWalletApi.wallet.loadWallets({
+            privateKey: userConnection.privateKey,
+            tokenMode: walletType,
+          });
+          
+          // Merge additional wallets if they exist
+          if (additionalWallet && additionalWallet[walletType]) {
+            _wallets[walletType] = additionalWallet[walletType];
+            console.log(`Successfully loaded ${walletType} wallet:`, additionalWallet[walletType].walletAddressForDisplay);
+          }
+        } catch (walletError) {
+          console.log(`${walletType} wallet not available:`, walletError.message);
+          // Continue with other wallet types
+        }
+      }
+      
       const _identity = await liveBioniqWalletApi.wallet.exportII(userConnection.privateKey);
       console.log("getting wallets in reload wallets", _wallets)
     let address=  AccountIdentifier.fromPrincipal({
@@ -783,13 +808,17 @@ const BioniqContextProvider = ({ children }) => {
 
       for (const walletType in _wallets) {
         if (Object.hasOwnProperty.call(_wallets, walletType)) {
-          const balances = await liveBioniqWalletApi.wallet.fetchLatestWalletBalance({
-            wallet: _wallets[walletType],
-            tokenMode: walletType,
-          });
-
-          _balances = _balances.concat(balances);
-          console.log("balances in wallet", _balances)
+          try {
+            const balances = await liveBioniqWalletApi.wallet.fetchLatestWalletBalance({
+              wallet: _wallets[walletType],
+              tokenMode: walletType,
+            });
+            
+            _balances = _balances.concat(balances);
+            console.log(`balances for ${walletType}:`, balances)
+          } catch (balanceError) {
+            console.log(`Could not fetch balance for ${walletType}:`, balanceError.message);
+          }
         }
       }
       setBalances(_balances);

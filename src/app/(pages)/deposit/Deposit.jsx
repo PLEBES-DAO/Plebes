@@ -88,14 +88,14 @@ const aggregatorTokens = {
   USDC: {
     logo: "/img/coins/usdc.svg",
     networks: [
-    { aggregatorSymbol: "USDCARB", displayToken: "USDC", displayNetwork: "ARBITRUM" },
+    { aggregatorSymbol: "USDCARB", displayToken: "USDC", displayNetwork: "ARB" },
     { aggregatorSymbol: "USDCBASE", displayToken: "USDC", displayNetwork: "BASE" },
-    { aggregatorSymbol: "USDC", displayToken: "USDC", displayNetwork: "ETHEREUM" },
-    { aggregatorSymbol: "USDCMATIC", displayToken: "USDC", displayNetwork: "MATIC" },
-    { aggregatorSymbol: "USDCNEAR", displayToken: "USDC", displayNetwork: "NEAR" },
-    { aggregatorSymbol: "USDCOP", displayToken: "USDC", displayNetwork: "OPTIMISM" },
-    { aggregatorSymbol: "USDCSOL", displayToken: "USDC", displayNetwork: "SOLANA" },
-    { aggregatorSymbol: "USDCTRC20", displayToken: "USDC", displayNetwork: "TRON" },
+    { aggregatorSymbol: "USDC", displayToken: "USDC", displayNetwork: "ETH" },
+    { aggregatorSymbol: "USDCMATIC", displayToken: "USDC", displayNetwork: "POLYGON" },
+   // { aggregatorSymbol: "USDCNEAR", displayToken: "USDC", displayNetwork: "NEAR" },
+    { aggregatorSymbol: "USDCOP", displayToken: "USDC", displayNetwork: "OP" },
+    { aggregatorSymbol: "USDCSOL", displayToken: "USDC", displayNetwork: "SOL" },
+   // { aggregatorSymbol: "usdctrc20", displayToken: "USDC", displayNetwork: "TRX" },
     ],
   },
 
@@ -103,14 +103,14 @@ const aggregatorTokens = {
   USDT: {
      logo: "/img/coins/usdt.svg",
      networks: [
-       { aggregatorSymbol: "USDTCARB", displayToken: "USDT", displayNetwork: "ARBITRUM" },
+       { aggregatorSymbol: "USDTARB", displayToken: "USDT", displayNetwork: "ARB" },
        { aggregatorSymbol: "USDTBASE", displayToken: "USDT", displayNetwork: "BASE" },
-       { aggregatorSymbol: "USDTERC20", displayToken: "USDT", displayNetwork: "ETHEREUM" },
-       { aggregatorSymbol: "USDTMATIC", displayToken: "USDT", displayNetwork: "MATIC" },
-       { aggregatorSymbol: "USDTNEAR", displayToken: "USDT", displayNetwork: "NEAR" },
-       { aggregatorSymbol: "USDTOP", displayToken: "USDT", displayNetwork: "OPTIMISM" },
-       { aggregatorSymbol: "USDTCSOL", displayToken: "USDT", displayNetwork: "SOLANA" },
-       { aggregatorSymbol: "USDTTRC20", displayToken: "USDT", displayNetwork: "TRON" },
+       { aggregatorSymbol: "usdterc20", displayToken: "USDT", displayNetwork: "ETH" },
+       { aggregatorSymbol: "usdtmatic", displayToken: "USDT", displayNetwork: "POLYGON" },
+       { aggregatorSymbol: "usdtnear", displayToken: "USDT", displayNetwork: "NEAR" },
+       { aggregatorSymbol: "USDTOP", displayToken: "USDT", displayNetwork: "OP" },
+       { aggregatorSymbol: "usdtsol", displayToken: "USDT", displayNetwork: "SOL" },
+       { aggregatorSymbol: "usdt", displayToken: "USDT", displayNetwork: "TRX" },
      ],
    },
 
@@ -118,7 +118,7 @@ const aggregatorTokens = {
   BTC: {
       logo: "/img/coins/btc.svg",
       networks: [
-        { aggregatorSymbol: "btc", displayToken: "BTC", displayNetwork: "BTC", defaultAmount: 0.05 },
+        { aggregatorSymbol: "BTC", displayToken: "BTC", displayNetwork: "BTC", defaultAmount: 0.05 },
       ],
     },
 
@@ -126,10 +126,10 @@ const aggregatorTokens = {
   ETH: {
     logo: "/img/coins/eth.svg",
     networks: [
-      { aggregatorSymbol: "ETHARB", displayToken: "ETH", displayNetwork: "MAINET" },
+      { aggregatorSymbol: "etharbitrum", displayToken: "ETH", displayNetwork: "ARB" },
       { aggregatorSymbol: "ETHBASE", displayToken: "ETH", displayNetwork: "BASE" },
-      { aggregatorSymbol: "ETH", displayToken: "ETH", displayNetwork: "ETHEREUM" },
-      { aggregatorSymbol: "ETHOP", displayToken: "ETH", displayNetwork: "OPTIMISM" },
+      { aggregatorSymbol: "ETH", displayToken: "ETH", displayNetwork: "ETH" },
+      { aggregatorSymbol: "ethoptimism", displayToken: "ETH", displayNetwork: "OP" },
     ],
   },
 
@@ -186,7 +186,7 @@ const aggregatorTokens = {
     logo: "/img/coinplebes/BUSD.svg",
     networks: [
       { aggregatorSymbol: "BUSD", displayToken: "BUSD", displayNetwork: "MAINNET" },
-      { aggregatorSymbol: "BUSDBEP20", displayToken: "BUSD", displayNetwork: "BSC", defaultAmount: 300, smartContract: "0xe9e7cea3dedca5984780bafc599bd69add087d56" },
+      { aggregatorSymbol: "busdbep20", displayToken: "BUSD", displayNetwork: "BSC", defaultAmount: 300, smartContract: "0xe9e7cea3dedca5984780bafc599bd69add087d56" },
     ],
   },
 
@@ -289,7 +289,7 @@ const aggregatorTokens = {
 };
 
 // Only show these tokens in the dropdown
-const allowedTokens = ["DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "SOL", "SUI", "TON", "XLM", "XRP", "AVAX"];
+const allowedTokens = ["BTC", "ETH", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "SOL", "SUI", "TON", "XLM", "XRP", "AVAX", "OP", "USDT", "USDC"];
 
 // "minimum deposit" - use dynamic values when available
 function getMinimumDeposit(symbol, minValue) {
@@ -383,9 +383,9 @@ const TokenRow = () => {
   const availableTokens = Object.keys(dynamicTokens).length > 0 ? 
     { ...dynamicTokens, ...aggregatorTokens } : 
     aggregatorTokens;
-  
+
   // Only show these tokens in the dropdown
-  const allowedTokens = ["DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "SUI", "TON", "XLM", "XRP", "AVAX"];
+  const allowedTokens = ["BTC", "ETH", "DOGE", "NEAR", "WLD", "ADA", "DOT", "BNB", "ALGO", "APT", "ARB", "SUI", "TON", "XLM", "XRP", "AVAX", "SOL", "OP", "USDT", "USDC"];
 
   // Status display labels for better UX
   const statusLabels = {
@@ -695,6 +695,11 @@ const TokenRow = () => {
   async function handleCreateExchange(retryCount = 0) {
     console.log("handleCreateExchange started");
     
+    // NEW ADDRESS FLOW:
+    // - addressReceive in API payload = user's ICP wallet (where they want to receive ICP)
+    // - addressDeposit from API response = where user sends their source currency (ETH, BTC, SOL, etc.)
+    // This eliminates the need for users to have wallets for every source currency
+    
     // Ensure retryCount is always a number
     let currentRetryCount = typeof retryCount === 'number' ? retryCount : 0;
     
@@ -807,82 +812,22 @@ const TokenRow = () => {
         throw new Error(rateData.message || "Failed to get rate from Swapzone");
       }
       
-      // Get deposit address from wallet
-      let depositAddress;
+      // Get the RECEIVE address from user's wallet (where they want ICP sent)
+      const receiveAddress = AccountIdentifier.fromPrincipal({
+        principal: wallets.ckBTC.walletPrincipal,
+      }).toHex();
       
-      // For Bitcoin, we need to use the BTC wallet address, not the ckBTC hex address
-      if (fromCurrency.toLowerCase() === 'btc') {
-        if (wallets.BTC?.walletAddressForDisplay) {
-          depositAddress = wallets.BTC.walletAddressForDisplay;
-          console.log("Using BTC wallet address:", depositAddress);
-        } else {
-          console.error("No BTC wallet address found");
-          throw new Error("No BTC wallet address found. Please make sure your Bitcoin wallet is connected.");
-        }
-      } else if (fromCurrency.toLowerCase() === 'ton') {
-        // For TON, we need to use a TON-compatible address format
-        // For now, we'll use the ckBTC address but this might need to be changed
-        // based on the specific wallet integration
-        if (wallets.TON?.walletAddressForDisplay) {
-          depositAddress = wallets.TON.walletAddressForDisplay;
-          console.log("Using TON wallet address:", depositAddress);
-        } else {
-          // If no specific TON wallet, fall back to ckBTC address but warn the user
-          depositAddress = AccountIdentifier.fromPrincipal({
-            principal: wallets.ckBTC.walletPrincipal,
-          }).toHex();
-          console.warn("No TON wallet found, using ckBTC address - this may cause issues");
-          console.log("Using ckBTC hex address for TON:", depositAddress);
-        }
-      } else if (fromCurrency.toLowerCase() === 'xlm') {
-        // For XLM, we need to use an XLM-compatible address format
-        // For now, we'll use the ckBTC address but this might need to be changed
-        // based on the specific wallet integration
-        if (wallets.XLM?.walletAddressForDisplay) {
-          depositAddress = wallets.XLM.walletAddressForDisplay;
-          console.log("Using XLM wallet address:", depositAddress);
-        } else {
-          // If no specific XLM wallet, fall back to ckBTC address but warn the user
-          depositAddress = AccountIdentifier.fromPrincipal({
-            principal: wallets.ckBTC.walletPrincipal,
-          }).toHex();
-          console.warn("No XLM wallet found, using ckBTC address - this may cause issues");
-          console.log("Using ckBTC hex address for XLM:", depositAddress);
-        }
-      } else if (fromCurrency.toLowerCase() === 'xrp') {
-        // For XRP, we need to use an XRP-compatible address format
-        // For now, we'll use the ckBTC address but this might need to be changed
-        // based on the specific wallet integration
-        if (wallets.XRP?.walletAddressForDisplay) {
-          depositAddress = wallets.XRP.walletAddressForDisplay;
-          console.log("Using XRP wallet address:", depositAddress);
-        } else {
-          // If no specific XRP wallet, fall back to ckBTC address but warn the user
-          depositAddress = AccountIdentifier.fromPrincipal({
-            principal: wallets.ckBTC.walletPrincipal,
-          }).toHex();
-          console.warn("No XRP wallet found, using ckBTC address - this may cause issues");
-          console.log("Using ckBTC hex address for XRP:", depositAddress);
-        }
-      } else {
-        // For other tokens, use the ckBTC hex address
-        depositAddress = AccountIdentifier.fromPrincipal({
-          principal: wallets.ckBTC.walletPrincipal,
-        }).toHex();
-        console.log("Using ckBTC hex address:", depositAddress);
-      }
-      
-      console.log("Deposit address from wallet:", depositAddress);
+      console.log("ICP receive address (user's wallet):", receiveAddress);
       
       // Step 2: Create transaction with Swapzone API
       console.log("Creating transaction with Swapzone API...");
       
       // Build the transaction payload
       const transactionPayload = {
-        from: fromCurrency.toLowerCase(), // Ensure lowercase for API compatibility
-        to: toCurrency.toLowerCase(), // Ensure lowercase for API compatibility
-        amountDeposit: rateData.amountFrom.toString(), // Use exactly the amount from rate response
-        addressReceive: depositAddress,
+        from: fromCurrency.toLowerCase(), // What they're sending (ETH, BTC, etc.)
+        to: toCurrency.toLowerCase(), // What they want (ICP)
+        amountDeposit: rateData.amountFrom.toString(), // Amount to deposit
+        addressReceive: receiveAddress, // WHERE TO SEND ICP (user's wallet)
         rateType: "floating",
         fromNetwork: rateData.fromNetwork,
         toNetwork: rateData.toNetwork,
@@ -902,15 +847,11 @@ const TokenRow = () => {
         
       console.log(`Adapter check: ${rateData.adapter}, isSideShift: ${isSideShiftAdapter}`);
       
-      // Add refund address except for SideShift which has issues with it
-      // Also exclude refund address for ADA, TON, XLM, XRP, and AVAX currencies which have specific address format requirements
-      if (!isSideShiftAdapter && 
-          fromCurrency.toLowerCase() !== 'ada' && 
-          fromCurrency.toLowerCase() !== 'ton' && 
-          fromCurrency.toLowerCase() !== 'xlm' && 
-          fromCurrency.toLowerCase() !== 'xrp' &&
-          fromCurrency.toLowerCase() !== 'avaxc') {
-        transactionPayload.refundAddress = depositAddress;
+      // For refund address, we can only provide one for currencies where we have actual wallet support
+      // Only add refund address for BTC since we have BTC wallet integration
+      if (!isSideShiftAdapter && fromCurrency.toLowerCase() === 'btc' && wallets.BTC?.walletAddressForDisplay) {
+        transactionPayload.refundAddress = wallets.BTC.walletAddressForDisplay;
+        console.log("Added BTC refund address:", wallets.BTC.walletAddressForDisplay);
       }
       
       console.log("Transaction payload:", JSON.stringify(transactionPayload));
@@ -961,8 +902,14 @@ const TokenRow = () => {
           return;
         }
         
-        // Format error message to be more user-friendly for BTC
-        if (fromCurrency.toLowerCase() === 'btc') {
+        // Format error message to be more user-friendly
+        if (errorMessage.includes('Invalid address')) {
+          if (fromCurrency.toLowerCase() === 'eth') {
+            errorMessage = `Address format issue. The exchange service may not support ICP as a destination for ETH deposits. Please try a different token or contact support.`;
+          } else {
+            errorMessage = `The ICP receive address format may not be compatible with this exchange service. Please try again or contact support.`;
+          }
+        } else if (fromCurrency.toLowerCase() === 'btc') {
           if (errorMessage.includes('minimum') || errorMessage.includes('min amount')) {
             // Get the minimum amount from the error message if possible
             const minAmountMatch = errorMessage.match(/([0-9.]+)\s*BTC/i);
@@ -970,10 +917,6 @@ const TokenRow = () => {
             errorMessage = `The amount ${amountToUse} BTC is below the minimum required (${minAmount} BTC). Please increase your amount.`;
           } else if (errorMessage.includes('maximum')) {
             errorMessage = `The amount ${amountToUse} BTC is above the maximum allowed. Please decrease your amount.`;
-          } else if (errorMessage.includes('Invalid address')) {
-            errorMessage = `Your Bitcoin address appears to be invalid or incompatible with this provider. Please ensure your wallet is connected properly.`;
-          } else if (errorMessage.includes('400') && errorMessage.includes('simpleswap')) {
-            errorMessage = `SimpleSwap error: Please try again with a slightly higher amount or a different provider.`;
           } else if (errorMessage.includes('422') && errorMessage.includes('stealthex')) {
             errorMessage = `StealthEx cannot process this Bitcoin transaction. This may be due to address format issues or temporary service problems. The amount ${amountToUse} BTC appears valid (minimum: ${rateData?.minAmount || '0.0003'} BTC). Please try again or contact support.`;
           } else if (errorMessage.includes('stealthex') && errorMessage.includes('createOrder')) {
@@ -1041,6 +984,40 @@ const TokenRow = () => {
           } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
             errorMessage = `The XRP exchange service is temporarily unavailable. Please try again in a few minutes.`;
           }
+        } else if (fromCurrency.toLowerCase() === 'eth' || fromCurrency.toLowerCase().includes('eth')) {
+          // Format error message to be more user-friendly for ETH
+          if (errorMessage.includes('minimum') || errorMessage.includes('min amount')) {
+            const minAmountMatch = errorMessage.match(/([0-9.]+)\s*ETH/i);
+            const minAmount = minAmountMatch ? minAmountMatch[1] : minAmounts[selectedToken] || '?';
+            errorMessage = `The amount ${amountToUse} ETH is below the minimum required (${minAmount} ETH). Please increase your amount.`;
+          } else if (errorMessage.includes('maximum')) {
+            errorMessage = `The amount ${amountToUse} ETH is above the maximum allowed. Please decrease your amount.`;
+          } else if (errorMessage.includes('Invalid address') || errorMessage.includes('Cannot read properties of undefined')) {
+            errorMessage = `ETH address validation failed. The exchange service may have issues with the ICP destination address format. Please try again or contact support.`;
+          } else if (errorMessage.includes('changelly') && errorMessage.includes('createOrder')) {
+            errorMessage = `Changelly cannot process this ETH transaction. This may be due to ICP address format incompatibility or network issues. Please try again or contact support.`;
+          } else if (errorMessage.includes('simpleswap') && (errorMessage.includes('400') || errorMessage.includes('createOrder'))) {
+            errorMessage = `SimpleSwap cannot process this ETH transaction. This may be due to ICP address format requirements or amount restrictions. Please try again or contact support.`;
+          } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
+            errorMessage = `The ETH exchange service is temporarily unavailable. Please try again in a few minutes.`;
+          }
+        } else if (fromCurrency.toLowerCase() === 'sol') {
+          // Format error message to be more user-friendly for SOL
+          if (errorMessage.includes('minimum') || errorMessage.includes('min amount')) {
+            const minAmountMatch = errorMessage.match(/([0-9.]+)\s*SOL/i);
+            const minAmount = minAmountMatch ? minAmountMatch[1] : minAmounts[selectedToken] || '?';
+            errorMessage = `The amount ${amountToUse} SOL is below the minimum required (${minAmount} SOL). Please increase your amount.`;
+          } else if (errorMessage.includes('maximum')) {
+            errorMessage = `The amount ${amountToUse} SOL is above the maximum allowed. Please decrease your amount.`;
+          } else if (errorMessage.includes('Invalid address') || errorMessage.includes('Cannot read properties of undefined')) {
+            errorMessage = `SOL address validation failed. The exchange service may have issues with the ICP destination address format. Please try again or contact support.`;
+          } else if (errorMessage.includes('changelly') && errorMessage.includes('createOrder')) {
+            errorMessage = `Changelly cannot process this SOL transaction. This may be due to ICP address format incompatibility or network issues. Please try again or contact support.`;
+          } else if (errorMessage.includes('simpleswap') && (errorMessage.includes('400') || errorMessage.includes('createOrder'))) {
+            errorMessage = `SimpleSwap cannot process this SOL transaction. This may be due to ICP address format requirements or amount restrictions. Please try again or contact support.`;
+          } else if (errorMessage.includes('500') || errorMessage.includes('unavailable')) {
+            errorMessage = `The SOL exchange service is temporarily unavailable. Please try again in a few minutes.`;
+          }
         } else {
           // Generic error formatting for other coins
           if (errorMessage.includes('Invalid address for specified network')) {
@@ -1061,8 +1038,8 @@ const TokenRow = () => {
       console.log("Transaction data structure:", {
         rawId: transactionData.id,
         txId: txData?.id,
-        rawAddress: transactionData.depositAddress || transactionData.address,
-        txAddress: txData?.depositAddress || txData?.address,
+        rawDepositAddress: transactionData.addressDeposit || transactionData.address,
+        txDepositAddress: txData?.addressDeposit || txData?.address,
         fullTxData: txData
       });
       
@@ -1072,12 +1049,29 @@ const TokenRow = () => {
         throw new Error("The exchange service returned an incomplete response. Transaction ID is missing.");
       }
       
+      // Get the deposit address from API response (where user needs to send their tokens)
+      const depositAddressFromApi = txData.addressDeposit || txData.address || "";
+      
+      if (!depositAddressFromApi) {
+        console.error("Missing deposit address in API response:", JSON.stringify(transactionData));
+        throw new Error("The exchange service did not provide a deposit address. Please try again.");
+      }
+      
+      console.log("Transaction created successfully:", {
+        id: txData?.id,
+        depositAddress: depositAddressFromApi, // WHERE TO SEND SOURCE CURRENCY (from API)
+        receiveAddress: receiveAddress, // WHERE ICP WILL BE SENT (user's wallet)
+        amount: txData?.amountDeposit || amountToUse,
+        fromCurrency: fromCurrency.toUpperCase(),
+        toCurrency: 'ICP'
+      });
+      
       // Update state with transaction data
       setApiResponse({
         details: {
           id: txData.id,
           deposit: {
-            address: txData.addressDeposit || txData.address || "",
+            address: depositAddressFromApi, // Deposit address from API response
             amount: txData.amountDeposit || amountToUse,
             extra_id: txData.extraIdDeposit || txData.memo || null
           },
