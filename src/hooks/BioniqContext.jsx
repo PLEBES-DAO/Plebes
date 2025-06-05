@@ -22,6 +22,7 @@ import { AccountIdentifier, SubAccount } from "@dfinity/ledger-icp";
 
 
 const icpCanister = "ryjl3-tyaaa-aaaaa-aaaba-cai";
+export const ICP_CANISTER = "ryjl3-tyaaa-aaaaa-aaaba-cai";
 const ckBTCcanister = "mxzaz-hqaaa-aaaar-qaada-cai";
 
 function toDefaultSub(owner, subaccount = []) {
@@ -74,6 +75,68 @@ function reverseFormatIcrcBalance(scaledBalance, supply) {
   let floatNumber = (Number(scaledBalance) * Number(supply)) / supplyAMillionth;
   let truncatedInt = Math.trunc(floatNumber);
   return truncatedInt;
+}
+
+export async function icpBalance(identityScope) {
+  try {
+    console.log("🔄 icpBalance: Starting function...");
+    console.log("🔄 icpBalance: Creating ICP actor with canister:", ICP_CANISTER);
+    
+    let icpActor = createicrc1Actor(ICP_CANISTER, {
+      agentOptions: { 
+        identity: identityScope,
+        host: "https://ic0.app"
+      },
+    });
+    
+    console.log("✅ icpBalance: Actor created successfully");
+    console.log("🔄 icpBalance: Getting total supply...");
+    
+    let icpSupply = await icpActor.icrc1_total_supply();
+    
+    console.log("✅ icpBalance: Total supply received:", icpSupply);
+    console.log("🔄 icpBalance: Getting principal...");
+    
+    let principal = identityScope.getPrincipal();
+    
+    console.log("✅ icpBalance: Principal obtained:", principal.toText());
+    console.log("🔄 icpBalance: Getting balance for principal...");
+    
+    let balance = await icpActor.icrc1_balance_of(toDefaultSub(principal));
+    
+    console.log("✅ icpBalance: Raw balance received:", balance);
+    console.log("🔄 icpBalance: Formatting balance...");
+    
+    let formattedBalance = formatIcrcBalance(balance, icpSupply);
+    
+    console.log("✅ icpBalance: Formatted balance:", formattedBalance);
+    return formattedBalance;
+  } catch (error) {
+    console.error("❌ icpBalance: Error occurred:", error);
+    console.error("❌ icpBalance: Error message:", error.message);
+    
+    if (error.message && error.message.includes("404")) {
+      console.log("🔄 icpBalance: Retrying with alternative configuration...");
+      try {
+        let icpActor = createicrc1Actor(ICP_CANISTER, {
+          agentOptions: { identity: identityScope },
+        });
+        
+        let icpSupply = await icpActor.icrc1_total_supply();
+        let principal = identityScope.getPrincipal();
+        let balance = await icpActor.icrc1_balance_of(toDefaultSub(principal));
+        let formattedBalance = formatIcrcBalance(balance, icpSupply);
+        
+        console.log("✅ icpBalance: Success with alternative config:", formattedBalance);
+        return formattedBalance;
+      } catch (retryError) {
+        console.error("❌ icpBalance: Retry also failed:", retryError);
+        throw retryError;
+      }
+    }
+    
+    throw error;
+  }
 }
 
 
@@ -235,7 +298,12 @@ const BioniqContextProvider = ({ children }) => {
 
 
   async function getSwapInfo() {
-    let pool = await createSwapFactoryActor().getPool({
+    let pool = await createSwapFactoryActor("4mmnk-kiaaa-aaaag-qbllq-cai", {
+      agentOptions: {
+        identity,
+        host: "https://ic0.app"
+      }
+    }).getPool({
       fee: 3000,
       token0: { address: ckBTCcanister, standard: "ICRC2" },
       token1: { address: icpCanister, standard: "ICP" },
@@ -248,11 +316,13 @@ const BioniqContextProvider = ({ children }) => {
       let tokenAactor = createicrc1Actor(pool.ok.token1.address, {
         agentOptions: {
           identity,
+          host: "https://ic0.app"
         },
       });
       let tokenBactor = createicrc1Actor(pool.ok.token0.address, {
         agentOptions: {
           identity,
+          host: "https://ic0.app"
         },
       });
       let balanceA = await tokenAactor.icrc1_balance_of(
@@ -308,50 +378,30 @@ const BioniqContextProvider = ({ children }) => {
   
     console.log("poolCanister before claim All", poolCanister);
     let poolActor = createPoolActor(poolCanister.ok.canisterId, {
-      agentOptions: { identity },
+      agentOptions: { 
+        identity,
+        host: "https://ic0.app"
+      },
     });
     let result = await poolActor.getUserUnusedBalance(identity.getPrincipal());
   
     let token0Fee = await createicrc1Actor(
-      poolCanister.ok.token0.address
+      poolCanister.ok.token0.address,
+      {
+        agentOptions: {
+          identity,
+          host: "https://ic0.app"
+        }
+      }
     ).icrc1_fee();
     let token1Fee = await createicrc1Actor(
-      poolCanister.ok.token1.address
-    ).icrc1_fee();
-  
-    console.log("addresses", address0, address1);
-    console.log("result");
-  
-    let withdrawResultA = await poolActor.withdraw({
-      fee: Number(token1Fee),
-      token: address1,
-      amount: result.ok.balance1,
-    });
-    let withdrawResultB = await poolActor.withdraw({
-      fee: Number(token0Fee),
-      token: address0,
-      amount: result.ok.balance0,
-    });
-  
-    console.log("withdraw results", withdrawResultA, withdrawResultB);
-    console.log("results", result);
-    return "unused tokens have been claimed!!";
-  }
-  async function withdrawAll(poolCanister) {
-    let address1 = poolCanister.ok.token1.address;
-    let address0 = poolCanister.ok.token0.address;
-  
-    console.log("poolCanister before claim All", poolCanister);
-    let poolActor = createPoolActor(poolCanister.ok.canisterId, {
-      agentOptions: { identity },
-    });
-    let result = await poolActor.getUserUnusedBalance(identity.getPrincipal());
-  
-    let token0Fee = await createicrc1Actor(
-      poolCanister.ok.token0.address
-    ).icrc1_fee();
-    let token1Fee = await createicrc1Actor(
-      poolCanister.ok.token1.address
+      poolCanister.ok.token1.address,
+      {
+        agentOptions: {
+          identity,
+          host: "https://ic0.app"
+        }
+      }
     ).icrc1_fee();
   
     console.log("addresses", address0, address1);
@@ -375,79 +425,99 @@ const BioniqContextProvider = ({ children }) => {
 
 
   async function buy() {
-    setSwapStep(1)
-    const {
-      balanceAF,
-      balanceBF,
-      tokenASymbol,
-      tokenBSymbol,
-      priceOfTokenAInB,
-      priceOfTokenBinA,
-      poolCanister,
-      zeroForOne,
-      supplyA,
-      supplyB,
-      pool,
-    } = await getSwapInfo();
-  
-    let poolActor = createPoolActor(poolCanister, {
-      agentOptions: {
-        identity,
-      },
-    });
-    let logedIcpActor = createicrc1Actor(icpCanister, {
-      agentOptions: { identity },
-    });
-  
-    let tokenBsupply = supplyB;
-    let icpSupply = await logedIcpActor.icrc1_total_supply();
-    let fee = await logedIcpActor.icrc1_fee();
-    let balance = await logedIcpActor.icrc1_balance_of(
-      toDefaultSub(identity.getPrincipal())
+    try {
+      setSwapStep(1)
+      const {
+        balanceAF,
+        balanceBF,
+        tokenASymbol,
+        tokenBSymbol,
+        priceOfTokenAInB,
+        priceOfTokenBinA,
+        poolCanister,
+        zeroForOne,
+        supplyA,
+        supplyB,
+        pool,
+      } = await getSwapInfo();
+    
+      let poolActor = createPoolActor(poolCanister, {
+        agentOptions: {
+          identity,
+          host: "https://ic0.app"
+        },
+      });
+      let logedIcpActor = createicrc1Actor(icpCanister, {
+        agentOptions: { 
+          identity,
+          host: "https://ic0.app"
+        },
+      });
+    
+      let tokenBsupply = supplyB;
+      let icpSupply = await logedIcpActor.icrc1_total_supply();
+      let fee = await logedIcpActor.icrc1_fee();
+      let balance = await logedIcpActor.icrc1_balance_of(
+        toDefaultSub(identity.getPrincipal())
+      );
+      console.log("balance",balance)
+      let amount = Number(balance)-Number(fee);
+      let transferSub = await logedIcpActor.icrc1_transfer(defaultIcrcTransferArgs(poolCanister,amount,[Number(fee)],[SubAccount.fromPrincipal(identity.getPrincipal()).toUint8Array()]));
+      console.log("transfer sub",transferSub);
+      console.log("deposit amout", defaultDepositIcpSwap(icpCanister, amount, Number(fee)))
+      setSwapStep(2)
+    let depositResult = await poolActor.deposit(
+      defaultDepositIcpSwap(icpCanister, amount, fee)
     );
-    console.log("balance",balance)
-    let amount = Number(balance)-Number(fee);
-    let transferSub = await logedIcpActor.icrc1_transfer(defaultIcrcTransferArgs(poolCanister,amount,[Number(fee)],[SubAccount.fromPrincipal(identity.getPrincipal()).toUint8Array()]));
-    console.log("transfer sub",transferSub);
-    console.log("deposit amout", defaultDepositIcpSwap(icpCanister, amount, Number(fee)))
-    setSwapStep(2)
-  let depositResult = await poolActor.deposit(
-    defaultDepositIcpSwap(icpCanister, amount, fee)
-  );
-    console.log("deposit Result", depositResult);
-    let amountOutMinimum = priceOfTokenBinA;
-    console.log("price of token", priceOfTokenAInB, "B:  ", priceOfTokenBinA);
-    console.log("ammount minimon before formate", amountOutMinimum);
-    let formatedAmmountOut = reverseFormatIcrcBalance(
-      amountOutMinimum,
-      tokenBsupply
-    );
-    setSwapStep(3)
-    console.log("amountOutMinimum", formatedAmmountOut);
-    console.log();
-    amount = Number(depositResult.ok)
-    let quote = await poolActor.quote({
-      zeroForOne: false,
-      amountIn: amount.toString(),
-      amountOutMinimum: "0",
-    });
-    let minimumQuote = quote.ok;
-    console.log("quote", Number(minimumQuote));
-    let miniumsum = Number(minimumQuote);
-    console.log("miniumsum", miniumsum);
-  
-    let swapResult = await poolActor.swap({
-      zeroForOne: false,
-      amountIn: amount.toString(),
-      amountOutMinimum: miniumsum.toString(),
-    });
-    console.log("looking at swap result", swapResult);
-    setSwapStep(4)
-    let resultWithdrawSwap = await withdrawAll(pool);
-    console.log(" result of withdrawing the swap", resultWithdrawSwap);
-    setSwapStep(5)
-     reloadBalances();
-    //return `we bough some ${tokenInfo.symbol} Chad!`;
+      console.log("deposit Result", depositResult);
+      let amountOutMinimum = priceOfTokenBinA;
+      console.log("price of token", priceOfTokenAInB, "B:  ", priceOfTokenBinA);
+      console.log("ammount minimon before formate", amountOutMinimum);
+      let formatedAmmountOut = reverseFormatIcrcBalance(
+        amountOutMinimum,
+        tokenBsupply
+      );
+      setSwapStep(3)
+      console.log("amountOutMinimum", formatedAmmountOut);
+      console.log();
+      amount = Number(depositResult.ok)
+      let quote = await poolActor.quote({
+        zeroForOne: false,
+        amountIn: amount.toString(),
+        amountOutMinimum: "0",
+      });
+      let minimumQuote = quote.ok;
+      console.log("quote", Number(minimumQuote));
+      let miniumsum = Number(minimumQuote);
+      console.log("miniumsum", miniumsum);
+    
+      let swapResult = await poolActor.swap({
+        zeroForOne: false,
+        amountIn: amount.toString(),
+        amountOutMinimum: miniumsum.toString(),
+      });
+      console.log("looking at swap result", swapResult);
+      setSwapStep(4)
+      let resultWithdrawSwap = await withdrawAll(pool);
+      console.log(" result of withdrawing the swap", resultWithdrawSwap);
+      setSwapStep(5)
+       reloadBalances();
+      //return `we bough some ${tokenInfo.symbol} Chad!`;
+    } catch (error) {
+      console.error("Swap error:", error);
+      setSwapStep(0);
+      
+      // Check if it's the ICPSwap canister configuration error
+      if (error.message && error.message.includes("ICPSwap factory canister ID needs to be updated")) {
+        setError("⚠️ Swap feature temporarily unavailable. The ICPSwap integration needs to be updated with the correct mainnet canister ID. Please contact the development team to resolve this configuration issue.");
+      } else if (error.message && error.message.includes("404")) {
+        setError("🔧 Swap service is currently unavailable due to a configuration issue. We're working to resolve this.");
+      } else {
+        setError(`Swap failed: ${error.message || "Unknown error occurred"}`);
+      }
+      
+      throw error;
+    }
   }
 
   async function withdraw(){
@@ -485,10 +555,10 @@ const BioniqContextProvider = ({ children }) => {
   const reloadBalances = async () =>{
     let _balances = [];
 
-    for (const walletType in _wallets) {
-      if (Object.hasOwnProperty.call(_wallets, walletType)) {
+    for (const walletType in wallets) {
+      if (Object.hasOwnProperty.call(wallets, walletType)) {
         const balances = await liveBioniqWalletApi.wallet.fetchLatestWalletBalance({
-          wallet: _wallets[walletType],
+          wallet: wallets[walletType],
           tokenMode: walletType,
         });
         _balances = _balances.concat(balances);
@@ -696,10 +766,35 @@ const BioniqContextProvider = ({ children }) => {
 
     try {
       console.log("before livee bionic loadWallets")
+      
+      // Load ckBTC wallet (primary wallet)
       const _wallets = await liveBioniqWalletApi.wallet.loadWallets({
         privateKey: userConnection.privateKey,
         tokenMode: 'ckBTC',
       });
+      
+      // Try to load additional wallet types for multichain support
+      const walletTypes = ['BTC', 'ETH', 'TON', 'XLM', 'XRP'];
+      
+      for (const walletType of walletTypes) {
+        try {
+          console.log(`Attempting to load ${walletType} wallet...`);
+          const additionalWallet = await liveBioniqWalletApi.wallet.loadWallets({
+            privateKey: userConnection.privateKey,
+            tokenMode: walletType,
+          });
+          
+          // Merge additional wallets if they exist
+          if (additionalWallet && additionalWallet[walletType]) {
+            _wallets[walletType] = additionalWallet[walletType];
+            console.log(`Successfully loaded ${walletType} wallet:`, additionalWallet[walletType].walletAddressForDisplay);
+          }
+        } catch (walletError) {
+          console.log(`${walletType} wallet not available:`, walletError.message);
+          // Continue with other wallet types
+        }
+      }
+      
       const _identity = await liveBioniqWalletApi.wallet.exportII(userConnection.privateKey);
       console.log("getting wallets in reload wallets", _wallets)
     let address=  AccountIdentifier.fromPrincipal({
@@ -713,13 +808,17 @@ const BioniqContextProvider = ({ children }) => {
 
       for (const walletType in _wallets) {
         if (Object.hasOwnProperty.call(_wallets, walletType)) {
-          const balances = await liveBioniqWalletApi.wallet.fetchLatestWalletBalance({
-            wallet: _wallets[walletType],
-            tokenMode: walletType,
-          });
-
-          _balances = _balances.concat(balances);
-          console.log("balances in wallet", _balances)
+          try {
+            const balances = await liveBioniqWalletApi.wallet.fetchLatestWalletBalance({
+              wallet: _wallets[walletType],
+              tokenMode: walletType,
+            });
+            
+            _balances = _balances.concat(balances);
+            console.log(`balances for ${walletType}:`, balances)
+          } catch (balanceError) {
+            console.log(`Could not fetch balance for ${walletType}:`, balanceError.message);
+          }
         }
       }
       setBalances(_balances);
@@ -863,6 +962,12 @@ const BioniqContextProvider = ({ children }) => {
 
   async function processBids(auction) {
     try {
+      // Check if auction and auction.bids exist and auction.bids is an array
+      if (!auction || !Array.isArray(auction.bids)) {
+        console.warn("processBids called with invalid auction or bids:", auction);
+        return []; // Return an empty array if bids are missing or not an array
+      }
+
       const newBids = await Promise.all(
         auction.bids.map(async (bid) => {
           const decimal = bigNatToDecimal(bid.amount);
@@ -1015,7 +1120,6 @@ const BioniqContextProvider = ({ children }) => {
       if(history){
         console.log("in history")
         history.results.forEach(async(item)=>{
-          console.log("in history results item",typeof item.metadata)
           let metadata = JSON.parse(item.metadata)
           if(metadata && metadata.seller === "bc1qz6dmmfrh9ejmn7fj2563lav7ze6pxck73a4vgy"){
             historicArray.push({metadata,item});
@@ -1095,6 +1199,30 @@ const BioniqContextProvider = ({ children }) => {
     }
   }, [bioniqAuthClient]);
 
+  const getIcpBalance = useCallback(async () => {
+    if (!wallets || !wallets.ckBTC || !wallets.ckBTC.credentials || !wallets.ckBTC.credentials.identity) {
+      console.error("Wallet identity not available");
+      console.log("Wallets debug:", {
+        wallets: !!wallets,
+        ckBTC: !!wallets?.ckBTC,
+        credentials: !!wallets?.ckBTC?.credentials,
+        identity: !!wallets?.ckBTC?.credentials?.identity
+      });
+      return null;
+    }
+    
+    try {
+      console.log("Calling icpBalance with identity:", wallets.ckBTC.credentials.identity);
+      const balance = await icpBalance(wallets.ckBTC.credentials.identity);
+      console.log("ICP balance result:", balance);
+      return balance;
+    } catch (error) {
+      console.error("Error getting ICP balance:", error);
+      console.error("Error details:", error.message, error.stack);
+      return null;
+    }
+  }, [wallets]);
+
   const contextValue = useMemo(
     () => ({
       isLoading,
@@ -1133,7 +1261,8 @@ const BioniqContextProvider = ({ children }) => {
       setSwapStep,
       convertBtcToUsd,
       convertUsdToBtcOnDemand,
-      auctionExpiry
+      auctionExpiry,
+      icpBalance: getIcpBalance
     }),
     [
       isLoading,
@@ -1171,7 +1300,8 @@ const BioniqContextProvider = ({ children }) => {
       setSwapStep,
       convertBtcToUsd,
       convertUsdToBtcOnDemand,
-      auctionExpiry
+      auctionExpiry,
+      getIcpBalance
     ]
   );
 
