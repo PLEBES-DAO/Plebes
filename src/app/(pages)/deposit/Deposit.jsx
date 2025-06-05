@@ -1196,7 +1196,7 @@ const TokenRow = () => {
                 console.log("Next button clicked, moving to section 2");
                 setCurrentSection(2);
               }}
-              className="pitch-deck-button px-8 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
+              className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
               disabled={!wallets?.ckBTC?.walletAddressForDisplay}
           >
             Next
@@ -1254,7 +1254,7 @@ const TokenRow = () => {
           </button>
           <button
               onClick={handleCreateExchange}
-              className="pitch-deck-button px-4 py-2 text-white rounded-lg shadow hover:bg-accent-dark focus:ring-2 focus:ring-offset-2 focus:ring-accent munro-narrow"
+              className="bg-morado-translucido munro-small-text text-lg py-3 px-8 rounded-lg text-center font-semibold text-white cursor-pointer transition-all duration-300 hover:bg-opacity-80"
               disabled={loading || !amount}
           >
             {loading ? "Processing..." : "Start Deposit"}
@@ -1599,16 +1599,18 @@ const TokenRow = () => {
           </div>
           
           <span className="text-white text-2xl md:text-5xl munro-regular-heading">
-            {activeTab === "deposit" ? "Multichain deposit" : "Time to swap"}
+            {activeTab === "deposit" ? "Multichain deposit" : "Swap to ckBTC"}
           </span>
           {supportedCurrencies.length > 0 && activeTab === "deposit" && (
             <div className="flex justify-center mt-2">
+              {/**
               <button
                 onClick={() => setShowCurrenciesModal(true)}
                 className="text-sm text-blue-400 hover:text-blue-300 munro-small-text"
               >
                 View supported currencies ({supportedCurrencies.length})
               </button>
+               */}
             </div>
           )}
         </div>
@@ -1617,196 +1619,197 @@ const TokenRow = () => {
         {activeTab === "swap" ? (
           <SwapInterface />
         ) : (
-          <>
-            {/* Process steps indicator */}
-            <div className="w-full flex justify-center mt-6 mb-8">
-              <div className="bg-jacarta-800 rounded-lg p-4 max-w-2xl w-full">
-                <div className="flex justify-between items-center relative">
-                  {[1, 2, 3, 4, 5].map((step) => (
-                    <div key={step} className="flex flex-col items-center z-10">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center 
-                        ${step <= rightStep ? 'bg-accent text-white' : 'bg-gray-700 text-gray-400'} 
-                        ${step === rightStep ? 'ring-2 ring-accent ring-offset-2 ring-offset-jacarta-800' : ''}
-                        munro-small`}>
-                        {step < rightStep ? <FaCheck /> : step}
+          <div className="w-full max-w-6xl mx-auto px-4">
+            <div className="max-w-4xl mx-auto p-6 bg-jacarta-800 rounded-lg shadow-xl">
+              {/* Process steps indicator */}
+              <div className="w-full flex justify-center mt-6 mb-8">
+                <div className="bg-jacarta-700 rounded-lg p-4 max-w-2xl w-full">
+                  <div className="flex justify-between items-center relative">
+                    {[1, 2, 3, 4, 5].map((step) => (
+                      <div key={step} className="flex flex-col items-center z-10">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center 
+                          ${step <= rightStep ? 'bg-accent text-white' : 'bg-gray-700 text-gray-400'} 
+                          ${step === rightStep ? 'ring-2 ring-accent ring-offset-2 ring-offset-jacarta-700' : ''}
+                          munro-small`}>
+                          {step < rightStep ? <FaCheck /> : step}
+                        </div>
+                        <span className={`text-xs mt-2 text-center w-16 
+                          ${step <= rightStep ? 'text-white' : 'text-gray-500'} munro-small-text`}>
+                          {step === 1 ? "Connect" : 
+                           step === 2 ? "Choose" : 
+                           step === 3 ? "Deposit" : 
+                           step === 4 ? "Convert" : "Receive"}
+                        </span>
                       </div>
-                      <span className={`text-xs mt-2 text-center w-16 
-                        ${step <= rightStep ? 'text-white' : 'text-gray-500'} munro-small-text`}>
-                        {step === 1 ? "Connect" : 
-                         step === 2 ? "Choose" : 
-                         step === 3 ? "Deposit" : 
-                         step === 4 ? "Convert" : "Receive"}
-                      </span>
+                    ))}
+                    
+                    {/* Progress bar connecting steps */}
+                    <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-700">
+                      <div 
+                        className="h-0.5 bg-accent transition-all duration-500 ease-in-out"
+                        style={{ width: `${(rightStep-1) * 25}%` }}
+                      ></div>
                     </div>
-                  ))}
-                  
-                  {/* Progress bar connecting steps */}
-                  <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-700">
-                    <div 
-                      className="h-0.5 bg-accent transition-all duration-500 ease-in-out"
-                      style={{ width: `${(rightStep-1) * 25}%` }}
-                    ></div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="w-full flex flex-col justify-start items-center p-4">
-              <div className="w-full max-w-md bg-jacarta-800 rounded-lg shadow-lg p-4 min-h-[600px]">
-                <div className="relative w-full ">
-                  <div className="absolute w-full flex justify-between items-center px-12">
-                    {/* Removed step circles and numbers */}
+              <div className="w-full flex flex-col justify-start items-center p-4">
+                <div className="w-full max-w-md bg-jacarta-700 rounded-lg shadow-lg p-4 min-h-[600px]">
+                  <div className="relative w-full ">
+                    <div className="absolute w-full flex justify-between items-center px-12">
+                      {/* Removed step circles and numbers */}
+                    </div>
+                  </div>
+
+                  <div className="text-center text-white">
+                    {rightStep === 1 && (
+                        <div>
+                          <h3 className="text-xl md:text-3xl font-bold mb-6 munro-small-heading">Connect Wallet</h3>
+                          <div className="flex justify-center mb-6">
+                            <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
+                          </div>
+                          <p className="text-xl md:text-2xl munro-small-text">Unlock multichain deposits</p>
+                        </div>
+                    )}
+                    {rightStep === 2 && (
+                        <div>
+                          <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Choose amount</h3>
+                          <div className="flex justify-center mb-6">
+                            <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
+                          </div>
+                          <p className="text-xl munro-small-text">Specify the amount you want to deposit</p>
+                        </div>
+                    )}
+                    {rightStep === 3 && (
+                        <div>
+                          <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Awaiting deposit</h3>
+                          <p className="text-xl munro-small-text">Send the specified amount to continue</p>
+                        </div>
+                    )}
+                    {rightStep === 4 && (
+                        <div>
+                          <h3 className="text-3xl font-bold mb-6 munro-regular-heading">
+                            Swapping tokens to ckBTC
+                          </h3>
+                          <p className="text-xl munro-small-text">Converting your tokens</p>
+                        </div>
+                    )}
+                    {rightStep === 5 && (
+                        <div>
+                          {status === "finished" ? (
+                              <>
+                                <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Balance updated</h3>
+                                <p className="text-xl munro-small-text">Check your wallet for new ckBTC</p>
+                              </>
+                          ) : (
+                              <>
+                                <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Sending ckBTC</h3>
+                                <p className="text-xl munro-small-text">Finalizing your transaction</p>
+                              </>
+                          )}
+                        </div>
+                    )}
                   </div>
                 </div>
-
-                <div className="text-center text-white">
-                  {rightStep === 1 && (
-                      <div>
-                        <h3 className="text-xl md:text-3xl font-bold mb-6 munro-small-heading">Connect Wallet</h3>
-                        <div className="flex justify-center mb-6">
-                          <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
-                        </div>
-                        <p className="text-xl md:text-2xl munro-small-text">Unlock multichain deposits</p>
-                      </div>
-                  )}
-                  {rightStep === 2 && (
-                      <div>
-                        <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Choose amount</h3>
-                        <div className="flex justify-center mb-6">
-                          <img src={connectWalletGif} alt="Connect Wallet" className="w-24 h-24 md:w-48 md:h-48 rounded-lg" />
-                        </div>
-                        <p className="text-xl munro-small-text">Specify the amount you want to deposit</p>
-                      </div>
-                  )}
-                  {rightStep === 3 && (
-                      <div>
-                        <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Awaiting deposit</h3>
-                        <p className="text-xl munro-small-text">Send the specified amount to continue</p>
-                      </div>
-                  )}
-                  {rightStep === 4 && (
-                      <div>
-                        <h3 className="text-3xl font-bold mb-6 munro-regular-heading">
-                          Swapping tokens to ckBTC
-                        </h3>
-                        <p className="text-xl munro-small-text">Converting your tokens</p>
-                      </div>
-                  )}
-                  {rightStep === 5 && (
-                      <div>
-                        {status === "finished" ? (
-                            <>
-                              <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Balance updated</h3>
-                              <p className="text-xl munro-small-text">Check your wallet for new ckBTC</p>
-                            </>
-                        ) : (
-                            <>
-                              <h3 className="text-3xl font-bold mb-6 munro-regular-heading">Sending ckBTC</h3>
-                              <p className="text-xl munro-small-text">Finalizing your transaction</p>
-                            </>
-                        )}
-                      </div>
-                  )}
-                </div>
-              </div>
-              <div
-                  className="px-6 mt-4 py-3 rounded-lg text-white munro-small-text text-center lg:w-1/2"
-                  style={{
-                    backgroundColor: wallets?.ckBTC?.walletAddressForDisplay ? 'rgba(22, 163, 74, 0.2)' : 'rgba(220, 38, 38, 0.2)',
-                    border: wallets?.ckBTC?.walletAddressForDisplay ? '2px solid #16a34a' : '2px solid #dc2626',
-                    minWidth: '300px',
-                    maxWidth: '300px'
-                  }}
-              >
-                {wallets?.ckBTC?.walletAddressForDisplay
-                    ? `Wallet connected`
-                    : "Account not detected. Please log in."}
-              </div>
-
-              {/* Balance de ICP */}
-          {/* Balance de ICP */}
-          {wallets?.ckBTC?.walletAddressForDisplay && (
-            <div
-                className="px-6 mt-2 py-3 rounded-lg text-white munro-small-text text-center lg:w-1/2"
-                style={{
-                  backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                  border: '2px solid #3b82f6',
-                  minWidth: '300px',
-                  maxWidth: '300px'
-                }}
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <span>ICP Balance:</span>
-                {loadingIcpBalance ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                ) : (
-                  <span className="font-bold">
-                    {icpBalanceValue !== null ? `${icpBalanceValue.toFixed(6)} ICP` : 'Unable to load'}
-                  </span>
-                )}
-                <button
-                  onClick={async () => {
-                    if (!loadingIcpBalance && icpBalance) {
-                      setLoadingIcpBalance(true);
-                      try {
-                        const balance = await icpBalance();
-                        setIcpBalanceValue(balance);
-                      } catch (error) {
-                        console.error('Error refreshing ICP balance:', error);
-                      } finally {
-                        setLoadingIcpBalance(false);
-                      }
-                    }
-                  }}
-                  className="ml-2 text-blue-300 hover:text-white transition-colors disabled:opacity-50"
-                  disabled={loadingIcpBalance}
-                  title="Refresh balance"
+                <div
+                    className="px-6 mt-4 py-3 rounded-lg text-white munro-small-text text-center lg:w-1/2"
+                    style={{
+                      backgroundColor: wallets?.ckBTC?.walletAddressForDisplay ? 'rgba(22, 163, 74, 0.2)' : 'rgba(220, 38, 38, 0.2)',
+                      border: wallets?.ckBTC?.walletAddressForDisplay ? '2px solid #16a34a' : '2px solid #dc2626',
+                      minWidth: '300px',
+                      maxWidth: '300px'
+                    }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </button>
+                  {wallets?.ckBTC?.walletAddressForDisplay
+                      ? `Wallet connected`
+                      : "Account not detected. Please log in."}
+                </div>
+
+                {/* Balance de ICP */}
+                {wallets?.ckBTC?.walletAddressForDisplay && (
+                  <div
+                      className="px-6 mt-2 py-3 rounded-lg text-white munro-small-text text-center lg:w-1/2"
+                      style={{
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        border: '2px solid #3b82f6',
+                        minWidth: '300px',
+                        maxWidth: '300px'
+                      }}
+                  >
+                    <div className="flex items-center justify-center space-x-2">
+                      <span>ICP Balance:</span>
+                      {loadingIcpBalance ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      ) : (
+                        <span className="font-bold">
+                          {icpBalanceValue !== null ? `${icpBalanceValue.toFixed(6)} ICP` : 'Unable to load'}
+                        </span>
+                      )}
+                      <button
+                        onClick={async () => {
+                          if (!loadingIcpBalance && icpBalance) {
+                            setLoadingIcpBalance(true);
+                            try {
+                              const balance = await icpBalance();
+                              setIcpBalanceValue(balance);
+                            } catch (error) {
+                            //  console.error('Error refreshing ICP balance:', error);
+                            } finally {
+                              setLoadingIcpBalance(false);
+                            }
+                          }
+                        }}
+                        className="ml-2 text-blue-300 hover:text-white transition-colors disabled:opacity-50"
+                        disabled={loadingIcpBalance}
+                        title="Refresh balance"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-        </div>
 
-        <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)] justify-center">
-          <div
-              className="w-full lg:w-1/2 flex justify-center items-center px-4"
-              style={{ filter: leftBoxBlur }}
-          >
-            <div className="w-full max-w-[300px]">
-              {/* Form */}
-              <div className="w-full">
-                {currentSection === 1 && renderTokenSelection()}
-                {currentSection === 2 && renderAmountInput()}
-                {currentSection === 3 && renderDepositInfo()}
+              <div className="flex flex-col lg:flex-row w-full h-[calc(100vh-120px)] justify-center">
+                <div
+                    className="w-full lg:w-1/2 flex justify-center items-center px-4"
+                    style={{ filter: leftBoxBlur }}
+                >
+                  <div className="w-full max-w-[300px]">
+                    {/* Form */}
+                    <div className="w-full">
+                      {currentSection === 1 && renderTokenSelection()}
+                      {currentSection === 2 && renderAmountInput()}
+                      {currentSection === 3 && renderDepositInfo()}
 
-                {isError && (
-                    <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
-                      <p className="text-red-100 munro-small-text">
-                        <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
-                      </p>
+                      {isError && (
+                          <div className="mt-6 p-4 bg-red-800 rounded-lg shadow-sm">
+                            <p className="text-red-100 munro-small-text">
+                              <strong>Error:</strong> Failed to retrieve exchange details. Please try again.
+                            </p>
+                          </div>
+                      )}
+
+                      {loading && (
+                          <div className="flex items-center justify-center mt-4">
+                            <div className="spinner-border animate-spin text-accent" role="status">
+                              <span className="sr-only">Loading...</span>
+                            </div>
+                            <span className="ml-2 text-jacarta-100 munro-small-text">{status}</span>
+                          </div>
+                      )}
                     </div>
-                )}
+                  </div>
+                </div>
 
-                {loading && (
-                    <div className="flex items-center justify-center mt-4">
-                      <div className="spinner-border animate-spin text-accent" role="status">
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                      <span className="ml-2 text-jacarta-100 munro-small-text">{status}</span>
-                    </div>
-                )}
+                {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
+
               </div>
             </div>
           </div>
-
-          {/* Contenedor de la derecha 5-step progress. #1 => Connect wallet */}
-
-        </div>
-        </>
         )}
 
         {/* Currencies Modal */}
