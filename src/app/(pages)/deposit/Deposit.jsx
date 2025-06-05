@@ -273,7 +273,9 @@ const aggregatorTokens = {
   XRP: {
     logo: "/img/coinplebes/XRP.svg",
     networks: [
-      { aggregatorSymbol: "xrp", displayToken: "XRP", displayNetwork: "XRP" },
+      { aggregatorSymbol: "xrp", displayToken: "XRP", displayNetwork: "XRP", defaultAmount: 1000,  "alias": [
+        "xrpxrp"
+      ] },
     ],
   },
 
