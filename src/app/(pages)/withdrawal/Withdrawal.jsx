@@ -336,7 +336,7 @@ const TokenRow = () => {
           setCurrentSection(3);
         }
       } catch (error) {
-        console.error("Failed to fetch user transactions", error);
+      //  console.error("Failed to fetch user transactions", error);
       }
     };
     fetchUserTransactions();
@@ -362,10 +362,10 @@ const TokenRow = () => {
             setApiResponse(transaction);
             setStatus(transaction.details.status);
           } else {
-            console.log("Polling: No active transaction found or invalid data format.", data);
+            // console.log("Polling: No active transaction found or invalid data format.", data);
           }
         } catch (err) {
-          console.error("Failed to poll transaction", err);
+          // console.error("Failed to poll transaction", err);
           setPolling(false);
         }
       }, 1000);
@@ -416,8 +416,6 @@ const TokenRow = () => {
   };
 
   async function handleCreateExchange() {
-    console.log("handleCreateExchange started");
-    console.log(`handleCreateExchange: Using token=${selectedToken}, networkIndex=${selectedNetworkIndex}`);
 
     if (!wallets?.ckBTC?.walletPrincipal) {
       console.error("No ckBTC wallet found");

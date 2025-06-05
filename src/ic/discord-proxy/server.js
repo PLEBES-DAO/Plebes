@@ -37,5 +37,5 @@ app.get('/messages/:channelId', async (req, res) => {
 
 // Iniciar el servidor
 app.listen(PORT, () => {
-    console.log(`Proxy server running on http://localhost:${PORT}`);
+  //  console.log(`Proxy server running on http://localhost:${PORT}`);
 });

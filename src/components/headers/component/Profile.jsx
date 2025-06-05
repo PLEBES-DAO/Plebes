@@ -29,12 +29,12 @@ export default function Profile({ wallets, balances, setModalOpen }) {
         // 3) Format the result
         const usdValString = usdVal.toFixed(2);
   
-        console.log("usdValString", usdValString);
+     //   console.log("usdValString", usdValString);
   
         // 4) Update state
         setCkBTCUSD(usdValString);
       } catch (err) {
-        console.error("Error converting ckBTC to USD:", err);
+      //  console.error("Error converting ckBTC to USD:", err);
       }
     };
   
@@ -54,7 +54,6 @@ export default function Profile({ wallets, balances, setModalOpen }) {
     setIsOpen(prevState => !prevState); // Toggle dropdown visibility using previous state
   };
 
-  console.log("wallets",wallets)
   return (
     <div className="js-nav-dropdown group-dropdown relative">
       {/* Button to trigger dropdown */}

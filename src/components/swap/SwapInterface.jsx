@@ -189,11 +189,12 @@ const SwapInterface = () => {
     <div className="max-w-4xl mx-auto p-6 bg-jacarta-800 rounded-lg shadow-xl">
       {/* Header */}
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2 munro-regular-heading gradient-text">
-          ICP ⇄ ckBTC Swap
-        </h2>
+        
         <p className="text-jacarta-300 munro-small-text">
           Exchange your ICP tokens for ckBTC using the decentralized swap pool
+        </p>
+        <p className="text-jacarta-300 munro-small-text text-sm">
+          (We are working on make this automated, stay tuned!)
         </p>
       </div>
 
@@ -244,7 +245,7 @@ const SwapInterface = () => {
         </div>
       </div>
 
-      {/* Swap Amount Input */}
+       {/* Swap Amount Input 
       <div className="mb-8">
         <div className="bg-jacarta-700 p-6 rounded-lg border-2 border-jacarta-600">
           <h3 className="text-lg font-bold text-white mb-4 munro-regular-heading">
@@ -304,8 +305,9 @@ const SwapInterface = () => {
                 </div>
               )}
             </div>
-            
-            {/* Estimated Output */}
+            */}
+
+            {/* Estimated Output
             {swapAmount && parseFloat(swapAmount) > 0 && (
               <div className="p-3 bg-jacarta-800 rounded-lg border border-jacarta-600">
                 <div className="flex justify-between items-center">
@@ -322,6 +324,7 @@ const SwapInterface = () => {
           </div>
         </div>
       </div>
+       */}
 
       {/* Progress Bar */}
       {swapStep > 0 && (

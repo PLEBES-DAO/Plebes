@@ -18,7 +18,7 @@ export default function ProposalPage() {
             const data = await response.json();
             setMessages(data.map(msg => msg.content)); // Almacena solo el contenido de los mensajes
         } catch (error) {
-            console.error(error);
+           // console.error(error);
         }
     };
 

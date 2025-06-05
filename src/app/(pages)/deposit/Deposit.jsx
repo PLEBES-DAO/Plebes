@@ -42,7 +42,6 @@ const fetchSupportedCurrencies = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Failed to fetch supported currencies:", error);
     return [];
   }
 };
@@ -218,7 +217,7 @@ const aggregatorTokens = {
   ICP: {
      logo: "/img/coins/icp.svg",
      networks: [
-       { aggregatorSymbol: "ICP", displayToken: "ICP", displayNetwork: "MAINNET" },
+       { aggregatorSymbol: "ICP", displayToken: "ICP", displayNetwork: "ICP" },
      ],
    },
 
@@ -226,7 +225,7 @@ const aggregatorTokens = {
   NEAR: {
      logo: "/img/coinplebes/NEAR.svg",
      networks: [
-       { aggregatorSymbol: "NEAR", displayToken: "NEAR", displayNetwork: "MAINNET" },
+       { aggregatorSymbol: "NEAR", displayToken: "NEAR", displayNetwork: "NEAR" },
      ],
    },
 
@@ -242,7 +241,7 @@ const aggregatorTokens = {
   SOL: {
     logo: "/img/coinplebes/SOL.svg",
     networks: [
-      { aggregatorSymbol: "SOL", displayToken: "SOL", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "SOL", displayToken: "SOL", displayNetwork: "SOLANA" },
     ],
   },
 
@@ -282,7 +281,7 @@ const aggregatorTokens = {
   WLD: {
     logo: "/img/coinplebes/WLD.svg",
     networks: [
-      { aggregatorSymbol: "WLD", displayToken: "WLD", displayNetwork: "MAINNET" },
+      { aggregatorSymbol: "WLD", displayToken: "WLD", displayNetwork: "ETHEREUM" },
       { aggregatorSymbol: "WLDOP", displayToken: "WLD", displayNetwork: "OPTIMISM", defaultAmount: 95, smartContract: "0xdc6ff44d5d932cbd77b52e5612ba0529dc6226f1" },
     ],
   },
@@ -305,7 +304,8 @@ function getMinimumDeposit(symbol, minValue) {
     "DOT": "Minimum 25 DOT",
     "XLM": "Minimum 370 XLM",
     "XRP": "Minimum 45.3 XRP",
-    "DOGE": "Minimum 50 DOGE"
+    "DOGE": "Minimum 15.97 DOGE", // Updated based on API error message
+    "WLD": "Minimum 20.68 WLD" // Updated based on API error message
   };
 
   return minimumValues[symbol] || `Minimum 0.01 ${symbol}`;
@@ -430,8 +430,6 @@ const TokenRow = () => {
       try {
         const currencies = await fetchSupportedCurrencies();
         if (currencies && currencies.length > 0) {
-          console.log("Fetched supported currencies:", currencies.length);
-          console.log("Full list of supported currencies:", currencies);
           setSupportedCurrencies(currencies);
           
           // Map currencies to the format needed for UI
@@ -444,7 +442,7 @@ const TokenRow = () => {
           });
         }
       } catch (error) {
-        console.error("Error fetching supported currencies:", error);
+        // console.error("Failed to fetch supported currencies:", error);
       }
     };
     
@@ -486,7 +484,7 @@ const TokenRow = () => {
           setCurrentSection(3);
         }
       } catch (error) {
-        console.error("Failed to fetch user transactions", error);
+       // console.error("Failed to fetch user transactions", error);
       }
     };
     fetchUserTransactions();
@@ -520,10 +518,7 @@ const TokenRow = () => {
           if (data && !data.error) {
             // Actualizar con el status correcto (según documentación)
             const currentStatus = data.status || "waiting";
-            
-            // Log transaction updates
-            console.log(`Transaction status update: ${status} → ${currentStatus}`);
-            
+                        
             setApiResponse(prev => ({
               ...prev,
               details: {
@@ -536,14 +531,13 @@ const TokenRow = () => {
             
             // Si la transacción está finalizada, detener polling
             if (currentStatus === "finished") {
-              console.log("Transaction completed successfully");
               setPolling(false);
               await buy();
               handleDeleteExchange();
             }
           }
         } catch (err) {
-          console.error("Failed to poll transaction:", err);
+        //  console.error("Failed to poll transaction:", err);
         }
       }, 5000);
       
@@ -585,9 +579,7 @@ const TokenRow = () => {
       try {
         const balance = await icpBalance();
         setIcpBalanceValue(balance);
-        console.log('ICP Balance loaded:', balance);
       } catch (error) {
-        console.error('Error loading ICP balance:', error);
         setIcpBalanceValue(null);
       } finally {
         setLoadingIcpBalance(false);
@@ -605,11 +597,12 @@ const TokenRow = () => {
     if (!netOption) return;
 
     // Use API-fetched minimum amount if available, otherwise use getMinimumDeposit fallback
-    const apiMinAmount = minAmounts[netOption.displayToken];
+    const apiMinAmount = minAmounts[selectedToken]; // Use selectedToken as key instead of netOption.displayToken
     const minValue = apiMinAmount ? 
-      `Minimum ${apiMinAmount} ${netOption.displayToken}` : 
-      getMinimumDeposit(netOption.displayToken, netOption.minAmount);
+      `Minimum ${apiMinAmount} ${selectedToken}` : 
+      getMinimumDeposit(selectedToken, netOption.minAmount); // Also use selectedToken here
     setMinDeposit(minValue);
+
   }, [selectedToken, selectedNetworkIndex, minAmounts]);
 
   // Función para avanzar a la siguiente sección
@@ -639,7 +632,6 @@ const TokenRow = () => {
       
       const url = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=1&rateType=floating${adapterParam}`;
       
-      console.log(`Fetching minimum amount for ${token}/${network.displayNetwork}...`);
       
       const response = await fetch(url, {
         method: "GET",
@@ -650,36 +642,60 @@ const TokenRow = () => {
       });
       
       if (!response.ok) {
-        console.error(`Failed to fetch minimum amount: ${response.status} ${response.statusText}`);
         return;
       }
       
       const data = await response.json();
       
       if (data.error) {
-        console.error(`Error fetching minimum amount: ${data.message}`);
-        return;
+        
+        // Try to extract minimum amount from error message patterns like "Try amount between X and Y"
+        if (data.message && typeof data.message === 'string') {
+          const amountBetweenMatch = data.message.match(/try amount between ([\d.]+) and/i);
+          const amountMoreThanMatch = data.message.match(/try amount more than ([\d.]+)/i); // New pattern for "more than X"
+          const minimumMatch = data.message.match(/minimum[:\s]+([\d.]+)/i);
+          
+          let extractedMinAmount = null;
+          
+          if (amountBetweenMatch && amountBetweenMatch[1]) {
+            extractedMinAmount = parseFloat(amountBetweenMatch[1]);
+          } else if (amountMoreThanMatch && amountMoreThanMatch[1]) {
+            extractedMinAmount = parseFloat(amountMoreThanMatch[1]);
+          } else if (minimumMatch && minimumMatch[1]) {
+            extractedMinAmount = parseFloat(minimumMatch[1]);
+          }
+          
+          if (extractedMinAmount && extractedMinAmount > 0) {
+            
+            // Update state with the extracted minimum amount
+            setMinAmounts(prev => ({
+              ...prev,
+              [token]: extractedMinAmount.toString() // Use token parameter as key (which is selectedToken)
+            }));
+            
+            // Auto-fill the minimum amount if the input is empty or less than minimum
+            if (!amount || parseFloat(amount) < extractedMinAmount) {
+              setAmount(extractedMinAmount.toString());
+            }
+            
+            return; // Successfully extracted minimum from error message
+          }
+        }
+        
+        return; // Could not extract minimum amount from error
       }
       
       // Get the minimum amount from the response
       const minAmount = data.minAmount || 0;
       
-      if (minAmount > 0) {
-        console.log(`Minimum amount for ${token}/${network.displayNetwork}: ${minAmount}`);
-        
+      if (minAmount > 0) {        
         // Use the exact API value without formatting
         const formattedMinAmount = minAmount.toString();
-        
-        // Add enhanced console logging
-        console.log(`==== MINIMUM DEPOSIT REQUIREMENTS ====`);
-        console.log(`Token: ${token} (${network.displayNetwork})`);
-        console.log(`Minimum required amount: ${formattedMinAmount} ${token}`);
-        console.log(`========================================`);
         
         // Update state with the minimum amount
         setMinAmounts(prev => ({
           ...prev,
-          [token]: formattedMinAmount
+          [token]: formattedMinAmount // Use token parameter as key (which is selectedToken)
         }));
         
         // Auto-fill the minimum amount if the input is empty or less than minimum
@@ -688,12 +704,11 @@ const TokenRow = () => {
         }
       }
     } catch (error) {
-      console.error("Error fetching minimum amount:", error);
+    //  console.error("Error fetching minimum amount:", error);
     }
   };
 
   async function handleCreateExchange(retryCount = 0) {
-    console.log("handleCreateExchange started");
     
     // NEW ADDRESS FLOW:
     // - addressReceive in API payload = user's ICP wallet (where they want to receive ICP)
@@ -710,7 +725,7 @@ const TokenRow = () => {
     }
     
     if (!wallets?.ckBTC?.walletPrincipal) {
-      console.error("No ckBTC wallet found");
+    //  console.error("No ckBTC wallet found");
       setErrorMessage("No ckBTC wallet found. Please connect your wallet.");
       return;
     }
@@ -745,8 +760,6 @@ const TokenRow = () => {
     try {
       setLoading(true);
       
-      // Step 1: Get rate from Swapzone API
-      console.log("Getting rate from Swapzone API...");
       
       // For Bitcoin, use a specific adapter based on currentRetryCount
       let adapterParam = '';
@@ -755,47 +768,30 @@ const TokenRow = () => {
         const currentIndex = currentRetryCount % btcAdapters.length;
         const selectedAdapter = btcAdapters[currentIndex];
         adapterParam = `&adapter=${selectedAdapter}`;
-        console.log(`Getting rate with BTC adapter attempt #${currentRetryCount + 1}: ${selectedAdapter}`);
       }
       
       const rateUrl = `${SWAPZONE_API_BASE_URL}/exchange/get-rate?from=${fromCurrency}&to=${toCurrency}&amount=${amountToUse}&rateType=floating${adapterParam}`;
-      console.log("Rate URL:", rateUrl);
       
       const headers = { 
         "Content-Type": "application/json",
         "x-api-key": SWAPZONE_API_KEY
       };
-      console.log("Rate request headers:", JSON.stringify(headers));
       
       const rateResponse = await fetch(rateUrl, {
         method: "GET",
         headers: headers
       });
       
-      console.log("Rate response status:", rateResponse.status, rateResponse.statusText);
       const rateResponseHeaders = {};
       rateResponse.headers.forEach((value, name) => {
         rateResponseHeaders[name] = value;
       });
-      console.log("Rate response headers:", rateResponseHeaders);
       
       // Parse rate response as JSON
       try {
-        rateData = await rateResponse.json();
-        console.log("Rate response received:", rateData);
+        rateData = await rateResponse.json();        
         
-        // Add enhanced logging for exchange rate details
-        console.log("==== EXCHANGE RATE DETAILS ====");
-        console.log(`From: ${fromCurrency} (${amountToUse})`);
-        console.log(`To: ${toCurrency}`);
-        console.log(`Exchange Rate: 1 ${fromCurrency} = ${rateData.amountTo/rateData.amountFrom} ${toCurrency}`);
-        console.log(`You will deposit: ${rateData.amountFrom} ${fromCurrency}`);
-        console.log(`You will receive approximately: ${rateData.amountTo} ${toCurrency}`);
-        console.log(`Minimum allowed: ${rateData.minAmount || 'Not specified'} ${fromCurrency}`);
-        console.log(`Maximum allowed: ${rateData.maxAmount || 'Not specified'} ${fromCurrency}`);
-        console.log("==============================");
       } catch (parseError) {
-        console.error("Error parsing rate response:", parseError);
         throw new Error(`Failed to parse rate response: ${parseError.message}`);
       }
       
@@ -805,7 +801,7 @@ const TokenRow = () => {
         if (fromCurrency.toLowerCase() === 'btc' && currentRetryCount < 2) {
           const nextRetryCount = currentRetryCount + 1;
           setAdapterTryCount(nextRetryCount); // Update state for UI feedback
-          console.log(`Retrying with next BTC adapter (attempt ${nextRetryCount + 1})`);
+         // console.log(`Retrying with next BTC adapter (attempt ${nextRetryCount + 1})`);
           handleCreateExchange(nextRetryCount); // Recursive call with incremented retryCount
           return;
         }
@@ -817,10 +813,10 @@ const TokenRow = () => {
         principal: wallets.ckBTC.walletPrincipal,
       }).toHex();
       
-      console.log("ICP receive address (user's wallet):", receiveAddress);
+      
       
       // Step 2: Create transaction with Swapzone API
-      console.log("Creating transaction with Swapzone API...");
+      // console.log("Creating transaction with Swapzone API...");
       
       // Build the transaction payload
       const transactionPayload = {
@@ -837,7 +833,7 @@ const TokenRow = () => {
       // Add adapter if we have one
       if (adapterParam) {
         transactionPayload.adapter = adapterParam.replace(/&adapter=/, '');
-        console.log(`Using adapter: ${transactionPayload.adapter}`);
+        // console.log(`Using adapter: ${transactionPayload.adapter}`);
       }
       
       // Check if we're using SideShift adapter (either from explicit adapter param or from rate data)
@@ -845,16 +841,16 @@ const TokenRow = () => {
         (transactionPayload.adapter && transactionPayload.adapter.toLowerCase().includes('sideshift')) ||
         (rateData.adapter && rateData.adapter.toLowerCase().includes('sideshift'));
         
-      console.log(`Adapter check: ${rateData.adapter}, isSideShift: ${isSideShiftAdapter}`);
+      // console.log(`Adapter check: ${rateData.adapter}, isSideShift: ${isSideShiftAdapter}`);
       
       // For refund address, we can only provide one for currencies where we have actual wallet support
       // Only add refund address for BTC since we have BTC wallet integration
       if (!isSideShiftAdapter && fromCurrency.toLowerCase() === 'btc' && wallets.BTC?.walletAddressForDisplay) {
         transactionPayload.refundAddress = wallets.BTC.walletAddressForDisplay;
-        console.log("Added BTC refund address:", wallets.BTC.walletAddressForDisplay);
+        // console.log("Added BTC refund address:", wallets.BTC.walletAddressForDisplay);
       }
       
-      console.log("Transaction payload:", JSON.stringify(transactionPayload));
+      // console.log("Transaction payload:", JSON.stringify(transactionPayload));
       
       const transactionResponse = await fetch(`${SWAPZONE_API_BASE_URL}/exchange/create`, {
         method: "POST",
@@ -865,37 +861,31 @@ const TokenRow = () => {
         body: JSON.stringify(transactionPayload)
       });
       
-      console.log("Transaction response status:", transactionResponse.status, transactionResponse.statusText);
+      // console.log("Transaction response status:", transactionResponse.status, transactionResponse.statusText);
       
       // Get response text for debugging in case of error
       const responseText = await transactionResponse.text();
-      console.log("Raw transaction response:", responseText);
+      // console.log("Raw transaction response:", responseText);
       
       // Parse the response as JSON (if possible)
       let transactionData;
       try {
         transactionData = JSON.parse(responseText);
-        console.log("Transaction data parsed:", JSON.stringify(transactionData));
+      //  console.log("Transaction data parsed:", JSON.stringify(transactionData));
       } catch (parseError) {
-        console.error("Error parsing transaction response:", parseError);
+      //  console.error("Error parsing transaction response:", parseError);
         throw new Error(`Failed to parse transaction response: ${parseError.message}`);
       }
       
       // Handle API error
       if (transactionData.error) {
         let errorMessage = transactionData.message || "Failed to create transaction";
-        
-        console.log(`Transaction creation failed: ${errorMessage}`);
-        console.log(`Current adapter try count: ${currentRetryCount}`);
-        console.log(`From currency: ${fromCurrency}`);
-        
         // Check if this is a StealthEx error and we can retry with a different adapter
         if (fromCurrency.toLowerCase() === 'btc' && 
             errorMessage.includes('stealthex') && 
             (errorMessage.includes('422') || errorMessage.includes('createOrder')) && 
             currentRetryCount < 2) {
           const nextRetryCount = currentRetryCount + 1;
-          console.log(`StealthEx failed for BTC, retrying with next adapter (attempt ${nextRetryCount + 1})`);
           setAdapterTryCount(nextRetryCount); // Update state for UI feedback
           setLoading(false); // Reset loading state before retry
           setTimeout(() => handleCreateExchange(nextRetryCount), 1000); // Small delay before retry
@@ -1034,18 +1024,9 @@ const TokenRow = () => {
       
       // Extract transaction data from nested structure if needed
       const txData = transactionData.transaction || transactionData;
-      
-      console.log("Transaction data structure:", {
-        rawId: transactionData.id,
-        txId: txData?.id,
-        rawDepositAddress: transactionData.addressDeposit || transactionData.address,
-        txDepositAddress: txData?.addressDeposit || txData?.address,
-        fullTxData: txData
-      });
-      
+    
       // Defensive check for required fields
       if (!txData || !txData.id) {
-        console.error("Missing required transaction ID in response:", JSON.stringify(transactionData));
         throw new Error("The exchange service returned an incomplete response. Transaction ID is missing.");
       }
       
@@ -1053,18 +1034,9 @@ const TokenRow = () => {
       const depositAddressFromApi = txData.addressDeposit || txData.address || "";
       
       if (!depositAddressFromApi) {
-        console.error("Missing deposit address in API response:", JSON.stringify(transactionData));
         throw new Error("The exchange service did not provide a deposit address. Please try again.");
       }
       
-      console.log("Transaction created successfully:", {
-        id: txData?.id,
-        depositAddress: depositAddressFromApi, // WHERE TO SEND SOURCE CURRENCY (from API)
-        receiveAddress: receiveAddress, // WHERE ICP WILL BE SENT (user's wallet)
-        amount: txData?.amountDeposit || amountToUse,
-        fromCurrency: fromCurrency.toUpperCase(),
-        toCurrency: 'ICP'
-      });
       
       // Update state with transaction data
       setApiResponse({
@@ -1084,7 +1056,6 @@ const TokenRow = () => {
       setHasFetched(true);
       setCurrentSection(3);
     } catch (error) {
-      console.error("Error in create-exchange process:", error);
       
       let userErrorMsg = "Failed to create transaction.";
       
@@ -1113,7 +1084,6 @@ const TokenRow = () => {
       setErrorMessage(userErrorMsg);
     } finally {
       setLoading(false);
-      console.log("handleCreateExchange finished");
     }
   }
 
@@ -1126,13 +1096,12 @@ const TokenRow = () => {
       // If we have a transaction ID and Swapzone supports cancellation, we would call it here
       // For now, we'll just clear the UI state as Swapzone might not support explicit cancellation
       
-      console.log("Clearing local transaction state");
       setApiResponse(null);
       setPolling(false);
       setStatus("");
       setCurrentSection(1);
     } catch (err) {
-      console.error("Error during transaction cleanup:", err);
+      // console.error("Error during transaction cleanup:", err);
     } finally {
       setLoading(false);
       setShowModal(false);
@@ -1153,19 +1122,7 @@ const TokenRow = () => {
 
   // Log deposit details only when they change
   useEffect(() => {
-    if (apiResponse?.details?.deposit) {
-      console.log("==== DEPOSIT DETAILS ====");
-      console.log("Transaction ID:", apiResponse.details.id);
-      console.log("Current Status:", status);
-      console.log("REQUIRED DEPOSIT AMOUNT:", apiResponse.details.deposit.amount, availableTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayToken);
-      console.log("Deposit Address:", apiResponse.details.deposit.address);
-      console.log("Network:", availableTokens[selectedToken]?.networks?.[selectedNetworkIndex]?.displayNetwork);
-      if (apiResponse.details.deposit.extra_id) {
-        console.log("Memo (IMPORTANT):", apiResponse.details.deposit.extra_id);
-      }
-      console.log("Full deposit object:", apiResponse.details.deposit);
-      console.log("=======================");
-    }
+
   }, [apiResponse, status]);
 
   // Renderiza la sección de selección de token y red
@@ -1642,7 +1599,7 @@ const TokenRow = () => {
           </div>
           
           <span className="text-white text-2xl md:text-5xl munro-regular-heading">
-            {activeTab === "deposit" ? "Multichain deposit" : "ICP ⇄ ckBTC Swap"}
+            {activeTab === "deposit" ? "Multichain deposit" : "Time to swap"}
           </span>
           {supportedCurrencies.length > 0 && activeTab === "deposit" && (
             <div className="flex justify-center mt-2">

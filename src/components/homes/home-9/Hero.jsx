@@ -52,7 +52,7 @@ export default function Hero() {
         setIcpBalance(e8sToDecimal(balanceNumber));
         setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching ICP balance:", error);
+      //  console.error("Error fetching ICP balance:", error);
         setIsLoading(false);
       }
     }
