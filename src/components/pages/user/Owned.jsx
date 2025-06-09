@@ -96,8 +96,18 @@ function CancelAuctionConfirmationModal({ isOpen, onClose, onConfirm }) {
   );
 }
 
-export default function Owned({ inscriptions }) {
-  const { sendInscription, createAuction, cancelAuction } = useBioniqContext();
+
+
+export default function Owned({ initialInscriptions, userAddress }) {
+  const { sendInscription, createAuction, cancelAuction, fetchUserInscriptions } = useBioniqContext();
+  const [inscriptions, setInscriptions] = useState(initialInscriptions?.nfts || []);
+  const [pagination, setPagination] = useState(initialInscriptions?.pagination || {
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 1
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   // Track currently selected item for any action
   const [selectedItem, setSelectedItem] = useState(null);
@@ -110,11 +120,36 @@ export default function Owned({ inscriptions }) {
 
   // Cancel Auction confirmation modal states
   const [isCancelAuctionModalOpen, setIsCancelAuctionModalOpen] = useState(false);
+  useEffect(() => {
+    console.log("inscriptions", initialInscriptions)
+  }, [initialInscriptions]);
 
   // Initialize tippy tooltips
   useEffect(() => {
     tippy("[data-tippy-content]");
   }, []);
+
+  // Fetch more inscriptions when pagination changes
+  const fetchMoreInscriptions = async (page) => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const data = await fetchUserInscriptions(page, pagination.limit);
+      setInscriptions(data.nfts);
+      setPagination(data.pagination);
+    } catch (error) {
+      console.error("Error fetching inscriptions:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > pagination.totalPages) return;
+    fetchMoreInscriptions(newPage);
+  };
 
   // ----------------------------
   // TRANSFER HANDLERS
@@ -197,19 +232,42 @@ export default function Owned({ inscriptions }) {
       <div className="container">
         <div className="tab-content">
           <div className="tab-pane fade" id="owned" role="tabpanel" aria-labelledby="owned-tab">
-            <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
-              {inscriptions &&
-                inscriptions.map((item, i) => (
+            {/* Pagination Controls */}
+            {initialInscriptions && <div className="flex justify-between items-center mb-4">
+              <button
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={initialInscriptions.pagination.page === 1 || isLoading}
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="text-jacarta-700 dark:text-white">
+                Page {initialInscriptions.pagination.page} of {initialInscriptions.pagination.totalPages} ({initialInscriptions.pagination.total} items)
+              </span>
+              <button
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={initialInscriptions.pagination.page === initialInscriptions.pagination.totalPages || isLoading}
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>}
+
+            {isLoading ? (
+              <div className="text-center py-8 text-jacarta-700 dark:text-white">Loading...</div>
+            ) : (
+              <div className="grid grid-cols-1 gap-[1.875rem] md:grid-cols-2 lg:grid-cols-4">
+                {initialInscriptions && initialInscriptions.nfts && initialInscriptions.nfts.map((item, i) => (
                   <article key={i}>
                     <div className="block rounded-2.5xl border border-jacarta-100 bg-white p-[1.1875rem] transition-shadow hover:shadow-lg dark:border-jacarta-700 dark:bg-jacarta-700">
                       <span className="font-display text-base text-jacarta-700 dark:text-white">
-                        {item.collection}
+                        {item.collection || 'Plebes NFT'}
                       </span>
                       <figure className="relative">
                         <Image
                           width={230}
                           height={230}
-                          src={item.content_url}
+                          src={`https://q3nxc-eyaaa-aaaah-aq2ha-cai.raw.icp0.io/?tokenid=${item.asset_id}`}
                           alt="item"
                           className="w-full rounded-[0.625rem]"
                           loading="lazy"
@@ -243,7 +301,8 @@ export default function Owned({ inscriptions }) {
                     </div>
                   </article>
                 ))}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

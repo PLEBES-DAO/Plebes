@@ -43,6 +43,20 @@ export default function Profile({ wallets, balances, setModalOpen }) {
       convertBalance();
     }
   }, [balances, ckBTCTotal]); // <- dependencies
+
+
+
+  useEffect(()=>{
+    const getUser = async () => {
+    console.log("in use effect wallets 1")
+    if(wallets){
+      console.log("in use effect wallets 2")
+      let api = await wallets.ckBTC.credentials.volt._api.user_address_data()
+      console.log("wallets api",api)
+    }
+  }
+  getUser();
+  },[wallets])
   
 
   useEffect(() => {

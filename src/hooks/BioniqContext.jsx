@@ -604,10 +604,46 @@ const BioniqContextProvider = ({ children }) => {
   }
 
 
-  const sendInscription = async (inscription,destinationAddress) =>{
+  // const sendInscription = async (inscription,destinationAddress) =>{
+  //   setLoading(true);
+  //   console.log('in send inscription',inscription,destinationAddress)
+  // //   async sendInscription({
+  // //     inscription,
+  // //     destinationAddress,
+  // //     utxoList,
+  // //     wrapFeeRate,
+  // //     resolvedBioniqUser,
+  // // }) 
+  // try{
+  //   console.log("in send inscription try",inscription,destinationAddress)
+  //   // let sendinscriptionResponse = await liveBioniqWalletApi.inscription.sendInscription({
+  //   //   inscription,
+  //   //   resolvedBioniqUser: {
+  //   //     currentWallets: wallets,
+  //   //   },
+  //   //   destinationAddress,
+  //   //   utxoList:[],
+  //   //   wrapFeeRate: { fullRate: 1000, tokenType: "Btc" }
+  //   // })
+  //   let toAddress = await liveBioniqWalletApi.inscription.lookupNFTAddres(destinationAddress);
+
+  //   let fromAddress = await wallets["ckBTC"]['credentials']['volt']['_api'].user_address();
+  //   let tokenId = inscription.tokenid;
+    
+  //   console.log("TXS from",fromAddress," to ",toAddress);
+  //   await reloadInscriptions();
+  //   setLoading(false);
+  //   console.log("response ",sendinscriptionResponse)
+  // }catch(e){
+  //   setError(e)
+  //   console.log("failed send inscription",e)
+  // }
+  // };
+
+  const sendInscription = async (inscription, destinationAddress) => {
     setLoading(true);
-    console.log('in send inscription',inscription,destinationAddress)
-  //   async sendInscription({
+    console.log('in send inscription', inscription, destinationAddress);
+  //       async sendInscription({
   //     inscription,
   //     destinationAddress,
   //     utxoList,
@@ -625,13 +661,41 @@ const BioniqContextProvider = ({ children }) => {
       utxoList:[],
       wrapFeeRate: { fullRate: 1000, tokenType: "Btc" }
     })
-    await reloadInscriptions();
-    setLoading(false);
-    console.log("response",sendinscriptionResponse)
-  }catch(e){
-    setError(e)
-    console.log("failed send inscription",e)
-  }
+      // Get addresses
+      let toAddress = await liveBioniqWalletApi.inscription.lookupNFTAddres(destinationAddress);
+      let fromAddress = await wallets["ckBTC"]['credentials']['volt']['_api'].user_address();
+      let tokenId = inscription.tokenid || inscription.token_id;
+      
+      console.log("TXS from", fromAddress, " to ", toAddress);
+      
+      // Call the transfer endpoint
+      const transferResponse = await fetch('https://api.plebes.xyz/transfer', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tokenId: tokenId,
+          fromAddress: fromAddress,
+          toAddress: toAddress,
+        })
+      });
+  
+      const result = await transferResponse.json();
+      
+      if (!transferResponse.ok) {
+        throw new Error(result.error || 'Transfer failed');
+      }
+  
+      console.log("Transfer successful:", result);
+      await reloadInscriptions();
+      setLoading(false);
+      
+    } catch(e) {
+      setError(e);
+      console.log("failed send inscription", e);
+      setLoading(false);
+    }
   };
 
 
@@ -649,12 +713,12 @@ const BioniqContextProvider = ({ children }) => {
         },
         tokenMode: "ckBTC",
         inscription: inscription,
-        startAmount: { decimalAmount: 0.00005, tokenType: "ckBTC" },
+        startAmount: { decimalAmount: 0.00001, tokenType: "ckBTC" },
         utxoList: [],
         wrapFeeRate: { fullRate: 1000, tokenType: "Btc" },
-        auctionDuration: { seconds: 82800 }
+        auctionDuration: { seconds: 300 } //82800
       });
-      await saveCurrentAuction("plebes",inscription.id);
+      await saveCurrentAuction("plebes",inscription.asset_id||inscription.id);
       console.log("auction response", auctionResponse)
       setLoading(false)
     }catch(e){
@@ -739,15 +803,17 @@ const BioniqContextProvider = ({ children }) => {
 
 
 
-  async function fetchUserInscriptions(user) {
+  async function fetchUserInscriptions(page = 1, limit = 20) {
+   let user = await wallets.ckBTC.credentials.volt._api.user_address();
+   console.log("user",user);
     try {
-      const response = await fetch(`https://api.bioniq.io/v2/inscriptions?address=${user}&page=2&limit=100`, {
+      const response = await fetch(`https://api.plebes.xyz/wallet-nfts/${user}?page=${page}&limit=${limit}`, {
         method: "GET",
         headers: {
-          "Content-Type": "application/json"
+          "Accept": "application/json"
         }
       });
-      console.log("response in fetch inscriptions",response)
+      
       if (!response.ok) {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
@@ -757,6 +823,7 @@ const BioniqContextProvider = ({ children }) => {
       return data;
     } catch (error) {
       console.error("Fetch Error:", error);
+      return { nfts: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 1 } };
     }
   }
 
@@ -1057,9 +1124,9 @@ const BioniqContextProvider = ({ children }) => {
     //   });
 
     // console.log("@inscriptions after load all inscriptions", _inscriptions);
-    let getInscriptions = await fetchUserInscriptions(wallets.BTC.walletAddress)
+    let getInscriptions = await fetchUserInscriptions();
     console.log("page 1 inscriptions",getInscriptions)
-    setInscriptions(getInscriptions.results);
+    setInscriptions(getInscriptions);
     setLoading(false);
     return getInscriptions.restults;
   }, [liveBioniqWalletApi, wallets]);
@@ -1133,7 +1200,8 @@ const BioniqContextProvider = ({ children }) => {
       setSwapStep,
       convertBtcToUsd,
       convertUsdToBtcOnDemand,
-      auctionExpiry
+      auctionExpiry,
+      fetchUserInscriptions
     }),
     [
       isLoading,
@@ -1171,7 +1239,8 @@ const BioniqContextProvider = ({ children }) => {
       setSwapStep,
       convertBtcToUsd,
       convertUsdToBtcOnDemand,
-      auctionExpiry
+      auctionExpiry,
+      fetchUserInscriptions
     ]
   );
 
