@@ -19,7 +19,7 @@ export default function OwnedPage({ login, inscriptions, loading, setModalOpen }
         <>
             <Navbar bLogin={login} setModalOpen={setModalOpen} />
             <main>
-                <Owned inscriptions={inscriptions} />
+                <Owned initialInscriptions={inscriptions} />
             </main>
             <Footer1 />
         </>

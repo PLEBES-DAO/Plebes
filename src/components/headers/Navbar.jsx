@@ -160,7 +160,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
               ? <>
                   <span className="text-xs "> Treasury:</span>
                   <span className="text-xs">{displayBalance.toFixed(4)}</span>
-                  <img src="/src/assets/img/icp-pixelated-logo.webp" alt="ICP Logo" className="icp-logo ml-2 mb-2 inline align-middle" style={{ height: '32px' }} />
+                  <img src="/img/icp-pixelated-logo.png" alt="ICP Logo" className="icp-logo ml-2 mb-2 inline align-middle" style={{ height: '32px' }} />
                 </>
               : '0.0000'}
           </span>
@@ -180,9 +180,9 @@ export default function Navbar({ bLogin, setModalOpen }) {
             displayBalance !== null ? displayBalance.toFixed(4) : '0.0000'
           )}
         </span>
-        <img src="/src/assets/img/icp-pixelated-logo.webp" alt="ICP Logo" className="ml-1 mb-1 inline align-middle" style={{ height: '18px' }} />
+          <img src="/img/icp-pixelated-logo.png" alt="ICP Logo" className="ml-1 mb-1 inline align-middle" style={{ height: '18px' }} />
+        </div>
       </div>
-    </div>
   );
 
   return (
