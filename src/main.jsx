@@ -5,6 +5,7 @@ import { AuthProvider } from "./AuthPlug.jsx";
 import { MetaMaskProvider } from "metamask-react";
 import { BrowserRouter } from "react-router-dom";
 import BioniqContextProvider from "./hooks/BioniqContext.jsx";
+import { StakingProvider } from "./hooks/StakingContext.tsx";
 import "swiper/css";
 // import "swiper/css/pagination";
 import "tippy.js/dist/tippy.css";
@@ -27,7 +28,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <MetaMaskProvider>
           <BioniqContextProvider>
+            <StakingProvider>
             <App />
+            </StakingProvider>
           </BioniqContextProvider>
         </MetaMaskProvider>
       </BrowserRouter>
