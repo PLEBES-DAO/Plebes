@@ -1,4 +1,4 @@
-mod state;
+pub mod state;
 
 use candid::{CandidType, Nat, Principal};
 use ic_cdk::api::time;
@@ -26,7 +26,7 @@ thread_local! {
         std::cell::RefCell::new(Principal::from_text("olpbc-wyaaa-aaaag-acnya-cai").unwrap()); // Default to ICP ledger
 }
 
-#[derive(CandidType, Deserialize, Serialize, Debug)]
+#[derive(CandidType, Deserialize, Serialize, Debug, Clone)]
 pub enum StakingError {
     TransferFailed(TransferFromError),
     TransferError(TransferError),

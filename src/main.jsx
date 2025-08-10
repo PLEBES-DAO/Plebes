@@ -6,6 +6,7 @@ import { MetaMaskProvider } from "metamask-react";
 import { BrowserRouter } from "react-router-dom";
 import BioniqContextProvider from "./hooks/BioniqContext.jsx";
 import { StakingProvider } from "./hooks/StakingContext.tsx";
+import { WalletProvider } from "./hooks/ICRCProvider.tsx";
 import "swiper/css";
 // import "swiper/css/pagination";
 import "tippy.js/dist/tippy.css";
@@ -28,9 +29,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <MetaMaskProvider>
           <BioniqContextProvider>
+            <WalletProvider>
             <StakingProvider>
             <App />
             </StakingProvider>
+            </WalletProvider>
           </BioniqContextProvider>
         </MetaMaskProvider>
       </BrowserRouter>
