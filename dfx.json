@@ -25,6 +25,11 @@
                 "dist"
             ],
             "type": "assets"
+        },
+        "backend": {
+          "candid": "backend/src/backend_backend/backend_backend.did",
+          "package": "backend_backend",
+          "type": "rust"
         }
     },
     "defaults": {

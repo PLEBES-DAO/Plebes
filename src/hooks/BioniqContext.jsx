@@ -1330,7 +1330,9 @@ const BioniqContextProvider = ({ children }) => {
       convertUsdToBtcOnDemand,
       auctionExpiry,
       icpBalance: getIcpBalance,
-      fetchUserInscriptions
+      fetchUserInscriptions,
+      identity,
+      setError
     }),
     [
       isLoading,
@@ -1370,7 +1372,9 @@ const BioniqContextProvider = ({ children }) => {
       convertUsdToBtcOnDemand,
       auctionExpiry,
       getIcpBalance,
-      fetchUserInscriptions
+      fetchUserInscriptions,
+      identity,
+      setError
     ]
   );
 

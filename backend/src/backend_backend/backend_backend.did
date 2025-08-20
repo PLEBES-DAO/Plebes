@@ -1,0 +1,61 @@
+type ProtocolStats = record {
+  total_staked : nat;
+  total_locked : nat;
+  total_stakers : nat64;
+  total_rewards_distributed : nat;
+};
+type Result = variant { Ok; Err : StakingError };
+type Result_1 = variant { Ok : StakingInfo; Err : StakingError };
+type Result_2 = variant { Ok : nat; Err : StakingError };
+type StakingError = variant {
+  InvalidAmount;
+  TransferError : TransferError;
+  AlreadyStaking;
+  InsufficientBalance;
+  CanisterCallFailed : record { nat32; text };
+  LockupPeriodNotEnded;
+  TransferFailed : TransferFromError;
+  InternalError : text;
+  NotStaking;
+};
+type StakingInfo = record {
+  staked_amount : nat;
+  unlock_time : nat64;
+  last_claim_time : nat64;
+  reward_amount : nat;
+  start_time : nat64;
+};
+type TransferError = variant {
+  GenericError : record { message : text; error_code : nat };
+  TemporarilyUnavailable;
+  BadBurn : record { min_burn_amount : nat };
+  Duplicate : record { duplicate_of : nat };
+  BadFee : record { expected_fee : nat };
+  CreatedInFuture : record { ledger_time : nat64 };
+  TooOld;
+  InsufficientFunds : record { balance : nat };
+};
+type TransferFromError = variant {
+  GenericError : record { message : text; error_code : nat };
+  TemporarilyUnavailable;
+  InsufficientAllowance : record { allowance : nat };
+  BadBurn : record { min_burn_amount : nat };
+  Duplicate : record { duplicate_of : nat };
+  BadFee : record { expected_fee : nat };
+  CreatedInFuture : record { ledger_time : nat64 };
+  TooOld;
+  InsufficientFunds : record { balance : nat };
+};
+service : () -> {
+  compound_rewards : () -> (Result);
+  get_protocol_stats : () -> (ProtocolStats) query;
+  get_token_canister : () -> (principal) query;
+  my_staking_balance : () -> (Result_1) query;
+  set_token_canister : (principal) -> ();
+  stake : (nat) -> (Result_2);
+  staking_balance : (principal) -> (Result_1) query;
+  start_staking : () -> (Result_2);
+  subaccount_balance : (principal) -> (Result_2);
+  user_subaccountQ : (principal) -> (blob) query;
+  withdraw : () -> (Result_2);
+}
