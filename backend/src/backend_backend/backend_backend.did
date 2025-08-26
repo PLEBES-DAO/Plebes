@@ -46,10 +46,35 @@ type TransferFromError = variant {
   TooOld;
   InsufficientFunds : record { balance : nat };
 };
+type BurnStats = record {
+  total_burned : nat;
+  total_to_treasury : nat;
+  total_burn_events : nat64;
+};
+
+type EarlyStakingInfo = record {
+  is_eligible: bool;
+  is_participant: bool;
+  slots_remaining: nat64;
+  total_participants: nat64;
+  joined_at: opt nat64;
+  lifetime_bonus_eligible: bool;
+};
+
+type EarlyStakingStats = record {
+  total_participants: nat64;
+  slots_remaining: nat64;
+};
+
 service : () -> {
   compound_rewards : () -> (Result);
+  get_burn_stats : () -> (BurnStats) query;
+  get_early_staking_info : (principal) -> (EarlyStakingInfo) query;
+  get_early_staking_stats : () -> (nat64) query;
   get_protocol_stats : () -> (ProtocolStats) query;
   get_token_canister : () -> (principal) query;
+  join_early_staking_program : () -> (variant { Ok: text; Err: text });
+  my_early_staking_info : () -> (EarlyStakingInfo) query;
   my_staking_balance : () -> (Result_1) query;
   set_token_canister : (principal) -> ();
   stake : (nat) -> (Result_2);
