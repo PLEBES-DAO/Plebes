@@ -2,9 +2,10 @@
 //@ts-nocheck
 import { Principal } from "@dfinity/principal";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { createStakingActor } from "../ic/staking/index.js";
+import { createActor } from "../declarations/backend/index.js";
 import { createicrc1Actor } from "../ic/icpswap/icrc1/index.js";
 import { useBioniqContext } from "./BioniqContext.jsx";
+import { EARLY_STAKING_CONSTANTS } from "../utils/tokenFormatting";
 
 const StakingContext = createContext(null);
 
@@ -12,6 +13,7 @@ export const useStakingClient = () => {
   const { identity,setError,error} = useBioniqContext();
   const [stakingStats, setStakingStats] = useState<ProtocolStats | null>(null);
   const [userStakingInfo, setUserStakingInfo] = useState<StakingInfo | null>(null);
+  const [burnStats, setBurnStats] = useState<BurnStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorIn, setErrorIn] = useState<StakingError | null>(null);
 
@@ -21,8 +23,10 @@ export const useStakingClient = () => {
 
   // Actor creators
   const createStakingActorAsync = () => {
-    return createStakingActor(stakingCanisterId, {
-      agentOptions: { identity }
+    const agentOptions = identity ? { identity, host: 'https://icp-api.io' } : { host: 'https://icp-api.io' };
+    return createActor(stakingCanisterId, {
+      agentOptions,
+      actorOptions: {},
     });
   };
 
@@ -45,6 +49,62 @@ export const useStakingClient = () => {
     }
   };
 
+  // Burn stats
+  const fetchBurnStats = async (): Promise<BurnStats> => {
+    try {
+      const actor = createStakingActorAsync();
+      const stats = await actor.get_burn_stats();
+      console.log('Burn stats from backend:', stats);
+      setBurnStats(stats);
+      return stats;
+    } catch (error) {
+      console.error("Failed to fetch burn stats:", error);
+      // Don't throw - burn stats are optional - set fallback data
+      const fallbackStats = {
+        total_burned: BigInt(0),
+        total_to_treasury: BigInt(0),
+        total_burn_events: BigInt(0)
+      };
+      setBurnStats(fallbackStats);
+      return fallbackStats;
+    }
+  };
+
+  // Early staking stats
+  const fetchEarlyStakingStats = async (): Promise<{ total_participants: bigint, slots_remaining: bigint }> => {
+    const max = BigInt(EARLY_STAKING_CONSTANTS?.MAX_PARTICIPANTS ?? 100);
+    try {
+      const actor = createStakingActorAsync();
+      const slotsRemaining = await actor.get_early_staking_stats();
+      console.log('Early staking stats (slots remaining) from backend:', slotsRemaining);
+
+      const slots = BigInt(slotsRemaining ?? 100);
+      return {
+        total_participants: max - slots,
+        slots_remaining: slots,
+      };
+    } catch (error) {
+      console.warn("get_early_staking_stats failed, falling back to get_protocol_stats:", error);
+      try {
+        const actor = createStakingActorAsync();
+        const stats = await actor.get_protocol_stats();
+        const participants = BigInt(stats?.total_stakers ?? 0);
+        const slots = max > participants ? max - participants : BigInt(0);
+        console.log('Fallback via protocol stats:', { participants: participants.toString(), slots: slots.toString() });
+        return {
+          total_participants: participants,
+          slots_remaining: slots,
+        };
+      } catch (err2) {
+        console.error("Fallback fetch via get_protocol_stats failed:", err2);
+        return {
+          total_participants: BigInt(0),
+          slots_remaining: max,
+        };
+      }
+    }
+  };
+
   // User staking info
   const fetchUserStakingInfo = async (): Promise<StakingInfo> => { 
     try {
@@ -56,16 +116,20 @@ export const useStakingClient = () => {
         return result.Ok;
       } else {
         setUserStakingInfo(null);
+        // Don't show error for NotStaking - it's normal for new users
         if(result && result.Err && result.Err.NotStaking){
-          return
+          console.log("User is not staking yet - this is expected for new users");
+          return null;
         }
-        setError("error fetching user dataa");
-        
+        // Don't show modal errors for normal states - just log them
+        console.warn("User staking data not available:", result.Err);
+        return null;
       }
     } catch (error) {
       setUserStakingInfo(null);
       console.error("Failed to fetch staking info:", error);
-      throw error;
+      // Don't throw - this prevents the modal from showing
+      return null;
     }
   };
 
@@ -94,13 +158,18 @@ export const useStakingClient = () => {
   const fetchStakingData = async () => {    
     setIsLoading(true);
     try {
-      await Promise.all([
-        fetchProtocolStats(),
-        fetchUserStakingInfo()
-      ]);
+      // Fetch protocol stats first (this should always work)
+      await fetchProtocolStats();
+      // Fetch burn stats (optional)
+      await fetchBurnStats();
+      // Fetch user info but don't fail if user isn't staking
+      await fetchUserStakingInfo();
     } catch (error) {
       console.error("Failed to fetch staking data:", error);
-      setError(error);
+      // Only show error modal for protocol stats failures, not user data failures
+      if (!stakingStats) {
+        setError("Unable to connect to staking service");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -192,23 +261,36 @@ export const useStakingClient = () => {
 
   // Initialize data on mount and when identity changes
   useEffect(() => {
-    console.log("identity in stakig",identity)
-    const loadData = async () => {
-      await fetchStakingData();
-    };
-
-    loadData();
+    console.log("identity in staking", identity);
+    
+    // Only fetch data if user is logged in
+    if (identity) {
+      const loadData = async () => {
+        await fetchStakingData();
+      };
+      loadData();
+    } else {
+      // Clear state when user is not logged in
+      setStakingStats(null);
+      setUserStakingInfo(null);
+      setBurnStats(null);
+      setIsLoading(false);
+      setErrorIn(null);
+    }
   }, [identity]);
 
   return {
     // State
     stakingStats,
     userStakingInfo,
+    burnStats,
     isLoading,
     error,
     
     // Functions
     fetchStakingData,
+    fetchBurnStats,
+    fetchEarlyStakingStats,
     startStaking,
     stakeTokens,
     withdrawTokens,
@@ -295,3 +377,9 @@ type TransferFromError = {
   TooOld?: null;
   InsufficientFunds?: { balance: bigint };
 };
+
+interface BurnStats {
+  total_burned: bigint;
+  total_to_treasury: bigint;
+  total_burn_events: bigint;
+}
