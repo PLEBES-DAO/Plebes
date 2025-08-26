@@ -180,6 +180,42 @@ export default function Profile({ wallets, balances, setModalOpen }) {
           </span>
         </div>
         <div
+          onClick={() => { navigate("/early-staking") }}
+          className="flex items-center space-x-2 rounded-xl px-5 py-2 transition-colors hover:bg-jacarta-50 hover:text-accent focus:text-accent dark:hover:bg-jacarta-600"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            className="h-4 w-4 fill-jacarta-700 transition-colors dark:fill-white"
+          >
+            <path fill="none" d="M0 0h24v24H0z"></path>
+            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"></path>
+          </svg>
+          <span className="mt-1 font-display text-sm text-jacarta-700 dark:text-white">
+            🚀 Early Staking
+          </span>
+        </div>
+        <div
+          onClick={() => { navigate("/staking") }}
+          className="flex items-center space-x-2 rounded-xl px-5 py-2 transition-colors hover:bg-jacarta-50 hover:text-accent focus:text-accent dark:hover:bg-jacarta-600"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            className="h-4 w-4 fill-jacarta-700 transition-colors dark:fill-white"
+          >
+            <path fill="none" d="M0 0h24v24H0z"></path>
+            <path d="M17 7h3a1 1 0 0 1 1 1v11a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V8a1 1 0 0 1 1-1h3V6a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v1zm-2 0V6a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v1h6zm-7 5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2z"></path>
+          </svg>
+          <span className="mt-1 font-display text-sm text-jacarta-700 dark:text-white">
+            Staking
+          </span>
+        </div>
+        <div
           onClick={() => { setModalOpen(true) }}
           className="flex items-center space-x-2 rounded-xl px-5 py-2 transition-colors hover:bg-jacarta-50 hover:text-accent focus:text-accent dark:hover:bg-jacarta-600"
         >

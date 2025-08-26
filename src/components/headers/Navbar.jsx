@@ -56,7 +56,7 @@ export default function Navbar({ bLogin, setModalOpen }) {
       try {
         const agent = new HttpAgent({ host: 'https://ic0.app' });
         const canisterId = 'ryjl3-tyaaa-aaaaa-aaaba-cai'; // ICP Ledger canister ID
-        const walletAddress = 'ycv6x-taztk-nu75u-k4xkg-5jthb-x525x-4tfk7-b6ino-avbls-hcbkv-sqe';
+        const walletAddress = '4pirv-cmyye-wxchr-37dkz-r6b7o-2gcnk-jf7qn-skfek-46kz4-faldj-uae';
 
         const icpActor = Actor.createActor(idlFactory, {
           agent,
