@@ -6,6 +6,7 @@ import './Munro.css';
 import { useBioniqContext } from '../../../hooks/BioniqContext';
 import Navbar from '../../headers/Navbar';
 import { useTokenClient } from '../../../hooks/ICRCProvider';
+import { formatE8sToTokens, tokensToE8s } from '../../../utils/tokenFormatting';
 
 export const StakingInterface = ({ login }) => {
   const { isLoggedIn, identity } = useBioniqContext();
@@ -54,7 +55,7 @@ export const StakingInterface = ({ login }) => {
   const handleStake = async () => {
     if (!amount) return;
     try {
-      const amountE8s = BigInt(Number(amount) * 100000000);
+      const amountE8s = tokensToE8s(amount);
       await stakeTokens(amountE8s);
       setAmount('');
     } catch (error) {
@@ -88,8 +89,8 @@ export const StakingInterface = ({ login }) => {
   };
 
   const formatBalance = (balance: bigint | null) => {
-    if (balance === null) return '0.00';
-    return (Number(balance) / 100000000).toFixed(2);
+    if (balance === null || balance === 0n) return '0.00';
+    return formatE8sToTokens(balance);
   };
 
   const formatDate = (timestamp: bigint) => {
@@ -175,6 +176,24 @@ export const StakingInterface = ({ login }) => {
         <section className="relative min-h-screen mt-[20px]" style={{ marginTop: "50px" }}>
           <div className="ml-auto mr-auto max-w-[91rem] px-4 relative z-10 p-8">
             <div className="grid grid-cols-1 gap-8">
+              
+              {/* Early Staking Program Banner */}
+              <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 p-4 rounded-2xl border border-purple-500/30">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div>
+                    <h3 className="munro-regular-text text-white text-lg mb-1">🚀 Early Staking Program</h3>
+                    <p className="text-gray-300 text-sm">
+                      Join 100 early adopters • Get 10 PLBS locked + daily rewards • Lifetime 1% farming bonus
+                    </p>
+                  </div>
+                  <a 
+                    href="/early-staking"
+                    className="bg-purple-600 hover:bg-purple-500 munro-small-text text-white px-6 py-2 rounded-lg transition-all shadow-lg flex-shrink-0"
+                  >
+                    Join Now →
+                  </a>
+                </div>
+              </div>
               {/* Staking Tabs */}
               <div className="bg-black/30 p-6 rounded-2xl">
                 {showStartStaking ? (
@@ -278,11 +297,11 @@ export const StakingInterface = ({ login }) => {
                         <div className="bg-gray-800/50 p-4 rounded-lg">
                           <div className="flex justify-between mb-3">
                             <span className="text-gray-300">Staked Amount:</span>
-                            <span className="text-white">{Number(userStakingInfo.staked_amount)}</span>
+                            <span className="text-white">{formatE8sToTokens(userStakingInfo.staked_amount)} PLBS</span>
                           </div>
                           <div className="flex justify-between mb-3">
                             <span className="text-gray-300">Rewards Earned:</span>
-                            <span className="text-green-400">{Number(userStakingInfo.reward_amount)}</span>
+                            <span className="text-green-400">{formatE8sToTokens(userStakingInfo.reward_amount)} PLBS</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-300">Unlock Time:</span>
@@ -321,17 +340,17 @@ export const StakingInterface = ({ login }) => {
                   <div className="bg-gray-800/50 p-4 rounded-lg">
                     <div className="flex justify-between mb-2">
                       <span className="text-gray-300">Total Staked:</span>
-                      <span className="text-white">
-                        {stakingStats ? stakingStats.total_staked.toString() : '0.00'}
-                      </span>
+                    <span className="text-white">
+                        {stakingStats ? formatE8sToTokens(stakingStats.total_staked) + ' PLBS' : '0.00 PLBS'}
+                    </span>
                     </div>
                   </div>
                   <div className="bg-gray-800/50 p-4 rounded-lg">
                     <div className="flex justify-between mb-2">
                       <span className="text-gray-300">Total Locked:</span>
-                      <span className="text-white">
-                        {stakingStats ? stakingStats.total_locked.toString() : '0.00'}
-                      </span>
+                    <span className="text-white">
+                        {stakingStats ? formatE8sToTokens(stakingStats.total_locked) + ' PLBS' : '0.00 PLBS'}
+                    </span>
                     </div>
                   </div>
                   <div className="bg-gray-800/50 p-4 rounded-lg">
@@ -345,9 +364,9 @@ export const StakingInterface = ({ login }) => {
                   <div className="bg-gray-800/50 p-4 rounded-lg">
                     <div className="flex justify-between mb-2">
                       <span className="text-gray-300">Rewards Distributed:</span>
-                      <span className="text-white">
-                        {stakingStats ? stakingStats.total_rewards_distributed.toString() : '0.00'}
-                      </span>
+                    <span className="text-white">
+                        {stakingStats ? formatE8sToTokens(stakingStats.total_rewards_distributed) + ' PLBS' : '0.00 PLBS'}
+                    </span>
                     </div>
                   </div>
                 </div>
