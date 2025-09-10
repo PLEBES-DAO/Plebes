@@ -52,6 +52,8 @@ type BurnStats = record {
   total_burn_events : nat64;
 };
 
+// Early staking types
+
 type EarlyStakingInfo = record {
   is_eligible: bool;
   is_participant: bool;
