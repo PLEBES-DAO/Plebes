@@ -442,10 +442,10 @@ export const EarlyStakingProgram = ({ login }) => {
                   </div>
                   <div className="border-b border-gray-700 pb-4">
                     <h4 className="text-white font-bold mb-2">How do I claim daily rewards?</h4>
-                    <p className="text-gray-300">
-                      Daily rewards of 1 PLBS are automatically credited to your staking position. 
-                      You can compound them or withdraw after the lockup period.
-                    </p>
+                      <p className="text-gray-300">
+                      Daily rewards of 1 PLBS are automatically credited to your staking position.
+                      You can withdraw them after the lockup period.
+                      </p>
                   </div>
                   <div className="border-b border-gray-700 pb-4">
                     <h4 className="text-white font-bold mb-2">What's the lifetime bonus?</h4>

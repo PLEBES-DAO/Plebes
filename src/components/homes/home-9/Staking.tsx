@@ -18,7 +18,6 @@ export const StakingInterface = ({ login }) => {
     error,
     stakeTokens,
     withdrawTokens,
-    compoundRewards,
     startStaking,
     fetchStakingData
   } = useStaking();
@@ -71,13 +70,6 @@ export const StakingInterface = ({ login }) => {
     }
   };
 
-  const handleCompound = async () => {
-    try {
-      await compoundRewards();
-    } catch (error) {
-      console.error("Compounding failed:", error);
-    }
-  };
 
   const handleStartStaking = async () => {
     try {
@@ -311,20 +303,13 @@ export const StakingInterface = ({ login }) => {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                           <button
                             onClick={handleWithdraw}
                             disabled={isLoading}
                             className="bg-morado-translucido munro-small-text text-lg py-3 rounded-lg font-semibold text-white hover:bg-opacity-80 transition-all"
                           >
                             {isLoading ? 'Processing...' : 'Withdraw'}
-                          </button>
-                          <button
-                            onClick={handleCompound}
-                            disabled={isLoading}
-                            className="bg-morado-translucido munro-small-text text-lg py-3 rounded-lg font-semibold text-white hover:bg-opacity-80 transition-all"
-                          >
-                            {isLoading ? 'Processing...' : 'Compound'}
                           </button>
                         </div>
                       </div>
