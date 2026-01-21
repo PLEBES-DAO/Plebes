@@ -31,3 +31,24 @@ dist-ssr
 bioniq/
 package-lock.json
 src/hooks/BioniqContext.jsx
+target
+
+# Rust and Cargo
+/target/
+Cargo.lock
+*.wasm
+
+# PocketIC binaries and cache
+pocket-ic
+pocket-ic.exe
+.pocket-ic/
+
+# Test artifacts
+*.wasm
+mock_ledger.wasm
+
+# IDE and editor files
+*.swp
+*.swo
+*~
+.vscode/settings.json

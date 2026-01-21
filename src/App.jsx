@@ -13,6 +13,8 @@ import ProposalPage from "./app/(homes)/proposal_page/page.jsx";
 import {
   useState
 } from "react";
+import { StakingInterface } from "./components/homes/home-9/Staking.tsx";
+import { EarlyStakingProgram } from "./components/homes/home-9/EarlyStakingProgram.tsx";
 
 
 
@@ -60,6 +62,9 @@ function App() {
         <Route path="/launchpad" element={<HomePage login={login} setModalOpenT={setWithdralModal} />} />
         <Route path="/dao" element={<DAO login={login} setModalOpenT={setWithdralModal} />} />
         <Route path="/proposal_page" element={<ProposalPage login={login} setModalOpenT={setWithdralModal} />} />
+        <Route path="/staking" element={<StakingInterface login={login} setModalOpenT={setWithdralModal}  />} />
+        <Route path="/early-staking" element={<EarlyStakingProgram login={login} setModalOpenT={setWithdralModal}  />} />
+
 
       </Routes>
       <ErrorModal modalOpen={modalOpen} setModalOpen={setModalOpen} error={error} resetError={resetError} />

@@ -1,9 +1,12 @@
 {
+  "backend": {
+    "ic": "qyxbw-vyaaa-aaaag-auepq-cai"
+  },
   "front": {
-    "playground":"mq6bg-yaaaa-aaaai-aqjoa-cai",
-    "old": "2vep4-2iaaa-aaaag-akz7q-cai",
     "ic": "j7sk4-liaaa-aaaan-qmllq-cai",
-    "plebes":"jlk7i-tqaaa-aaaam-acojq-cai"
+    "old": "2vep4-2iaaa-aaaag-akz7q-cai",
+    "playground": "mq6bg-yaaaa-aaaai-aqjoa-cai",
+    "plebes": "jlk7i-tqaaa-aaaam-acojq-cai"
   },
   "voting_treasury": {
     "ic": "wmfyw-vyaaa-aaaal-ajm3a-cai"
